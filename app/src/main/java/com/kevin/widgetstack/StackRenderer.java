@@ -236,7 +236,11 @@ final class StackRenderer {
             Bundle b=WidgetSizing.options(actual,s,s.selected,c.getResources().getDisplayMetrics().density);
             boolean landscape=c.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE;
             SizeF available=displaySize(actual,landscape),logical=displaySize(b,landscape);
-            try{RemoteViewsBridge.embedFitted(c,root,source,s.selected,logical,available);}
+            try{
+                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0&&s.logicalSizePercent(s.selected)==100)
+                    RemoteViewsBridge.embedAuto(c,root,source,s.selected,logical);
+                else RemoteViewsBridge.embedFitted(c,root,source,s.selected,logical,available);
+            }
             catch(Exception|LinkageError|StackOverflowError e){
                 Log.e("WidgetStack","Cannot embed widget "+s.selected,e);
                 root=shell(c,s,0,forceContracted,0,rootId);root.setTextViewText(R.id.empty,"This widget could not be displayed.\nTap here to edit the stack.");

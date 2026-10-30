@@ -56,6 +56,20 @@ public class IndependentSizingTest {
   assertEquals(600*density,scaled.getLayoutParams().width*scaled.getScaleX(),1f);
   assertEquals(400*density,scaled.getLayoutParams().height*scaled.getScaleY(),1f);
  }
+ @Test public void autoSizingUsesMeasuredLauncherAreaWhenOptionsAreSmaller() throws Exception {
+  android.content.Context c=RuntimeEnvironment.getApplication();
+  StackState state=new StackState(9876);state.add(11);state.showRail=false;
+  android.widget.RemoteViews provider=new android.widget.RemoteViews(c.getPackageName(),R.layout.stack_placeholder);
+  StackHost.get(c).views.put(11,provider);
+  try {
+   android.view.View view=StackRenderer.render(c,state,0,false).apply(c,new android.widget.FrameLayout(c));
+   int width=900,height=720;
+   view.measure(android.view.View.MeasureSpec.makeMeasureSpec(width,android.view.View.MeasureSpec.EXACTLY),android.view.View.MeasureSpec.makeMeasureSpec(height,android.view.View.MeasureSpec.EXACTLY));
+   view.layout(0,0,width,height);
+   android.view.View content=view.findViewById(R.id.empty);
+   assertEquals(width,content.getWidth());assertEquals(height,content.getHeight());
+  }finally{StackHost.get(c).views.remove(11);}
+ }
  @Test public void dimensionsSurvivePersistenceReorderAndIndependentPlacements(){
   StackStore store=new StackStore(RuntimeEnvironment.getApplication());StackState saved=store.createSaved("Sizing");saved.add(11);saved.add(22);saved.setDimensions(11,600,400);saved.setDimensions(22,175,0);store.put(saved);store.assign(100,saved.id);store.assign(200,saved.id);
   StackState copy=store.get(saved.id);copy.move(0,1);store.put(copy);

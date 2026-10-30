@@ -65,13 +65,24 @@ final class RemoteViewsBridge {
     static void embed(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,float scale) throws ReflectiveOperationException {
         embedFitted(c,outer,source,child,size,new SizeF(size.getWidth()*scale,size.getHeight()*scale));
     }
+    static void embedAuto(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size) throws ReflectiveOperationException {
+        embedWithSizing(c,outer,source,child,size,null);
+    }
     static void embedFitted(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
+        embedWithSizing(c,outer,source,child,size,available);
+    }
+    private static void embedWithSizing(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
         RemoteViews chosen=select(c,new RemoteViews(source),size);
         List<Object> collections=prepare(c,chosen,child);
-        SizeF bounds=WidgetSizing.rootSize(c,chosen,size);
-        float scale=WidgetSizing.fit(available.getWidth(),available.getHeight(),bounds.getWidth(),bounds.getHeight());
         if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
         outer.removeAllViews(R.id.content);
+        if(available==null){
+            // Auto uses the actual parent layout in the launcher. Options are
+            // provider hints, not authoritative pixel bounds for the slot.
+            outer.addView(R.id.content,chosen);
+        }else{
+        SizeF bounds=WidgetSizing.rootSize(c,chosen,size);
+        float scale=WidgetSizing.fit(available.getWidth(),available.getHeight(),bounds.getWidth(),bounds.getHeight());
         // Fit the provider root, which may be smaller than the requested layout.
         // The outer match-parent frame centers the logical-size frame; Android's
         // View transforms also map descendant touch coordinates back to that frame.
@@ -82,6 +93,7 @@ final class RemoteViewsBridge {
         frame.setFloat(R.id.widget_scale_container,"setScaleX",scale);
         frame.setFloat(R.id.widget_scale_container,"setScaleY",scale);
         frame.addView(R.id.widget_scale_container,chosen);outer.addView(R.id.content,frame);
+        }
         // Android's collection conversion scans root actions on some OS releases.
         // Repeating only collection adapter actions at the root makes them discoverable.
         List<Object> dest=actions(outer);if(dest!=null)dest.addAll(collections);
