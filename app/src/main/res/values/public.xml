@@ -1,0 +1,9 @@
+<resources>
+ <!-- Keep wrapper IDs away from typical provider IDs. Both apps use package 0x7f. -->
+ <public type="id" name="content" id="0x7f700000" />
+ <public type="id" name="dot" id="0x7f700001" />
+ <public type="id" name="edit" id="0x7f700002" />
+ <public type="id" name="empty" id="0x7f700003" />
+ <public type="id" name="indicators" id="0x7f700004" />
+ <public type="id" name="rail" id="0x7f700005" />
+</resources>

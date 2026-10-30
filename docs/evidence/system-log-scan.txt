@@ -1,0 +1,2 @@
+Complete emulator logcat captured after the passing 15-test run and final APK install.
+No production app fatal exception or ANR found.

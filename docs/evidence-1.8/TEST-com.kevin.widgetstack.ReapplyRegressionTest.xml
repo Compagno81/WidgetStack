@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.ReapplyRegressionTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-29T14:42:20" hostname="70ecfa5e9c28" time="0.52">
+  <properties/>
+  <testcase name="repeatedContractedRefreshesKeepExpansionAndThicknessCurrent[31]" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.038"/>
+  <testcase name="repeatedContractedRefreshesKeepExpansionAndThicknessCurrent" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.052"/>
+  <testcase name="reapplyUpdatesTheActualBarDespiteCollidingProviderIds[31]" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.053"/>
+  <testcase name="reapplyUpdatesTheActualBarDespiteCollidingProviderIds" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.057"/>
+  <testcase name="losingACachedSnapshotRestoresThePlaceholderAndKeepsTheBarUsable[31]" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.043"/>
+  <testcase name="losingACachedSnapshotRestoresThePlaceholderAndKeepsTheBarUsable" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.045"/>
+  <testcase name="asynchronousReapplyAlsoClearsCollisionsBeforeResolvingBarActions[31]" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.062"/>
+  <testcase name="asynchronousReapplyAlsoClearsCollisionsBeforeResolvingBarActions" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.059"/>
+  <testcase name="reapplyReplacesOuterDotsAndPreservesBothSetsOfClickActions[31]" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.056"/>
+  <testcase name="reapplyReplacesOuterDotsAndPreservesBothSetsOfClickActions" classname="com.kevin.widgetstack.ReapplyRegressionTest" time="0.055"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/909 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@6d363106], context=[android.app.ContextImpl@55fc15c9], intentFilter=[android.content.IntentFilter@6af5f906]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@45928fea], context=[android.app.ContextImpl@3ab66fcb], intentFilter=[android.content.IntentFilter@7f8765a]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/909/40/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@712bb9f7], context=[android.app.ContextImpl@1d5e9f8b], intentFilter=[android.content.IntentFilter@3972ccfe]]]
+Intent = Intent { act=provider.action pkg=com.kevin.widgetstack }; Matching wrappers: []
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@10b731da], context=[android.app.ContextImpl@156cab6b], intentFilter=[android.content.IntentFilter@2c9cadab]]]
+Intent = Intent { act=provider.action pkg=com.kevin.widgetstack }; Matching wrappers: []
+]]></system-err>
+</testsuite>

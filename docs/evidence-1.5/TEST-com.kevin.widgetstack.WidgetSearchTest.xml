@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.WidgetSearchTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-29T07:52:05" hostname="b4ab45be54c4" time="0.001">
+  <properties/>
+  <testcase name="partialNamesAndNonEnglishLabelsRemainSearchable" classname="com.kevin.widgetstack.WidgetSearchTest" time="0.001"/>
+  <testcase name="spacedAppNamesFindTheirUnspacedLabels" classname="com.kevin.widgetstack.WidgetSearchTest" time="0.0"/>
+  <testcase name="packageNameMatchesWhenTheAppUsesADifferentLabel" classname="com.kevin.widgetstack.WidgetSearchTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

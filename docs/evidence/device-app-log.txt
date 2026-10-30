@@ -1,0 +1,6 @@
+--------- beginning of main
+10-21 16:11:44.128  3005  3005 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+10-21 16:11:44.237  3005  3005 I AndroidRuntime: Using default boot image
+10-21 16:11:44.237  3005  3005 I AndroidRuntime: Leaving lock profiling enabled
+10-21 16:11:47.566  3005  3005 D AndroidRuntime: Calling main entry com.android.commands.am.Am
+10-21 16:17:48.587  3005  3005 I AndroidRuntime: VM exiting with result code 0.

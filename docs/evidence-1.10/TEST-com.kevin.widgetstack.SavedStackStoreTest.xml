@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.SavedStackStoreTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-10-30T00:54:46" hostname="af280fb4f65f" time="0.573">
+  <properties/>
+  <testcase name="invalidAssignmentNeverCreatesData[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.025"/>
+  <testcase name="invalidAssignmentNeverCreatesData" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.024"/>
+  <testcase name="removingHomeCopyKeepsSavedStackAndConfiguredChildIds[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.027"/>
+  <testcase name="removingHomeCopyKeepsSavedStackAndConfiguredChildIds" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.024"/>
+  <testcase name="createWithoutHomePlacementRetainsWidgetsAndAllControls[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.024"/>
+  <testcase name="createWithoutHomePlacementRetainsWidgetsAndAllControls" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.021"/>
+  <testcase name="removingSelectedChildNormalizesEachCopyAndDefaultSeparately[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.027"/>
+  <testcase name="removingSelectedChildNormalizesEachCopyAndDefaultSeparately" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.03"/>
+  <testcase name="placementWritesUpdateSharedSettingsWithoutChangingStartingWidget[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.027"/>
+  <testcase name="placementWritesUpdateSharedSettingsWithoutChangingStartingWidget" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.023"/>
+  <testcase name="reassignmentDoesNotMutateEitherSavedDefinitionOrAnotherCopy[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.026"/>
+  <testcase name="reassignmentDoesNotMutateEitherSavedDefinitionOrAnotherCopy" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.024"/>
+  <testcase name="pruneOnlyRemovesMissingPlacements[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.025"/>
+  <testcase name="pruneOnlyRemovesMissingPlacements" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.023"/>
+  <testcase name="migrationCoexistsWithAlreadySavedDefinitionsAndSkipsMalformedLegacyData[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.038"/>
+  <testcase name="migrationCoexistsWithAlreadySavedDefinitionsAndSkipsMalformedLegacyData" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.024"/>
+  <testcase name="savedDeletionIsBlockedWhileAHomeCopyUsesIt[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.024"/>
+  <testcase name="savedDeletionIsBlockedWhileAHomeCopyUsesIt" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.023"/>
+  <testcase name="twoCopiesShareConfigurationsButKeepIndependentSelections[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.023"/>
+  <testcase name="twoCopiesShareConfigurationsButKeepIndependentSelections" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.029"/>
+  <testcase name="legacyMigrationPreservesBindingsSettingsAndSelectionAndIsIdempotent[31]" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.029"/>
+  <testcase name="legacyMigrationPreservesBindingsSettingsAndSelectionAndIsIdempotent" classname="com.kevin.widgetstack.SavedStackStoreTest" time="0.03"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.LivePreviewTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-29T09:45:13" hostname="3f74efe9aae4" time="0.895">
+  <properties/>
+  <testcase name="draftBarNavigationStaysLocalAndUsesTheSameLayoutAndDimensions[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.103"/>
+  <testcase name="draftBarNavigationStaysLocalAndUsesTheSameLayoutAndDimensions" classname="com.kevin.widgetstack.LivePreviewTest" time="0.147"/>
+  <testcase name="noSnapshotShowsAnExplicitPlaceholderRatherThanInventedWidgetContent[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.045"/>
+  <testcase name="noSnapshotShowsAnExplicitPlaceholderRatherThanInventedWidgetContent" classname="com.kevin.widgetstack.LivePreviewTest" time="0.047"/>
+  <testcase name="attachedPreviewRefreshesOnProviderSnapshotsAndDetachesCleanly[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.159"/>
+  <testcase name="attachedPreviewRefreshesOnProviderSnapshotsAndDetachesCleanly" classname="com.kevin.widgetstack.LivePreviewTest" time="0.165"/>
+  <testcase name="previewRendersCachedWidgetThroughProductionRendererAndRetainsItsAction[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.106"/>
+  <testcase name="previewRendersCachedWidgetThroughProductionRendererAndRetainsItsAction" classname="com.kevin.widgetstack.LivePreviewTest" time="0.121"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=preview.provider.action pkg=com.kevin.widgetstack }; Matching wrappers: []
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=preview.provider.action pkg=com.kevin.widgetstack }; Matching wrappers: []
+]]></system-err>
+</testsuite>

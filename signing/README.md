@@ -1,0 +1,1 @@
+This is a disposable development signing key, password android, alias AndroidDebugKey. It is included so subsequent test APKs can update this 1.2 build after workspace resets. Do not use it for Play Store or production publication. The original 1.0 key was lost with the cleared workspace, so upgrading from 1.0 requires uninstalling that test version first.

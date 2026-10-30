@@ -1,0 +1,1 @@
+a891a2c77d1f0508a9b5b90a728e2cced6a6f0fee360d96313cb268fb1766759  output/WidgetStack-1.11-debug.apk

@@ -1,0 +1,3 @@
+Install final APK: Performing Streamed Install
+Success
+Launch package activity: Events injected: 1

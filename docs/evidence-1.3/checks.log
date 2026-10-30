@@ -1,0 +1,140 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Checking the license for package Android SDK Platform-Tools in /workspace/scratch/f4367a5ef000/android-sdk/licenses
+Warning: License for package Android SDK Platform-Tools not accepted.
+WARNING: platform-tools package is not installed. Please accept the installation licence to continue
+> Task :app:clean
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes NO-SOURCE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugAndroidTestResValues
+> Task :app:extractProguardFiles
+> Task :app:javaPreCompileDebugAndroidTest
+> Task :app:checkDebugAndroidTestAarMetadata
+> Task :app:mapDebugAndroidTestSourceSetPaths
+> Task :app:generateDebugAndroidTestResources
+> Task :app:mergeDebugAndroidTestResources
+> Task :app:processDebugAndroidTestManifest
+> Task :app:processDebugResources
+> Task :app:processDebugAndroidTestResources
+
+> Task :app:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:packageDebugUnitTestForUnitTest
+
+> Task :app:compileDebugUnitTestJavaWithJavac
+Note: /workspace/scratch/f4367a5ef000/WidgetStack/app/src/test/java/com/kevin/widgetstack/BarNavigationTest.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:generateDebugUnitTestConfig
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:testDebugUnitTest
+> Task :app:generateDebugLintReportModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:compileDebugAndroidTestJavaWithJavac
+> Task :app:mergeDebugAndroidTestShaders
+> Task :app:compileDebugAndroidTestShaders NO-SOURCE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeDebugAndroidTestAssets
+> Task :app:compressDebugAndroidTestAssets
+> Task :app:desugarDebugAndroidTestFileDependencies
+> Task :app:dexBuilderDebugAndroidTest
+> Task :app:mergeDebugAndroidTestGlobalSynthetics
+> Task :app:processDebugAndroidTestJavaRes NO-SOURCE
+> Task :app:mergeDebugAndroidTestJavaResource
+> Task :app:checkDebugAndroidTestDuplicateClasses
+> Task :app:mergeExtDexDebugAndroidTest
+> Task :app:mergeLibDexDebugAndroidTest
+> Task :app:mergeProjectDexDebugAndroidTest
+> Task :app:mergeDebugAndroidTestJniLibFolders
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebugAndroidTest
+> Task :app:writeDebugAndroidTestSigningConfigVersions
+> Task :app:packageDebugAndroidTest
+> Task :app:createDebugAndroidTestApkListingFileRedirect
+> Task :app:assembleDebugAndroidTest
+> Task :fixture:preBuild UP-TO-DATE
+> Task :fixture:preDebugBuild UP-TO-DATE
+> Task :fixture:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :fixture:javaPreCompileDebug
+> Task :fixture:checkDebugAarMetadata
+> Task :fixture:generateDebugResValues
+> Task :fixture:mapDebugSourceSetPaths
+> Task :fixture:generateDebugResources
+> Task :fixture:mergeDebugResources
+> Task :fixture:packageDebugResources
+> Task :fixture:parseDebugLocalResources
+> Task :fixture:createDebugCompatibleScreenManifests
+> Task :fixture:extractDeepLinksDebug
+> Task :fixture:processDebugMainManifest
+> Task :fixture:processDebugManifest
+> Task :fixture:processDebugManifestForPackage
+> Task :fixture:processDebugResources
+
+> Task :fixture:compileDebugJavaWithJavac
+Note: /workspace/scratch/f4367a5ef000/WidgetStack/fixture/src/main/java/com/kevin/widgetfixture/ListWidget.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :fixture:mergeDebugShaders
+> Task :fixture:compileDebugShaders NO-SOURCE
+> Task :fixture:generateDebugAssets UP-TO-DATE
+> Task :fixture:mergeDebugAssets
+> Task :fixture:compressDebugAssets
+> Task :fixture:desugarDebugFileDependencies
+> Task :fixture:dexBuilderDebug
+> Task :fixture:mergeDebugGlobalSynthetics
+> Task :fixture:processDebugJavaRes NO-SOURCE
+> Task :fixture:mergeDebugJavaResource
+> Task :fixture:checkDebugDuplicateClasses
+> Task :fixture:mergeExtDexDebug
+> Task :fixture:mergeLibDexDebug
+> Task :fixture:mergeProjectDexDebug
+> Task :fixture:mergeDebugJniLibFolders
+> Task :fixture:mergeDebugNativeLibs NO-SOURCE
+> Task :fixture:stripDebugDebugSymbols NO-SOURCE
+> Task :fixture:validateSigningDebug
+> Task :fixture:writeDebugAppMetadata
+> Task :fixture:writeDebugSigningConfigVersions
+> Task :fixture:packageDebug
+> Task :fixture:createDebugApkListingFileRedirect
+> Task :fixture:assembleDebug
+> Task :app:lintAnalyzeDebug
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///workspace/scratch/f4367a5ef000/WidgetStack/app/build/reports/lint-results-debug.html
+
+> Task :app:lintDebug
+[Incubating] Problems report is available at: file:///workspace/scratch/f4367a5ef000/WidgetStack/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 44s
+92 actionable tasks: 92 executed

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.WidgetPickerDiscoveryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-29T07:52:04" hostname="b4ab45be54c4" time="0.86">
+  <properties/>
+  <testcase name="pickerFindsSpacedNamesAndWidgetLabelsWithoutDuplicateProviders[31]" classname="com.kevin.widgetstack.WidgetPickerDiscoveryTest" time="0.36"/>
+  <testcase name="pickerFindsSpacedNamesAndWidgetLabelsWithoutDuplicateProviders" classname="com.kevin.widgetstack.WidgetPickerDiscoveryTest" time="0.33"/>
+  <testcase name="refreshAndResumeDiscoverNewlyAvailableWidgets[31]" classname="com.kevin.widgetstack.WidgetPickerDiscoveryTest" time="0.085"/>
+  <testcase name="refreshAndResumeDiscoverNewlyAvailableWidgets" classname="com.kevin.widgetstack.WidgetPickerDiscoveryTest" time="0.083"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+]]></system-err>
+</testsuite>

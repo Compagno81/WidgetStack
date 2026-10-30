@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.LivePreviewTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-30T05:55:44" hostname="a5f9f1235270" time="0.726">
+  <properties/>
+  <testcase name="draftBarNavigationStaysLocalAndUsesTheSameLayoutAndDimensions[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.076"/>
+  <testcase name="draftBarNavigationStaysLocalAndUsesTheSameLayoutAndDimensions" classname="com.kevin.widgetstack.LivePreviewTest" time="0.07"/>
+  <testcase name="previewRendersCachedWidgetButBlocksProviderTouchesAndAccessibility[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.132"/>
+  <testcase name="previewRendersCachedWidgetButBlocksProviderTouchesAndAccessibility" classname="com.kevin.widgetstack.LivePreviewTest" time="0.125"/>
+  <testcase name="noSnapshotShowsAnExplicitPlaceholderRatherThanInventedWidgetContent[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.054"/>
+  <testcase name="noSnapshotShowsAnExplicitPlaceholderRatherThanInventedWidgetContent" classname="com.kevin.widgetstack.LivePreviewTest" time="0.051"/>
+  <testcase name="attachedPreviewRefreshesOnProviderSnapshotsAndDetachesCleanly[31]" classname="com.kevin.widgetstack.LivePreviewTest" time="0.09"/>
+  <testcase name="attachedPreviewRefreshesOnProviderSnapshotsAndDetachesCleanly" classname="com.kevin.widgetstack.LivePreviewTest" time="0.127"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+]]></system-err>
+</testsuite>

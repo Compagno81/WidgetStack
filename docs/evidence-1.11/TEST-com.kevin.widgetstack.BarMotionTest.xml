@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.BarMotionTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-30T05:55:24" hostname="a5f9f1235270" time="4.549">
+  <properties/>
+  <testcase name="editorRejectsInvalidSecondsWithoutClosingAndCancelPreservesDelay[31]" classname="com.kevin.widgetstack.BarMotionTest" time="1.492"/>
+  <testcase name="editorRejectsInvalidSecondsWithoutClosingAndCancelPreservesDelay" classname="com.kevin.widgetstack.BarMotionTest" time="1.424"/>
+  <testcase name="transitionsAnimateOnlyTheBarAndAnchorAtEveryEdgeInBothLayoutModes[31]" classname="com.kevin.widgetstack.BarMotionTest" time="0.525"/>
+  <testcase name="transitionsAnimateOnlyTheBarAndAnchorAtEveryEdgeInBothLayoutModes" classname="com.kevin.widgetstack.BarMotionTest" time="0.52"/>
+  <testcase name="previewUsesCustomDelayAndTheProductionExpansionLayout[31]" classname="com.kevin.widgetstack.BarMotionTest" time="0.182"/>
+  <testcase name="previewUsesCustomDelayAndTheProductionExpansionLayout" classname="com.kevin.widgetstack.BarMotionTest" time="0.228"/>
+  <testcase name="navigationResetsDelayAndTapDuringContractionCancelsOldCompletion[31]" classname="com.kevin.widgetstack.BarMotionTest" time="0.031"/>
+  <testcase name="navigationResetsDelayAndTapDuringContractionCancelsOldCompletion" classname="com.kevin.widgetstack.BarMotionTest" time="0.026"/>
+  <testcase name="delayPersistsDefaultsToTwoAndUsesLongArithmetic[31]" classname="com.kevin.widgetstack.BarMotionTest" time="0.036"/>
+  <testcase name="delayPersistsDefaultsToTwoAndUsesLongArithmetic" classname="com.kevin.widgetstack.BarMotionTest" time="0.026"/>
+  <testcase name="customDelayStartsContractionAtTheConfiguredSecondThenSettles[31]" classname="com.kevin.widgetstack.BarMotionTest" time="0.03"/>
+  <testcase name="customDelayStartsContractionAtTheConfiguredSecondThenSettles" classname="com.kevin.widgetstack.BarMotionTest" time="0.025"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/903 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@9815fa7], context=[android.app.ContextImpl@6e50d946], intentFilter=[android.content.IntentFilter@19a94b94]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.EXPAND dat=widgetstack://expand/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@3c0402c7], context=[android.app.ContextImpl@5d10a343], intentFilter=[android.content.IntentFilter@5bc67918]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+]]></system-err>
+</testsuite>

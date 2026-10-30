@@ -1,0 +1,129 @@
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/StackStore.java:28: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+            prefs.edit().putString("stack_"+s.id,j.toString()).commit();
+                                                               ~~~~~~~~
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/StackStore.java:38: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+    synchronized void delete(int id) { prefs.edit().remove("stack_"+id).commit(); }
+                                                                        ~~~~~~~~
+
+   Explanation for issues of type "ApplySharedPref":
+   Consider using apply() instead of commit on shared preferences. Whereas
+   commit blocks and writes its data to persistent storage immediately, apply
+   will handle it in the background.
+
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/CollectionProxyService.java:39: Warning: Accessing internal APIs via reflection is not supported and may not work on all devices or in the future [PrivateApi]
+                    Class<?> stub=Class.forName("com.android.internal.widget.IRemoteViewsFactory$Stub");
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/CollectionProxyService.java:40: Warning: Accessing internal APIs via reflection is not supported and may not work on all devices or in the future [PrivateApi]
+                    factoryInterface=Class.forName("com.android.internal.widget.IRemoteViewsFactory");
+                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/StackHost.java:44: Warning: Accessing internal APIs via reflection is not supported and may not work on all devices or in the future [PrivateApi]
+            Class<?> listener=Class.forName("android.appwidget.AppWidgetHost$AppWidgetHostListener");
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "PrivateApi":
+   Using reflection to access hidden/private Android APIs is not safe; it will
+   often not work on devices from other vendors, and it may suddenly stop
+   working (if the API is removed) or crash spectacularly (if the API behavior
+   changes, since there are no guarantees for compatibility).
+
+   https://developer.android.com/preview/restrictions-non-sdk-interfaces
+
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/StackHost.java:21: Warning: Do not place Android context classes in static fields (static reference to StackHost which has field context pointing to Context); this is a memory leak [StaticFieldLeak]
+    private static StackHost instance;
+            ~~~~~~
+
+   Explanation for issues of type "StaticFieldLeak":
+   A static field will leak contexts.
+
+   Non-static inner classes have an implicit reference to their outer class.
+   If that outer class is for example a Fragment or Activity, then this
+   reference means that the long-running handler/loader/task will hold a
+   reference to the activity which prevents it from getting garbage
+   collected.
+
+   Similarly, direct field references to activities and fragments from these
+   longer running instances can cause leaks.
+
+   ViewModel classes should never point to Views or non-application Contexts.
+
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/res/layout/indicator.xml:1: Warning: Possible overdraw: Root element paints background ?android:attr/selectableItemBackground with a theme that also paints a background (inferred theme is @style/AppTheme) [Overdraw]
+<TextView xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/dot" android:layout_width="match_parent" android:layout_height="44dp" android:gravity="center" android:textColor="#FF102C23" android:textSize="16sp" android:background="?android:attr/selectableItemBackground"/>
+                                                                                                                                                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/WidgetPickerActivity.java:119: Warning: Custom view PreviewScale overrides onTouchEvent but not performClick [ClickableViewAccessibility]
+        @Override public boolean onTouchEvent(android.view.MotionEvent event){return false;}
+                                 ~~~~~~~~~~~~
+
+   Explanation for issues of type "ClickableViewAccessibility":
+   If a View that overrides onTouchEvent or uses an OnTouchListener does not
+   also implement performClick and call it when clicks are detected, the View
+   may not handle accessibility actions properly. Logic handling the click
+   actions should ideally be placed in View#performClick as some accessibility
+   services invoke performClick when a click action should occur.
+
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/ConfigureActivity.java:32: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+  Switch railToggle=new Switch(this);railToggle.setText("Show widget navigation strip");railToggle.setTextSize(16);railToggle.setPadding(0,Ui.dp(this,8),0,Ui.dp(this,8));railToggle.setChecked(s.showRail);root.addView(railToggle,new LinearLayout.LayoutParams(-1,-2));
+                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/java/com/kevin/widgetstack/WidgetPickerActivity.java:45: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        TextView empty=new TextView(this);empty.setText("No widgets found");empty.setGravity(Gravity.CENTER);empty.setPadding(dp(16),dp(32),dp(16),dp(32));root.addView(empty);list.setEmptyView(empty);
+                                                        ~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetTextI18n":
+   When calling TextView#setText
+   * Never call Number#toString() to format numbers; it will not handle
+   fraction separators and locale-specific digits properly. Consider using
+   String#format with proper format specifications (%d or %f) instead.
+   * Do not pass a string literal (e.g. "Hello") to display text. Hardcoded
+   text can not be properly translated to other languages. Consider using
+   Android resource strings instead.
+   * Do not build messages by concatenating text chunks. Such messages can not
+   be properly translated.
+
+   https://developer.android.com/guide/topics/resources/localization.html
+
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/res/layout/stack.xml:3: Warning: Hardcoded string "Tap + to add widgets", should use @string resource [HardcodedText]
+  <TextView android:id="@+id/empty" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:padding="16dp" android:text="Tap + to add widgets" android:textSize="15sp" android:textColor="#FF34463D" android:background="#CCF3F6F0" />
+                                                                                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/res/layout/stack.xml:7: Warning: Hardcoded string "+", should use @string resource [HardcodedText]
+  <TextView android:id="@+id/edit" android:layout_width="match_parent" android:layout_height="40dp" android:gravity="center" android:text="+" android:textColor="#FF102C23" android:textSize="22sp" android:contentDescription="Edit stack" android:background="?android:attr/selectableItemBackground"/>
+                                                                                                                             ~~~~~~~~~~~~~~~~
+/workspace/scratch/f4367a5ef000/WidgetStack/app/src/main/res/layout/stack.xml:7: Warning: Hardcoded string "Edit stack", should use @string resource [HardcodedText]
+  <TextView android:id="@+id/edit" android:layout_width="match_parent" android:layout_height="40dp" android:gravity="center" android:text="+" android:textColor="#FF102C23" android:textSize="22sp" android:contentDescription="Edit stack" android:background="?android:attr/selectableItemBackground"/>
+                                                                                                                                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+0 errors, 13 warnings

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.BarNavigationTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-10-29T07:51:31" hostname="b4ab45be54c4" time="31.046">
+  <properties/>
+  <testcase name="minimumThicknessAndButtonsOnlyCanBeAppliedAndPersisted[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="19.626"/>
+  <testcase name="minimumThicknessAndButtonsOnlyCanBeAppliedAndPersisted" classname="com.kevin.widgetstack.BarNavigationTest" time="3.524"/>
+  <testcase name="buttonsOnlyNavigationKeepsTheStackIdentityAndDirection[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.078"/>
+  <testcase name="buttonsOnlyNavigationKeepsTheStackIdentityAndDirection" classname="com.kevin.widgetstack.BarNavigationTest" time="0.095"/>
+  <testcase name="allEdgesReserveThicknessAndKeepQuarterEndButtons[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.08"/>
+  <testcase name="allEdgesReserveThicknessAndKeepQuarterEndButtons" classname="com.kevin.widgetstack.BarNavigationTest" time="0.117"/>
+  <testcase name="animationLayoutsApplyBothDirectionsAndLeaveWidgetContentInteractive[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.181"/>
+  <testcase name="animationLayoutsApplyBothDirectionsAndLeaveWidgetContentInteractive" classname="com.kevin.widgetstack.BarNavigationTest" time="0.209"/>
+  <testcase name="visualEditorAppliesTogetherAndCancelLeavesSettingsAlone[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="3.011"/>
+  <testcase name="visualEditorAppliesTogetherAndCancelLeavesSettingsAlone" classname="com.kevin.widgetstack.BarNavigationTest" time="3.381"/>
+  <testcase name="everyDotAndEndButtonHasItsOwnCorrectNavigationIntent[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.101"/>
+  <testcase name="everyDotAndEndButtonHasItsOwnCorrectNavigationIntent" classname="com.kevin.widgetstack.BarNavigationTest" time="0.108"/>
+  <testcase name="compactButtonsOnlyBarUsesTwoEqualAreasOnEveryEdge[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.104"/>
+  <testcase name="compactButtonsOnlyBarUsesTwoEqualAreasOnEveryEdge" classname="com.kevin.widgetstack.BarNavigationTest" time="0.068"/>
+  <testcase name="switchingBarModeRestoresDotsWhenRemoteViewsAreReapplied[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.042"/>
+  <testcase name="switchingBarModeRestoresDotsWhenRemoteViewsAreReapplied" classname="com.kevin.widgetstack.BarNavigationTest" time="0.055"/>
+  <testcase name="hiddenBarRestoresFullContentAndSizes[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.079"/>
+  <testcase name="hiddenBarRestoresFullContentAndSizes" classname="com.kevin.widgetstack.BarNavigationTest" time="0.081"/>
+  <testcase name="resizeOptionsSubtractOnlyOccupiedAxisIncludingResponsiveSizes[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.02"/>
+  <testcase name="resizeOptionsSubtractOnlyOccupiedAxisIncludingResponsiveSizes" classname="com.kevin.widgetstack.BarNavigationTest" time="0.026"/>
+  <testcase name="storePersistsSettingsAndLoadsOldStacksWithDefaults[31]" classname="com.kevin.widgetstack.BarNavigationTest" time="0.026"/>
+  <testcase name="storePersistsSettingsAndLoadsOldStacksWithDefaults" classname="com.kevin.widgetstack.BarNavigationTest" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/-1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@16928b8d], context=[android.app.ContextImpl@323c0647], intentFilter=[android.content.IntentFilter@c828ed8]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@16928b8d], context=[android.app.ContextImpl@323c0647], intentFilter=[android.content.IntentFilter@c828ed8]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@fdf5660], context=[android.app.ContextImpl@28ee9cd], intentFilter=[android.content.IntentFilter@262a2640]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@fdf5660], context=[android.app.ContextImpl@28ee9cd], intentFilter=[android.content.IntentFilter@262a2640]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/10/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/20/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/30/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/-1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/10/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/20/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/30/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/-1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/10/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/20/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/30/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/-1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/10/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/20/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/30/0 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/-1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/987/-1/1 cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@4488b337], context=[android.app.ContextImpl@6d85e426], intentFilter=[android.content.IntentFilter@fa01e84]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Intent = Intent { act=com.kevin.widgetstack.SELECT dat=widgetstack://select/... cmp=com.kevin.widgetstack/.StackProvider (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackProvider@41276cca], context=[android.app.ContextImpl@19eff0c5], intentFilter=[android.content.IntentFilter@63e7366d]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+]]></system-err>
+</testsuite>

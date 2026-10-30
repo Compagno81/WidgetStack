@@ -1,0 +1,24 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+ <uses-permission android:name="android.permission.BIND_APPWIDGET" />
+ <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+ <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+ <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+ <queries>
+  <intent><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent>
+  <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
+  <package android:name="com.duolingo" />
+  <package android:name="com.myfitnesspal.android" />
+ </queries>
+ <application android:name=".StackApplication" android:label="Widget Stack" android:icon="@drawable/ic_stack" android:theme="@style/AppTheme" android:allowBackup="false" android:dataExtractionRules="@xml/data_extraction_rules" android:supportsRtl="true">
+  <activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity>
+  <activity android:name=".WidgetPickerActivity" android:exported="false" android:label="Choose a widget"/>
+  <activity android:name=".StackChooserActivity" android:exported="true" android:label="Choose a saved stack"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/></intent-filter></activity>
+  <activity android:name=".ConfigureActivity" android:exported="false" android:label="Edit saved stack"/>
+  <receiver android:name=".StackControlReceiver" android:exported="false"/>
+  <receiver android:name=".StackProvider" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter><intent-filter><action android:name="com.kevin.widgetstack.SELECT"/><action android:name="com.kevin.widgetstack.EXPAND"/><action android:name="com.kevin.widgetstack.PINNED"/><data android:scheme="widgetstack"/></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/stack_info"/></receiver>
+  <receiver android:name=".BootReceiver" android:exported="false"><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"/><action android:name="android.intent.action.MY_PACKAGE_REPLACED"/></intent-filter></receiver>
+  <service android:name=".HostService" android:exported="false" android:foregroundServiceType="specialUse"><property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Maintains AppWidgetHost listener for user-created home-screen stacks and forwards widget updates to the launcher. No overlay or lock-screen functionality."/></service>
+  <service android:name=".CollectionProxyService" android:exported="false" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+ </application>
+</manifest>

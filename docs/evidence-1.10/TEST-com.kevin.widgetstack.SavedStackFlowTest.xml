@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.SavedStackFlowTest" tests="26" skipped="0" failures="0" errors="0" timestamp="2026-10-30T00:54:44" hostname="af280fb4f65f" time="2.369">
+  <properties/>
+  <testcase name="deletingEveryHomeCopyRetainsTheConfiguredRealWidgets[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.049"/>
+  <testcase name="deletingEveryHomeCopyRetainsTheConfiguredRealWidgets" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.072"/>
+  <testcase name="pinCallbackReceivesFilledHomeIdAndUsesTheRequestedSavedStack[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.042"/>
+  <testcase name="pinCallbackReceivesFilledHomeIdAndUsesTheRequestedSavedStack" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.044"/>
+  <testcase name="sharedBindingReceivesResponsiveSizesFromEveryPlacement[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.065"/>
+  <testcase name="sharedBindingReceivesResponsiveSizesFromEveryPlacement" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.092"/>
+  <testcase name="createFromChooserReturnsToTheSamePlacementAfterEditorDone[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.116"/>
+  <testcase name="createFromChooserReturnsToTheSamePlacementAfterEditorDone" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.128"/>
+  <testcase name="launcherChooserAssignsExistingBindingsAndReturnsTheHomeId[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.063"/>
+  <testcase name="launcherChooserAssignsExistingBindingsAndReturnsTheHomeId" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.065"/>
+  <testcase name="unassignedHomeDoesNotCreateAnAccidentalSavedStack[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.031"/>
+  <testcase name="unassignedHomeDoesNotCreateAnAccidentalSavedStack" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.034"/>
+  <testcase name="addingProviderFromPickerWorksInAnUnplacedSavedStack[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.092"/>
+  <testcase name="addingProviderFromPickerWorksInAnUnplacedSavedStack" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.122"/>
+  <testcase name="twoCopiesNavigateIndependentlyThroughTheActualReceiver[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.076"/>
+  <testcase name="twoCopiesNavigateIndependentlyThroughTheActualReceiver" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.082"/>
+  <testcase name="unplacedPreviewShowsLiveContentAndObservesUpdatesWithoutActivatingIt[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.067"/>
+  <testcase name="unplacedPreviewShowsLiveContentAndObservesUpdatesWithoutActivatingIt" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.068"/>
+  <testcase name="cancelChooserLeavesSavedStacksAndHomeUnassigned[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.05"/>
+  <testcase name="cancelChooserLeavesSavedStacksAndHomeUnassigned" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.054"/>
+  <testcase name="invalidHomeOrRemovedDefinitionCannotBeAssigned[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.024"/>
+  <testcase name="invalidHomeOrRemovedDefinitionCannotBeAssigned" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.03"/>
+  <testcase name="savedEditorWorksBeforeAnyHomeWidgetAndBackKeepsTheDefinition[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.086"/>
+  <testcase name="savedEditorWorksBeforeAnyHomeWidgetAndBackKeepsTheDefinition" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.1"/>
+  <testcase name="savedManagerAndChooserHaveNativeUsableLayouts[31]" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.328"/>
+  <testcase name="savedManagerAndChooserHaveNativeUsableLayouts" classname="com.kevin.widgetstack.SavedStackFlowTest" time="0.387"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.PINNED dat=widgetstack://pin/-2 cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@13c5518d], context=[android.app.ContextImpl@6ac6001c], intentFilter=[android.content.IntentFilter@a80bbb0]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Intent = Intent { act=com.kevin.widgetstack.PINNED dat=widgetstack://pin/... cmp=com.kevin.widgetstack/.StackControlReceiver (has extras) }; Matching wrappers: [Wrapper[receiver=[com.kevin.widgetstack.StackControlReceiver@710989f2], context=[android.app.ContextImpl@2968523b], intentFilter=[android.content.IntentFilter@3f37f3ad]]]
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+Invalid ID 0x00000000.
+]]></system-err>
+</testsuite>

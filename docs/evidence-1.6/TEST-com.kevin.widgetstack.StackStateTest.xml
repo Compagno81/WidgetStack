@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kevin.widgetstack.StackStateTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-29T09:45:17" hostname="3f74efe9aae4" time="0.001">
+  <properties/>
+  <testcase name="deletingSelectedChoosesNeighbour" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="invalidAppearanceValuesAreClamped" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="addingDuplicateDoesNotAllocateAnotherPage" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="independentStacks" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="reorderingPreservesSelectedIdentity" classname="com.kevin.widgetstack.StackStateTest" time="0.001"/>
+  <testcase name="invalidSelectionCannotEscapeStack" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="navigationHandlesEmptyAndSingleWidget" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="invalidMovesDoNotCorruptOrder" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="navigationStripDefaultsVisibleAndCanBeHidden" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <testcase name="previousAndNextWrapAndFollowReorderedWidgets" classname="com.kevin.widgetstack.StackStateTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

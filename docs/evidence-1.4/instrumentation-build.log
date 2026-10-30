@@ -1,0 +1,90 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Checking the license for package Android SDK Platform-Tools in /workspace/scratch/f4367a5ef000/android-sdk/licenses
+Warning: License for package Android SDK Platform-Tools not accepted.
+WARNING: platform-tools package is not installed. Please accept the installation licence to continue
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:mergeDebugShaders
+
+> Task :app:compileDebugUnitTestJavaWithJavac
+Note: /workspace/scratch/f4367a5ef000/WidgetStack/app/src/test/java/com/kevin/widgetstack/BarNavigationTest.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:packageDebugUnitTestForUnitTest
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes NO-SOURCE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugUnitTestConfig
+> Task :app:generateDebugAndroidTestResValues
+> Task :app:testDebugUnitTest
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:extractProguardFiles
+> Task :app:generateDebugLintReportModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:lintAnalyzeDebug
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:javaPreCompileDebugAndroidTest
+> Task :app:checkDebugAndroidTestAarMetadata
+> Task :app:mapDebugAndroidTestSourceSetPaths
+> Task :app:generateDebugAndroidTestResources
+> Task :app:mergeDebugAndroidTestResources
+> Task :app:processDebugAndroidTestManifest
+> Task :app:processDebugAndroidTestResources
+> Task :app:compileDebugAndroidTestJavaWithJavac
+> Task :app:mergeDebugAndroidTestShaders
+> Task :app:compileDebugAndroidTestShaders NO-SOURCE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeDebugAndroidTestAssets
+> Task :app:compressDebugAndroidTestAssets
+> Task :app:desugarDebugAndroidTestFileDependencies
+> Task :app:dexBuilderDebugAndroidTest
+> Task :app:mergeDebugAndroidTestGlobalSynthetics
+> Task :app:processDebugAndroidTestJavaRes NO-SOURCE
+> Task :app:mergeDebugAndroidTestJavaResource
+> Task :app:checkDebugAndroidTestDuplicateClasses
+> Task :app:mergeExtDexDebugAndroidTest
+> Task :app:mergeLibDexDebugAndroidTest
+> Task :app:mergeProjectDexDebugAndroidTest
+> Task :app:mergeDebugAndroidTestJniLibFolders
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebugAndroidTest
+> Task :app:writeDebugAndroidTestSigningConfigVersions
+> Task :app:packageDebugAndroidTest
+> Task :app:createDebugAndroidTestApkListingFileRedirect
+> Task :app:assembleDebugAndroidTest
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///workspace/scratch/f4367a5ef000/WidgetStack/app/build/reports/lint-results-debug.html
+
+> Task :app:lintDebug
+[Incubating] Problems report is available at: file:///workspace/scratch/f4367a5ef000/WidgetStack/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 2m 5s
+59 actionable tasks: 44 executed, 15 up-to-date

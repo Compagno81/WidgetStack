@@ -1,0 +1,17 @@
+Widget Stack
+
+Copyright (c) 2026 Widget Stack contributors.
+
+Parts of RemoteViewsBridge and CollectionProxyService are adapted from
+Widgets Anywhere, https://github.com/zacharee/LockscreenWidgets
+Copyright (c) 2020, 2023 Zachary Wander. MIT License.
+Reference commit: 259a2c7dc6df2e3317bcde2e77c36c4e8275f2ab
+
+Android Hidden API Bypass 6.1
+https://github.com/LSPosed/AndroidHiddenApiBypass
+Copyright 2021-2025 LSPosed. Apache License 2.0.
+
+Gradle Wrapper: Gradle contributors. Apache License 2.0.
+Android SDK and Android Gradle Plugin are build tools, not bundled runtimes.
+JUnit 4.13.2 (Eclipse Public License 1.0) is used only by local unit tests.
+Full upstream MIT and Apache licences are included under licenses/.
