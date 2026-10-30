@@ -64,6 +64,34 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
   await("Original widget PendingIntent should open external app",()->eventRow()==-1);
   getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
  }
+ public void testAutoUsesActualLauncherBoundsAndRetainsEdgeClicksAfterResize() throws Exception {
+  int child=allocate("PlainWidget"),id=stack(child);
+  getInstrumentation().runOnMainSync(()->{
+   StackState state=new StackStore(c).get(id);state.showRail=false;new StackStore(c).put(state);
+   Bundle reported=new Bundle();reported.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,200);reported.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,200);reported.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,150);reported.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,150);
+   manager.updateAppWidgetOptions(id,reported);StackRenderer.updateSizes(c,id);StackRenderer.update(c,id);
+  });
+  AppWidgetHostView view=display(id);
+  await("External provider should render",()->findText(view,"External widget")!=null);
+  for(int[] dimensions:new int[][]{{400,300},{300,400},{400,200}}){
+   getInstrumentation().runOnMainSync(()->view.setLayoutParams(new FrameLayout.LayoutParams(Ui.dp(activity,dimensions[0]),Ui.dp(activity,dimensions[1]),Gravity.CENTER)));
+   await("Auto provider must fill actual launcher area despite smaller size options",()->{
+    TextView provider=findText(view,"External widget");View area=view.findViewById(R.id.content);
+    return provider!=null&&view.getWidth()==Ui.dp(activity,dimensions[0])&&view.getHeight()==Ui.dp(activity,dimensions[1])&&provider.getWidth()==area.getWidth()&&provider.getHeight()==area.getHeight()&&provider.getWidth()==view.getWidth()&&provider.getHeight()==view.getHeight();
+   });
+   final int[] xy=new int[2],wh=new int[2];getInstrumentation().runOnMainSync(()->{TextView provider=findText(view,"External widget");provider.getLocationOnScreen(xy);wh[0]=provider.getWidth();wh[1]=provider.getHeight();});
+   getInstrumentation().waitForIdleSync();
+   android.graphics.Bitmap image=getInstrumentation().getUiAutomation().takeScreenshot();assertNotNull("Screenshot must be available",image);
+   int pixel=image.getPixel(xy[0]+wh[0]-4,xy[1]+wh[1]/2);image.recycle();
+   assertEquals("Provider background must reach the visible right edge",0xffb9d9ec,pixel);
+   resetEvents();long now=SystemClock.uptimeMillis();
+   MotionEvent down=MotionEvent.obtain(now,now,MotionEvent.ACTION_DOWN,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0),up=MotionEvent.obtain(now,now+80,MotionEvent.ACTION_UP,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0);
+   getInstrumentation().sendPointerSync(down);getInstrumentation().sendPointerSync(up);down.recycle();up.recycle();
+   await("A tap at the displayed edge must open the external provider",()->eventRow()==-1);
+   getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+   await("Test host should regain focus",view::hasWindowFocus);
+  }
+ }
  public void testCalendarStyleCollectionScrollAndClick() throws Exception {
   int child=allocate("ListWidget"),id=stack(child);AppWidgetHostView view=display(id);
   await("External collection should contain forty events",()->findList(view)!=null&&findList(view).getCount()==40);

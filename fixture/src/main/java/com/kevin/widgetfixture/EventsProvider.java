@@ -4,6 +4,21 @@ import android.content.*;import android.database.Cursor;import android.net.Uri;i
 public final class EventsProvider extends ContentProvider {
  public boolean onCreate(){return true;}
  @Override public Bundle call(String method,String arg,Bundle extras){
+  if("launcher_bounds".equals(method)||"launcher_resize".equals(method)){
+   Bundle result=new Bundle();LauncherActivity activity=LauncherActivity.current;if(activity==null)return result;
+   java.util.concurrent.CountDownLatch ready=new java.util.concurrent.CountDownLatch(1);
+   new android.os.Handler(android.os.Looper.getMainLooper()).post(()->{
+    try{
+     android.appwidget.AppWidgetHostView widget=activity.widget;
+     if("launcher_resize".equals(method)&&extras!=null)widget.setLayoutParams(new android.widget.FrameLayout.LayoutParams(extras.getInt("width"),extras.getInt("height"),android.view.Gravity.CENTER));
+     int[] xy=new int[2];widget.getLocationOnScreen(xy);result.putInt("left",xy[0]);result.putInt("top",xy[1]);result.putInt("width",widget.getWidth());result.putInt("height",widget.getHeight());
+     int id=activity.getResources().getIdentifier("content","id","com.kevin.widgetstack");android.view.View area=widget.findViewById(id);
+     if(area instanceof android.view.ViewGroup&&((android.view.ViewGroup)area).getChildCount()>0){android.view.View child=((android.view.ViewGroup)area).getChildAt(0);result.putInt("provider_width",child.getWidth());result.putInt("provider_height",child.getHeight());result.putInt("provider_left",child.getLeft());result.putInt("provider_top",child.getTop());}
+    }finally{ready.countDown();}
+   });
+   try{if(!ready.await(10,java.util.concurrent.TimeUnit.SECONDS))return new Bundle();}catch(InterruptedException e){Thread.currentThread().interrupt();return new Bundle();}
+   return result;
+  }
   if("allocate_home".equals(method)){
    android.appwidget.AppWidgetHost host=new android.appwidget.AppWidgetHost(getContext(),7777);
    int id=host.allocateAppWidgetId();
