@@ -2,10 +2,20 @@ plugins { id 'com.android.application' }
 android {
  namespace 'com.kevin.widgetstack'
  compileSdk 35
- defaultConfig { applicationId 'com.kevin.widgetstack'; minSdk 31; targetSdk 35; versionCode 15; versionName '1.14'; testInstrumentationRunner 'android.test.InstrumentationTestRunner' }
+ defaultConfig { applicationId 'com.kevin.widgetstack'; minSdk 31; targetSdk 35; versionCode 20; versionName '1.19-reconstructed'; testInstrumentationRunner 'android.test.InstrumentationTestRunner' }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
  signingConfigs { debug { storeFile rootProject.file("signing/testing-debug.keystore"); storePassword "android"; keyAlias "AndroidDebugKey"; keyPassword "android" } }
- buildTypes { release { minifyEnabled false } }
+ signingConfigs {
+  ownerRelease {
+   if (System.getenv('WIDGETSTACK_KEYSTORE')) {
+    storeFile file(System.getenv('WIDGETSTACK_KEYSTORE'))
+    storePassword System.getenv('WIDGETSTACK_STORE_PASSWORD')
+    keyAlias System.getenv('WIDGETSTACK_KEY_ALIAS')
+    keyPassword System.getenv('WIDGETSTACK_KEY_PASSWORD')
+   }
+  }
+ }
+ buildTypes { release { minifyEnabled false; if (System.getenv('WIDGETSTACK_KEYSTORE')) signingConfig signingConfigs.ownerRelease } }
  testOptions { unitTests.includeAndroidResources = true }
  lint { disable 'ProtectedPermissions'; abortOnError true }
 }

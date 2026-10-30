@@ -80,11 +80,15 @@ final class StackRenderer {
         if(sizes!=null){ArrayList<SizeF> scaled=new ArrayList<>();for(SizeF size:sizes)scaled.add(new SizeF(size.getWidth()*factor,size.getHeight()*factor));b.putParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES,scaled);}
         return b;
     }
+    static SizeF displaySize(Bundle options,boolean landscape){
+        return new SizeF(Math.max(1,options.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH:AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,240)),Math.max(1,options.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT:AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,160)));
+    }
+
     static void updateSizes(Context c,int stack) {
         StackState s=new StackStore(c).get(stack);if(s==null)return;
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         for(int child:s.children) {
-            Bundle b=logicalOptions(hostedOptions(c,stack),s.logicalSizePercent(child));
+            Bundle b=WidgetSizing.options(hostedOptions(c,stack),s,child,c.getResources().getDisplayMetrics().density);
             Bundle old=m.getAppWidgetOptions(child);
             boolean same=true;
             for(String k:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_SIZES})
@@ -207,16 +211,32 @@ final class StackRenderer {
         android.content.SharedPreferences prefs=c.getSharedPreferences("render_generation",Context.MODE_PRIVATE);
         int id=prefs.getInt("root",1000000)%0x00fffffe+1;prefs.edit().putInt("root",id).commit();return id;
     }
-    static RemoteViews renderForHome(Context c,StackState s,int direction,int barMotion){return render(c,s,direction,null,barMotion,nextRootId(c));}
-    private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){
+    static RemoteViews renderForHome(Context c,StackState s,int direction,int barMotion){
+        Bundle options=optionsFor(c,s.id);
+        ArrayList<SizeF> sizes=options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+        if(sizes==null||sizes.isEmpty())return render(c,s,direction,null,barMotion,nextRootId(c));
+        java.util.Map<SizeF,RemoteViews> variants=new java.util.LinkedHashMap<>();
+        for(SizeF slot:sizes){
+            if(slot.getWidth()<=0||slot.getHeight()<=0||variants.size()>=16)continue;
+            Bundle exact=new Bundle(options);
+            for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH})exact.putInt(key,Math.max(1,Math.round(slot.getWidth())));
+            for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT})exact.putInt(key,Math.max(1,Math.round(slot.getHeight())));
+            exact.remove(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+            variants.put(slot,render(c,s,direction,null,barMotion,nextRootId(c),exact));
+        }
+        return variants.isEmpty()?render(c,s,direction,null,barMotion,nextRootId(c)):new RemoteViews(variants);
+    }
+    private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){return render(c,s,direction,forceContracted,barMotion,rootId,null);}
+    private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId,Bundle exactOptions){
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         RemoteViews root=shell(c,s,direction,forceContracted,barMotion,rootId);
         RemoteViews source=StackHost.get(c).views.get(s.selected);
         if(source!=null){
-            int percent=s.logicalSizePercent(s.selected);Bundle b=logicalOptions(childOptions(optionsFor(c,s.id),s,forceContracted),percent);
+            Bundle actual=childOptions(exactOptions==null?optionsFor(c,s.id):exactOptions,s,forceContracted);
+            Bundle b=WidgetSizing.options(actual,s,s.selected,c.getResources().getDisplayMetrics().density);
             boolean landscape=c.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE;
-            SizeF size=new SizeF(b.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH:AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,204),b.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT:AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,160));
-            try{RemoteViewsBridge.embed(c,root,source,s.selected,size,100f/percent);}
+            SizeF available=displaySize(actual,landscape),logical=displaySize(b,landscape);
+            try{RemoteViewsBridge.embedFitted(c,root,source,s.selected,logical,available);}
             catch(Exception|LinkageError|StackOverflowError e){
                 Log.e("WidgetStack","Cannot embed widget "+s.selected,e);
                 root=shell(c,s,0,forceContracted,0,rootId);root.setTextViewText(R.id.empty,"This widget could not be displayed.\nTap here to edit the stack.");

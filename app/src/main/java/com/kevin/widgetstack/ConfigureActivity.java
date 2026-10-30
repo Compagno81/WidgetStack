@@ -44,7 +44,7 @@ public final class ConfigureActivity extends Activity {
   Ui.tonalButton(this,nav,"Customize navigation bar",()->BarEditor.show(this,s,()->changed(s)));
   Ui.text(this,nav,"Tap a dot to choose a widget, or use the end buttons to move between widgets. Scrolling inside a widget stays with that widget.",13);
   Ui.section(this,root,"Widgets");
-  Ui.text(this,root,"Tap a widget name to choose the starting widget for new copies. Layout size requests a roomier provider layout, then scales it to fit; results depend on the widget app.",14);
+  Ui.text(this,root,"Tap a widget name to choose the starting widget for new copies. Resize each widget independently to request a compact or roomy provider layout. The result fits the stack without changing its proportions.",14);
   if(s.children.isEmpty()){LinearLayout empty=Ui.card(this,root);Ui.text(this,empty,"Add your first widget",17);}
   AppWidgetManager manager=AppWidgetManager.getInstance(this);
   for(int index=0;index<s.children.size();index++){
@@ -67,13 +67,10 @@ public final class ConfigureActivity extends Activity {
     try{host.startAppWidgetConfigureActivityForResult(this,child,0,RECONFIGURE,null);}catch(Exception e){message("This widget has no available setup screen.");}
    });
    Ui.compactButton(this,controls,"Remove",()->new AlertDialog.Builder(this).setMessage("Remove this widget from the stack?").setPositiveButton("Remove",(d,w)->{s.remove(child);store.put(s);host.deleteAppWidgetId(child);changed(s);}).setNegativeButton("Cancel",null).show());
-   TextView sizeLabel=Ui.text(this,row,"Requested layout: "+s.logicalSizePercent(child)+"% · displayed at "+Math.round(10000f/s.logicalSizePercent(child))+"%",14);
-   SeekBar size=new SeekBar(this);size.setMax(50);size.setProgress(s.logicalSizePercent(child)-100);row.addView(size,new LinearLayout.LayoutParams(-1,Ui.dp(this,32)));
-   size.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-    public void onProgressChanged(SeekBar bar,int progress,boolean fromUser){if(fromUser){s.setLogicalSizePercent(child,100+progress);float display=10000f/s.logicalSizePercent(child);sizeLabel.setText("Requested layout: "+s.logicalSizePercent(child)+"% · displayed at "+Math.round(display)+"%");}}
-    public void onStartTrackingTouch(SeekBar bar){}
-    public void onStopTrackingTouch(SeekBar bar){store.put(s);SavedStacks.changed(ConfigureActivity.this,stackId);}
-   });
+   Ui.text(this,row,"Layout: "+(s.widthPx(child)==0?"Auto":s.widthPx(child)+" px")+" × "+(s.heightPx(child)==0?"Auto":s.heightPx(child)+" px"),14);
+   if(s.logicalSizePercent(child)!=100)Ui.text(this,row,"Legacy layout size retained. Applying dimensions replaces the old percentage setting.",13);
+   Ui.tonalButton(this,row,"Resize widget",()->WidgetSizeEditor.show(this,s,child,()->changed(s)));
+
   }
   Ui.button(this,root,"Add widget",this::pick).setEnabled(!externalFlow);
   Ui.text(this,root,"Reorder using the arrows, or hold a widget title and drag it onto another row.",14);

@@ -1,27 +1,27 @@
-# Widget Stack recovery
+# Widget Stack
 
-Android application for stacks of interactive third-party widgets.
+Android stacks of live third-party widgets. Recovered from the owner-supplied
+1.14 Android Studio archive; new work is reconstruction, not historical 1.18 source.
 
-## Current checkpoint
+See [requirements](docs/WidgetStack-Requirements-and-Acceptance-Criteria.md),
+[recovery provenance](docs/SOURCE-RECOVERY.md), and
+[candidate notes](docs/RELEASE-CANDIDATE.md).
 
-This repository currently preserves the supplied requirements, not application
-source. It contains no buildable Android application or verified implementation.
+## Build
 
-See [requirements and acceptance criteria](docs/WidgetStack-Requirements-and-Acceptance-Criteria.md).
+Use JDK 17, Android SDK 35, Build Tools 35.0.0, and the included Gradle 8.11.1
+wrapper. Configure the SDK through ANDROID_HOME or an ignored local.properties.
+Run `./gradlew :app:testDebugUnitTest :app:lintRelease :app:assembleRelease`.
+For a test APK, restore your historical testing key locally from the supplied
+archive into signing/testing-debug.keystore and run `./gradlew :app:assembleDebug`.
+Keys are excluded from Git. A clean checkout can compile and test without that
+key; debug APK signing requires it. Do not generate a replacement and assume it
+will upgrade an existing installation.
 
-The requirements report recovered version 1.14 source and a preserved version
-1.18 APK. Neither artifact was available in this workspace when this checkpoint
-was created. Those historical recovery claims have not been independently verified.
+Every tagged release includes an APK, matching source, commit, checksum and
+validation notes. Configure owner signing secrets as described in the candidate
+notes before running the release workflow. No validated new release is claimed
+until its required checks pass; physical Pixel/HyperOS testing remains necessary.
 
-## Next work
-
-1. Obtain the recovered source or full Git bundle, and the preserved APK.
-2. Import recovered source in a separate commit recording its provenance.
-3. Reconstruct later changes separately, without claiming historical equivalence.
-4. Verify independent provider width/height settings and implement SIZE-04:
-   aspect-preserving fit, including enlargement, using actual content bounds.
-5. Run the applicable build and acceptance checks and record untested device cases.
-6. Push milestones to an owner-accessible GitHub repository and verify remote SHAs.
-
-No GitHub remote is configured yet. A local bundle is a recovery aid, not proof
-of durable remote storage. Keep signing keys and credentials outside the repository.
+The source retains private Android API integration and its compatibility risks.
+Original project documentation is under docs/recovered-1.14/README.md.
