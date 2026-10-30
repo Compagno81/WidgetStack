@@ -66,18 +66,19 @@ final class RemoteViewsBridge {
         embedFitted(c,outer,source,child,size,new SizeF(size.getWidth()*scale,size.getHeight()*scale));
     }
     static void embedFitted(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
-        float scale=WidgetSizing.fit(available.getWidth(),available.getHeight(),size.getWidth(),size.getHeight());
         RemoteViews chosen=select(c,new RemoteViews(source),size);
         List<Object> collections=prepare(c,chosen,child);
+        SizeF bounds=WidgetSizing.rootSize(c,chosen,size);
+        float scale=WidgetSizing.fit(available.getWidth(),available.getHeight(),bounds.getWidth(),bounds.getHeight());
         if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
         outer.removeAllViews(R.id.content);
-        // Give the provider its requested layout bounds before transforming it.
+        // Fit the provider root, which may be smaller than the requested layout.
         // The outer match-parent frame centers the logical-size frame; Android's
         // View transforms also map descendant touch coordinates back to that frame.
         RemoteViews frame=new RemoteViews(c.getPackageName(),R.layout.widget_scale_frame);
         int unit=android.util.TypedValue.COMPLEX_UNIT_DIP;
-        frame.setViewLayoutWidth(R.id.widget_scale_container,size.getWidth(),unit);
-        frame.setViewLayoutHeight(R.id.widget_scale_container,size.getHeight(),unit);
+        frame.setViewLayoutWidth(R.id.widget_scale_container,bounds.getWidth(),unit);
+        frame.setViewLayoutHeight(R.id.widget_scale_container,bounds.getHeight(),unit);
         frame.setFloat(R.id.widget_scale_container,"setScaleX",scale);
         frame.setFloat(R.id.widget_scale_container,"setScaleY",scale);
         frame.addView(R.id.widget_scale_container,chosen);outer.addView(R.id.content,frame);

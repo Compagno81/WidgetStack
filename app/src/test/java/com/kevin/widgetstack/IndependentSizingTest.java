@@ -40,6 +40,22 @@ public class IndependentSizingTest {
   assertEquals(Math.round(200*c.getResources().getDisplayMetrics().density),scaled.getLayoutParams().width);
   assertEquals(Math.round(100*c.getResources().getDisplayMetrics().density),scaled.getLayoutParams().height);
  }
+ @Test public void fixedProviderRootFillsAvailableWidthInsteadOfScalingEmptyRequestedSpace() throws Exception {
+  android.content.Context c=RuntimeEnvironment.getApplication();StackState state=new StackState(-2);state.showRail=false;
+  android.widget.RemoteViews root=StackRenderer.shell(c,state);
+  android.widget.RemoteViews provider=new android.widget.RemoteViews(c.getPackageName(),R.layout.stack_placeholder);
+  provider.setViewLayoutWidth(R.id.empty,120,android.util.TypedValue.COMPLEX_UNIT_DIP);
+  provider.setViewLayoutHeight(R.id.empty,80,android.util.TypedValue.COMPLEX_UNIT_DIP);
+  RemoteViewsBridge.embedFitted(c,root,provider,11,new SizeF(200,100),new SizeF(600,400));
+  android.view.View view=root.apply(c,new android.widget.FrameLayout(c));
+  android.view.View scaled=view.findViewById(R.id.widget_scale_container);
+  float density=c.getResources().getDisplayMetrics().density;
+  assertEquals(5f,scaled.getScaleX(),.0001f);
+  assertEquals(Math.round(120*density),scaled.getLayoutParams().width);
+  assertEquals(Math.round(80*density),scaled.getLayoutParams().height);
+  assertEquals(600*density,scaled.getLayoutParams().width*scaled.getScaleX(),1f);
+  assertEquals(400*density,scaled.getLayoutParams().height*scaled.getScaleY(),1f);
+ }
  @Test public void dimensionsSurvivePersistenceReorderAndIndependentPlacements(){
   StackStore store=new StackStore(RuntimeEnvironment.getApplication());StackState saved=store.createSaved("Sizing");saved.add(11);saved.add(22);saved.setDimensions(11,600,400);saved.setDimensions(22,175,0);store.put(saved);store.assign(100,saved.id);store.assign(200,saved.id);
   StackState copy=store.get(saved.id);copy.move(0,1);store.put(copy);

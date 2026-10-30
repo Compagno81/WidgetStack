@@ -1,43 +1,36 @@
-# 1.19 reconstructed candidate — not a validated release
+# 1.20 reconstructed test candidate
 
-Reconstructed from the supplied 1.14 archive. This is not the original source of
-1.18, and that binary has not been supplied for comparison.
+Fixes a reproduced fitting defect: a provider may return a fixed-size or
+wrap-content root smaller than the requested custom layout rectangle. Version
+1.19 fitted that rectangle and could leave avoidable space around the provider.
+This version measures the returned root at the requested constraints and fits
+its complete bounds uniformly to the available area, allowing enlargement and
+reduction. Custom provider size options and saved per-widget dimensions remain
+unchanged. No descendant-content detection, padding removal or cropping is used.
+If measurement requires a real attached host or fails, the requested-size fitting
+path remains the fallback rather than replacing working content with an error.
 
-Changes: independent width/height pixels and Auto, 50 px sliders, exact fields,
-non-interactive single-provider sizing preview with draggable bounds, draft Apply/
-Cancel, density-aware provider options and uniform fit allowing enlargement.
-Historical percentage sizes remain active until dimensions are applied.
+Regression: a 120 × 80 dp provider root requested inside 200 × 100 dp and
+placed in 600 × 400 dp must use a 5× scale and fill both axes. The regression
+failed on API 31 and 35 before the change. Existing MATCH_PARENT-root fitting
+and independent dimensions remain covered.
 
-Stored pixel values remain physical pixels if screen density changes; Android
-provider dimensions are rounded to dp at the current density. Explicit values
-are limited to 1–4000 px, with zero stored internally only as Auto.
+Validation: 195 tests passed, zero failures or skips, including the new regression on API 31 and 35. Debug APK compilation and lint passed, with zero lint errors and 969 warnings. No emulator/instrumented or physical-device test was performed. Device confirmation of
+the reported screenshot is still required. Internal padding in provider content
+is preserved. Launchers that supply only legacy min/max size options still use
+those estimates; no actual device compatibility claim is made by unit tests.
 
-Validation: 193 unit/Robolectric tests passed on API 31 and 35; debug APK compilation and lint passed (zero errors, 969 warnings). The APK signature and version metadata were verified. Lint warnings remain, including legacy UI/resource issues; this is not a store-ready release. No emulator/instrumentation or physical-device run was performed. Pixel and HyperOS home-screen behavior, scaled input,
-provider responsive layouts, contraction and upgrade compatibility require
-physical-device checks. Existing private API compatibility risks remain.
+This is reconstructed work based on recovered 1.14 source, not historical 1.18
+source. The test APK is signed with the same recovered testing key as 1.19;
+release signing keys remain excluded from Git. All new releases include a test
+APK, matching source ZIP, source commit, checksums and these validation notes.
 
-Every tagged release must include an APK, source ZIP, source commit, checksums
-and validation notes. The workflow requires owner-controlled signing secrets:
-ANDROID_KEYSTORE_BASE64, ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS and
-ANDROID_KEY_PASSWORD. Reuse the intended signing identity to retain upgrade
-compatibility. Never put those values or keys into source control. The historical
-testing key is only in the owner-supplied archive, not in Git.
+Build: JDK 17, Gradle 8.11.1, SDK 35 / Build Tools 35.0.0. Local-only test runner
+settings route cache writes and network/certificate trust through the managed
+environment; they are not committed to the app project.
 
-Workflow dispatch creates a downloadable build artifact; a v-prefixed tag creates
-a GitHub prerelease with matching assets. Do not tag a candidate as a validated
-release until its required acceptance checks pass.
+The release workflow requires owner-controlled GitHub secrets:
+ANDROID_KEYSTORE_BASE64, ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS,
+ANDROID_KEY_PASSWORD. Retain the intended signing identity for upgrades.
 
-APK SHA-256: `bc8a9fd3c49cd3492168ab19211aed627d7e25564a4ebf9691a8dab1098befca`.
-
-The test APK uses the historical testing key recovered locally from the supplied
-archive. Its certificate SHA-256 is
-`eb7cc6e833e7221ea3fab1fde4e64b2a2c21e57765a8d48b1cd651d3e44ae925`.
-Compatibility with the unsupplied 1.18 APK cannot be confirmed.
-
-Home rendering uses launcher-provided size variants where available. Launchers
-that provide only legacy min/max options necessarily use those estimates.
-
-Build environment: JDK 17, Gradle 8.11.1, Android SDK 35 / Build Tools 35.0.0.
-The sandbox required a local Gradle init script to move Robolectric caches to a
-writable directory and use the environment proxy/certificate trust. No such
-machine-specific settings are committed.
+APK SHA-256: `6481197716aaa848a6959fc1264051aa4f52d67262cd1ae1e84c907fc367d2b1`.

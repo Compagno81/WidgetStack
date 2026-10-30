@@ -11,6 +11,27 @@ final class WidgetSizing {
         if(width<=0||height<=0||logicalWidth<=0||logicalHeight<=0)throw new IllegalArgumentException("Dimensions must be positive");
         return Math.min(width/logicalWidth,height/logicalHeight);
     }
+    /** Measure the provider root as FrameLayout will measure it in the launcher.
+     * This honors fixed/wrap-content roots without inspecting or cropping their
+     * descendants. MATCH_PARENT roots keep the full requested logical size.
+     */
+    static SizeF rootSize(android.content.Context context,android.widget.RemoteViews provider,SizeF requested) {
+        float density=context.getResources().getDisplayMetrics().density;
+        try {
+            android.widget.FrameLayout parent=new android.widget.FrameLayout(context);
+            android.view.View root=provider.apply(context,parent);
+            parent.addView(root);
+            parent.measure(android.view.View.MeasureSpec.makeMeasureSpec(Math.max(1,Math.round(requested.getWidth()*density)),android.view.View.MeasureSpec.EXACTLY),
+                    android.view.View.MeasureSpec.makeMeasureSpec(Math.max(1,Math.round(requested.getHeight()*density)),android.view.View.MeasureSpec.EXACTLY));
+            int width=root.getMeasuredWidth(),height=root.getMeasuredHeight();
+            if(width>0&&height>0)return new SizeF(width/density,height/density);
+        }catch(RuntimeException|LinkageError e){
+            // Some providers depend on a real host or attached collection view.
+            // Preserve the established requested-size path in that case.
+            android.util.Log.w("WidgetStack","Provider root measurement unavailable; using requested size",e);
+        }
+        return requested;
+    }
     static Bundle options(Bundle actual,StackState state,int child,float density) {
         Bundle result=StackRenderer.logicalOptions(actual,state.logicalSizePercent(child));
         int width=state.widthPx(child),height=state.heightPx(child);
