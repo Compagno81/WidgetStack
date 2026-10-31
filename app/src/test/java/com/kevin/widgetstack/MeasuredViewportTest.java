@@ -31,6 +31,25 @@ public class MeasuredViewportTest {
   java.util.List<Intent> sent=shadowOf((Application)c).getBroadcastIntents();return new Intent(sent.get(sent.size()-1));
  }
  void measure(int id,int width,int height){Intent i=request(id);i.setSourceBounds(new Rect(25,50,25+width,50+height));MeasuredViewport.receive(c,i);assertTrue(MeasuredViewport.has(c,id));}
+ @Test public void manualScalePersistsPerWidgetAndDoesNotReuseLegacyPercent(){
+  StackStore store=new StackStore(c);StackState state=store.createSaved("Scale");state.add(12);state.add(13);state.setLogicalSizePercent(12,150);assertEquals(100,state.visualScalePercent(12));
+  state.setVisualScalePercent(12,135);state.setDimensions(12,0,850);store.put(state);
+  StackState restored=store.get(state.id);assertEquals(135,restored.visualScalePercent(12));assertEquals(100,restored.visualScalePercent(13));assertEquals(850,restored.heightPx(12));
+  restored.remove(12);restored.add(12);assertEquals(100,restored.visualScalePercent(12));
+ }
+ @Test public void manualScaleTransformsBothAxesAndKeepsProviderClickable(){
+  String action="widgetstack.test.MANUAL_SCALE";RemoteViews source=new RemoteViews(c.getPackageName(),R.layout.stack_placeholder);
+  source.setOnClickPendingIntent(R.id.empty,PendingIntent.getBroadcast(c,911,new Intent(action).setPackage(c.getPackageName()),PendingIntent.FLAG_IMMUTABLE));StackHost.get(c).views.put(12,source);
+  Activity activity=Robolectric.buildActivity(Activity.class).setup().get();
+  for(int percent:new int[]{50,100,150,300}){
+   StackState state=new StackState(701);state.add(12);state.showRail=false;state.setVisualScalePercent(12,percent);
+   AppWidgetHostView host=new AppWidgetHostView(c);host.setPadding(0,0,0,0);host.updateAppWidget(StackRenderer.render(c,state,0,false));activity.setContentView(host);shadowOf(Looper.getMainLooper()).idle();
+   host.measure(View.MeasureSpec.makeMeasureSpec(400,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec(300,View.MeasureSpec.EXACTLY));host.layout(0,0,400,300);
+   View provider=host.findViewById(R.id.empty);assertEquals(400,provider.getWidth());assertEquals(300,provider.getHeight());
+   View frame=host.findViewById(R.id.widget_scale_container);if(percent!=100){assertEquals(percent/100f,frame.getScaleX(),0f);assertEquals(percent/100f,frame.getScaleY(),0f);}
+   int before=count(action);long now=SystemClock.uptimeMillis();for(int a:new int[]{MotionEvent.ACTION_DOWN,MotionEvent.ACTION_UP}){MotionEvent e=MotionEvent.obtain(now,now+40,a,200,150,0);host.dispatchTouchEvent(e);e.recycle();}shadowOf(Looper.getMainLooper()).idle();assertEquals(before+1,count(action));
+  }
+ }
  @Test public void cachesActualBoundsSeparatelyForEachPlacement(){
   measure(701,400,300);measure(702,300,500);
   assertEquals(400,StackRenderer.optionsFor(c,701).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));

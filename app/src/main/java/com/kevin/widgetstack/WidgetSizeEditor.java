@@ -32,6 +32,7 @@ final class WidgetSizeEditor {
             this.activity=activity;this.saved=saved;this.child=child;this.applied=applied;
             draft=new StackState(saved.id);draft.add(child);draft.select(child);draft.showRail=false;
             draft.setDimensions(child,saved.widthPx(child),saved.heightPx(child));
+            draft.setVisualScalePercent(child,saved.visualScalePercent(child));
             dialog=new Dialog(activity);dialog.setTitle("Resize widget");
             ScrollView scroll=new ScrollView(activity);LinearLayout root=new LinearLayout(activity);root.setOrientation(LinearLayout.VERTICAL);int padding=Ui.dp(activity,16);root.setPadding(padding,padding,padding,padding);scroll.addView(root);
             Ui.text(activity,root,"Resize widget",24);
@@ -39,6 +40,14 @@ final class WidgetSizeEditor {
             dimensions=Ui.text(activity,root,"",14);
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
             Ui.text(activity,root,"Drag the blue edges or corners. Provider actions are disabled in this preview.",13);
+            final TextView zoomLabel=Ui.text(activity,root,"Scale: "+draft.visualScalePercent(child)+"%",17);
+            Ui.text(activity,root,"Zoom this widget proportionally. 100% is normal; enlarged edges may be clipped.",14);
+            SeekBar zoom=new SeekBar(activity);zoom.setMax(275);zoom.setProgress(draft.visualScalePercent(child)-25);zoom.setContentDescription("Widget scale, 25 to 300 percent");root.addView(zoom,new LinearLayout.LayoutParams(-1,Ui.dp(activity,48)));
+            zoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+                public void onProgressChanged(SeekBar bar,int value,boolean user){draft.setVisualScalePercent(child,value+25);zoomLabel.setText("Scale: "+draft.visualScalePercent(child)+"%");renderPreview();}
+                public void onStartTrackingTouch(SeekBar bar){} public void onStopTrackingTouch(SeekBar bar){}
+            });
+            Ui.compactButton(activity,Ui.row(activity,root),"Reset scale to 100%",()->zoom.setProgress(75));
             axis(root,0,"Width");axis(root,1,"Height");
             LinearLayout buttons=Ui.row(activity,root);
             Ui.compactButton(activity,buttons,"Cancel",dialog::dismiss);
@@ -49,6 +58,8 @@ final class WidgetSizeEditor {
                 StackState latest=new StackStore(activity).get(saved.id);
                 if(latest==null||!latest.children.contains(child)){dialog.dismiss();return;}
                 latest.setDimensions(child,draft.widthPx(child),draft.heightPx(child));
+                latest.setVisualScalePercent(child,draft.visualScalePercent(child));
+                saved.setVisualScalePercent(child,draft.visualScalePercent(child));
                 new StackStore(activity).put(latest);
                 saved.setDimensions(child,draft.widthPx(child),draft.heightPx(child));
                 dialog.dismiss();applied.run();
@@ -135,6 +146,7 @@ final class WidgetSizeEditor {
         @Override protected void onLayout(boolean changed,int l,int t,int r,int b){
             float margin=24*getResources().getDisplayMetrics().density;
             scale=Math.min(1,WidgetSizing.fit(Math.max(1,getWidth()-margin*2),Math.max(1,getHeight()-margin*2),logicalWidth,logicalHeight));
+            scale*=session.draft.visualScalePercent(session.child)/100f;
             float left=(getWidth()-logicalWidth*scale)/2,top=(getHeight()-logicalHeight*scale)/2;
             host.layout(0,0,Math.round(logicalWidth),Math.round(logicalHeight));host.setPivotX(0);host.setPivotY(0);host.setScaleX(scale);host.setScaleY(scale);host.setTranslationX(left);host.setTranslationY(top);
             bounds.set(left,top,left+logicalWidth*scale,top+logicalHeight*scale);

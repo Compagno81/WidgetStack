@@ -1,28 +1,16 @@
-# 1.24 — independent width and height
+# 1.25 — manual scale per stacked widget
 
-Changing height now leaves width alone. Auto uses MATCH_PARENT on that axis;
-custom dimensions use physical pixel layout sizes. The provider lays out its
-contents in that rectangle. No uniform scale transform is applied to custom
-widgets, and no calibration tap is required. Dimensions larger than the slot
-are centered and clipped rather than shrinking the other axis.
+The Resize widget dialog now has a Scale slider from 25% to 300%, a live
+percentage label, a preview, and Reset scale to 100%. Apply saves it for the
+selected widget; Cancel discards the draft. Scaling enlarges or shrinks both
+axes proportionally around the center. Enlarged edges are clipped by the stack.
+Width/height still control layout independently. Auto dimensions support scale.
 
-This corrects the resizing contract from 1.23. That version fitted a logical
-rectangle uniformly into the host, coupling the two axes. Its passing fitting
-tests did not establish the independent-axis behavior the owner expects.
+The new setting is separate from obsolete logicalSizePercent data, so old
+settings cannot unexpectedly enable zoom. It persists by child widget identity
+and defaults to 100%. Provider actions retain native transformed touch handling.
 
-The resize editor keeps explicit pixel values exact rather than displaying a
-rounded dp-to-pixel conversion (for example 850 becoming 852). Auto provider
-layout hints can still be approximate; the actual Auto axis follows its parent.
-Third-party providers retain control over their internal layouts.
-
-Validation: full framework suite on API 31/35, APK build and lint. New regression
-covers a 1060 × 865 host at 420 dpi, changing only height to 864, 850 and 1 while
-asserting that width remains 1060. Existing custom geometry checks now verify
-independent physical sizes at mdpi/xhdpi and touch delivery within visible bounds.
-Android instrumentation cases have been updated for independent dimensions;
-the 1.24 instrumentation cases have not yet been run on a device. Historical
-1.23 emulator evidence validates the previous fitting behavior, not this change.
-Physical MyFitnessPal/HyperOS acceptance remains open.
-
-Signed with the same recovered testing key, excluded from Git. APK and matching
-source ZIP accompany this test release.
+Validation: framework tests on API 31/35, including independent persistence,
+legacy default behavior, transforms and provider taps at 50/100/150/300%; APK
+build and lint. Physical HyperOS/MyFitnessPal and emulator checks of this new
+version have not been performed. Same recovered testing signing key.

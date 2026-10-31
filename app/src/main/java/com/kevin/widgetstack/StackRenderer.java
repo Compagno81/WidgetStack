@@ -237,9 +237,9 @@ final class StackRenderer {
             boolean landscape=c.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE;
             SizeF available=displaySize(actual,landscape),logical=displaySize(b,landscape);
             try{
-                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0)
+                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0&&s.visualScalePercent(s.selected)==100)
                     RemoteViewsBridge.embedAuto(c,root,source,s.selected,logical);
-                else RemoteViewsBridge.embedSized(c,root,source,s.selected,logical,s.widthPx(s.selected),s.heightPx(s.selected));
+                else RemoteViewsBridge.embedSized(c,root,source,s.selected,logical,s.widthPx(s.selected),s.heightPx(s.selected),s.visualScalePercent(s.selected));
             }
             catch(Exception|LinkageError|StackOverflowError e){
                 Log.e("WidgetStack","Cannot embed widget "+s.selected,e);
