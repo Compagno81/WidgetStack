@@ -41,3 +41,17 @@ Physical confirmation for the reported MyFitnessPal case remains necessary.
 Explicit custom dimensions still use the separate fitting path and its
 launcher-option limitations; passing Auto tests does not establish custom sizing.
 No universal visual crop of provider internals is introduced.
+
+## Follow-up after owner confirmed 1.21 still has gaps
+
+A retained 150% legacy field with both current axes on Auto reproduces a small
+provider through the fixed wrapper on 1.21. `LauncherBoundsTest` now follows the
+actual provider descendant through ancestor transforms, rather than accepting a
+full-sized outer wrapper as proof of fill. The legacy case failed on both API
+levels before the fix. Ignoring that obsolete multiplier gives 205 passing
+unit/framework tests. See `RELEASE-CANDIDATE.md` for the 1.22 candidate.
+
+The external fixture's geometry report likewise follows the real provider leaf's
+visible screen bounds. Test focus and Back injection use the correct cross-app
+mechanisms. Runtime runs remain incomplete until a clean end-to-end result is
+recorded; infrastructure crashes and interrupted runs are not passing evidence.

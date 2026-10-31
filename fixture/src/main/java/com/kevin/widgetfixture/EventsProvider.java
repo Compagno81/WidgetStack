@@ -12,8 +12,9 @@ public final class EventsProvider extends ContentProvider {
      android.appwidget.AppWidgetHostView widget=activity.widget;
      if("launcher_resize".equals(method)&&extras!=null)widget.setLayoutParams(new android.widget.FrameLayout.LayoutParams(extras.getInt("width"),extras.getInt("height"),android.view.Gravity.CENTER));
      int[] xy=new int[2];widget.getLocationOnScreen(xy);result.putInt("left",xy[0]);result.putInt("top",xy[1]);result.putInt("width",widget.getWidth());result.putInt("height",widget.getHeight());
-     int id=activity.getResources().getIdentifier("content","id","com.kevin.widgetstack");android.view.View area=widget.findViewById(id);
-     if(area instanceof android.view.ViewGroup&&((android.view.ViewGroup)area).getChildCount()>0){android.view.View child=((android.view.ViewGroup)area).getChildAt(0);result.putInt("provider_width",child.getWidth());result.putInt("provider_height",child.getHeight());result.putInt("provider_left",child.getLeft());result.putInt("provider_top",child.getTop());}
+     android.view.View child=findProvider(widget);
+     if(child!=null){android.graphics.Rect visible=new android.graphics.Rect();if(child.getGlobalVisibleRect(visible)){result.putInt("provider_width",visible.width());result.putInt("provider_height",visible.height());result.putInt("provider_left",visible.left-xy[0]);result.putInt("provider_top",visible.top-xy[1]);}}
+
     }finally{ready.countDown();}
    });
    try{if(!ready.await(10,java.util.concurrent.TimeUnit.SECONDS))return new Bundle();}catch(InterruptedException e){Thread.currentThread().interrupt();return new Bundle();}
@@ -31,6 +32,11 @@ public final class EventsProvider extends ContentProvider {
   if("record".equals(method))p.edit().putInt("row",extras.getInt("row")).commit();
   if(method.startsWith("config_")){FixtureConfigureActivity a=FixtureConfigureActivity.current;if(a!=null)new android.os.Handler(android.os.Looper.getMainLooper()).post(()->a.complete("config_accept".equals(method)));}
   Bundle b=new Bundle();b.putInt("config_id",p.getInt("config_id",-1));b.putInt("row",p.getInt("row",-999));return b;
+ }
+ private android.view.View findProvider(android.view.View root){
+  if(root instanceof android.widget.TextView){String text=((android.widget.TextView)root).getText().toString();if(text.startsWith("External widget")||text.startsWith("Updated external widget"))return root;}
+  if(root instanceof android.view.ViewGroup){android.view.ViewGroup group=(android.view.ViewGroup)root;for(int i=0;i<group.getChildCount();i++){android.view.View found=findProvider(group.getChildAt(i));if(found!=null)return found;}}
+  return null;
  }
  public Cursor query(Uri u,String[] p,String s,String[] a,String sort){return null;}public String getType(Uri u){return null;}public Uri insert(Uri u,ContentValues v){return null;}public int delete(Uri u,String s,String[] a){return 0;}public int update(Uri u,ContentValues v,String s,String[] a){return 0;}
 }

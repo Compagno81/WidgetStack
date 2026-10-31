@@ -73,6 +73,7 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
   });
   AppWidgetHostView view=display(id);
   await("External provider should render",()->findText(view,"External widget")!=null);
+  await("Test host must be focused before injecting edge taps",view::hasWindowFocus);
   for(int[] dimensions:new int[][]{{400,300},{300,400},{400,200}}){
    getInstrumentation().runOnMainSync(()->view.setLayoutParams(new FrameLayout.LayoutParams(Ui.dp(activity,dimensions[0]),Ui.dp(activity,dimensions[1]),Gravity.CENTER)));
    await("Auto provider must fill actual launcher area despite smaller size options",()->{
@@ -92,7 +93,7 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
    down.setSource(InputDevice.SOURCE_TOUCHSCREEN);up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
    assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(down,true));assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(up,true));down.recycle();up.recycle();
    await("A tap at the displayed edge must open the external provider",()->eventRow()==-1);
-   pressBack();getInstrumentation().waitForIdleSync();
+   pressBack();await("Main activity should return after provider",activity::hasWindowFocus);getInstrumentation().waitForIdleSync();
    // MainActivity deliberately rebuilds its normal UI in onResume. Reattach
    // the test host after returning from the external provider activity.
    getInstrumentation().runOnMainSync(()->activity.setContentView((View)view.getParent()));
