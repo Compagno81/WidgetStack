@@ -59,11 +59,11 @@ public final class CrossUidControlsTest extends ActivityInstrumentationTestCase2
    long keyTime=SystemClock.uptimeMillis();for(int action:new int[]{KeyEvent.ACTION_DOWN,KeyEvent.ACTION_UP})assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(new KeyEvent(keyTime,SystemClock.uptimeMillis(),action,KeyEvent.KEYCODE_BACK,0),true));
   }
  }
- public void testCustomMatchingAspectUsesEntireActualArea() throws Exception {
+ public void testCustomHeightLeavesAutoWidthUnchanged() throws Exception {
   c=getActivity();getInstrumentation().runOnMainSync(()->a=child("PlainWidget"));
   home=c.getContentResolver().call(EVENTS,"allocate_home",null,null).getInt("id",-1);assertTrue(home>=0);
   getInstrumentation().runOnMainSync(()->{
-   StackStore store=new StackStore(c);StackState state=store.createSaved("Custom regression");saved=state.id;state.add(a);state.showRail=false;state.setDimensions(a,200,150);store.put(state);
+   StackStore store=new StackStore(c);StackState state=store.createSaved("Custom regression");saved=state.id;state.add(a);state.showRail=false;state.setDimensions(a,0,299);store.put(state);
    Bundle hints=new Bundle();hints.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,80);hints.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,80);hints.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,60);hints.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,60);
    AppWidgetManager.getInstance(c).updateAppWidgetOptions(home,hints);assertTrue(SavedStacks.place(c,home,saved));
   });
@@ -79,7 +79,7 @@ public final class CrossUidControlsTest extends ActivityInstrumentationTestCase2
   android.util.Log.i("CUSTOM_FIT","matching-aspect version="+version+" geometry="+geometry);
   android.graphics.Bitmap frame=getInstrumentation().getUiAutomation().takeScreenshot();assertNotNull(frame);try{FitScreenshot.save(c,"matching-aspect-"+version,frame);}finally{frame.recycle();}
   assertEquals("custom width must fill real host: "+geometry,400,geometry.getInt("provider_width"));
-  assertEquals("custom height must fill real host: "+geometry,300,geometry.getInt("provider_height"));
+  assertEquals("custom height must fill real host: "+geometry,299,geometry.getInt("provider_height"));
   assertEquals(0,geometry.getInt("provider_left"));assertEquals(0,geometry.getInt("provider_top"));
  }
  public void testCustomDimensionsFitActualBoundsAcrossUids() throws Exception {
@@ -91,18 +91,18 @@ public final class CrossUidControlsTest extends ActivityInstrumentationTestCase2
    AppWidgetManager.getInstance(c).updateAppWidgetOptions(home,options);assertTrue(SavedStacks.place(c,home,saved));
   });
   c.startActivity(new Intent().setComponent(new ComponentName("com.kevin.widgetfixture","com.kevin.widgetfixture.LauncherActivity")).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,home).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-  calibrateViewport();
+
   for(int[] size:new int[][]{{400,300},{300,400},{500,200}}){
    Bundle request=new Bundle();request.putInt("width",size[0]);request.putInt("height",size[1]);c.getContentResolver().call(EVENTS,"launcher_resize",null,request);
    await("Launcher size change must be laid out",()->{Bundle g=launcherBounds();return g.getInt("home_id",-1)==home&&g.getInt("width")==size[0]&&g.getInt("height")==size[1];});
    getInstrumentation().runOnMainSync(()->new StackProvider().onAppWidgetOptionsChanged(c,AppWidgetManager.getInstance(c),home,AppWidgetManager.getInstance(c).getAppWidgetOptions(home)));
-   calibrateViewport();
-   for(int[] dimensions:new int[][]{{200,0},{0,150},{200,150},{800,0},{0,600},{800,600}}){
+
+   for(int[] dimensions:new int[][]{{0,size[1]-1},{size[0]-1,0},{200,0},{0,150},{200,150},{800,0},{0,600},{800,600}}){
     getInstrumentation().runOnMainSync(()->{StackStore store=new StackStore(c);StackState state=store.get(saved);state.setDimensions(a,dimensions[0],dimensions[1]);store.put(state);SavedStacks.changed(c,saved);});
     float logicalW=dimensions[0]==0?size[0]:dimensions[0],logicalH=dimensions[1]==0?size[1]:dimensions[1];
-    float scale=Math.min(size[0]/logicalW,size[1]/logicalH);int w=Math.round(logicalW*scale),h=Math.round(logicalH*scale),left=(size[0]-w)/2,top=(size[1]-h)/2;
+    int w=Math.min(size[0],Math.round(logicalW)),h=Math.min(size[1],Math.round(logicalH)),left=(size[0]-w)/2,top=(size[1]-h)/2;
     String label="custom-"+size[0]+"x"+size[1]+"-"+dimensions[0]+"x"+dimensions[1];
-    await(label+" must reach an edge and preserve aspect ratio",()->{Bundle g=launcherBounds();return Math.abs(g.getInt("provider_width")-w)<=1&&Math.abs(g.getInt("provider_height")-h)<=1&&Math.abs(g.getInt("provider_left")-left)<=1&&Math.abs(g.getInt("provider_top")-top)<=1;});
+    await(label+" must resize axes independently",()->{Bundle g=launcherBounds();return Math.abs(g.getInt("provider_width")-w)<=1&&Math.abs(g.getInt("provider_height")-h)<=1&&Math.abs(g.getInt("provider_left")-left)<=1&&Math.abs(g.getInt("provider_top")-top)<=1;});
     await("External host must regain input focus",()->launcherBounds().getBoolean("focused"));
     getInstrumentation().getUiAutomation().waitForIdle(100,10000);
     Bundle g=launcherBounds();assertTrue("Provider click listener must survive fitting",g.getBoolean("provider_clickable"));assertTrue(g.getBoolean("provider_enabled"));int x=g.getInt("left")+left+w-4,y=g.getInt("top")+top+Math.min(8,h/4);

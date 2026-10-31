@@ -7,10 +7,9 @@ See [requirements](docs/WidgetStack-Requirements-and-Acceptance-Criteria.md),
 [recovery provenance](docs/SOURCE-RECOVERY.md), and
 [candidate notes](docs/RELEASE-CANDIDATE.md).
 
-Custom sizing uses the largest aspect-preserving fit within each home-screen
-copy. When prompted, tap **Tap to fit this stack** once on the home screen; tap
-again after resizing that copy. Auto needs no calibration. See
-[custom sizing details](docs/CUSTOM-FITTING-1.23.md).
+Width and height resize independently. Auto fills the corresponding axis of
+each home-screen copy. Custom values are physical pixels; oversized content is
+clipped within the stack. No fitting tap is required in 1.24.
 
 ## Build
 

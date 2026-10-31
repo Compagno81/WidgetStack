@@ -35,7 +35,7 @@ final class WidgetSizeEditor {
             dialog=new Dialog(activity);dialog.setTitle("Resize widget");
             ScrollView scroll=new ScrollView(activity);LinearLayout root=new LinearLayout(activity);root.setOrientation(LinearLayout.VERTICAL);int padding=Ui.dp(activity,16);root.setPadding(padding,padding,padding,padding);scroll.addView(root);
             Ui.text(activity,root,"Resize widget",24);
-            Ui.text(activity,root,"Width and height request the provider’s layout. Auto follows the stack. Values are screen pixels, from 1 to 4000; sliders and dragging use 50 px steps.",14);
+            Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders and dragging use 50 px steps.",14);
             dimensions=Ui.text(activity,root,"",14);
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
             Ui.text(activity,root,"Drag the blue edges or corners. Provider actions are disabled in this preview.",13);
@@ -122,7 +122,7 @@ final class WidgetSizeEditor {
         }
         void refresh(){
             android.util.SizeF size=session.logicalSize();float density=getResources().getDisplayMetrics().density;
-            logicalWidth=size.getWidth()*density;logicalHeight=size.getHeight()*density;
+            logicalWidth=session.draft.widthPx(session.child)>0?session.draft.widthPx(session.child):size.getWidth()*density;logicalHeight=session.draft.heightPx(session.child)>0?session.draft.heightPx(session.child):size.getHeight()*density;
             android.widget.RemoteViews source=StackHost.get(getContext()).views.get(session.child);
             if(source!=null)try{host.updateAppWidget(RemoteViewsBridge.select(getContext(),source,size));}catch(Exception e){host.updateAppWidget(null);}
             session.dimensions.setText(Math.round(logicalWidth)+" × "+Math.round(logicalHeight)+" px requested; preview fits the editor.");

@@ -212,7 +212,6 @@ final class StackRenderer {
         int id=prefs.getInt("root",1000000)%0x00fffffe+1;prefs.edit().putInt("root",id).commit();return id;
     }
     static RemoteViews renderForHome(Context c,StackState s,int direction,int barMotion){
-        if(MeasuredViewport.needed(c,s))return MeasuredViewport.probe(c,s.id);
         Bundle options=optionsFor(c,s.id);
         ArrayList<SizeF> sizes=options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
         if(sizes==null||sizes.isEmpty())return render(c,s,direction,null,barMotion,nextRootId(c));
@@ -240,7 +239,7 @@ final class StackRenderer {
             try{
                 if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0)
                     RemoteViewsBridge.embedAuto(c,root,source,s.selected,logical);
-                else RemoteViewsBridge.embedFitted(c,root,source,s.selected,logical,available);
+                else RemoteViewsBridge.embedSized(c,root,source,s.selected,logical,s.widthPx(s.selected),s.heightPx(s.selected));
             }
             catch(Exception|LinkageError|StackOverflowError e){
                 Log.e("WidgetStack","Cannot embed widget "+s.selected,e);

@@ -71,6 +71,19 @@ final class RemoteViewsBridge {
     static void embedFitted(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
         embedWithSizing(c,outer,source,child,size,available);
     }
+    /** Each explicit axis is a physical layout size; Auto follows its actual parent. */
+    static void embedSized(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx) throws ReflectiveOperationException {
+        RemoteViews chosen=select(c,new RemoteViews(source),requested);
+        List<Object> collections=prepare(c,chosen,child);
+        if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
+        RemoteViews frame=new RemoteViews(c.getPackageName(),R.layout.widget_scale_frame);
+        int unit=android.util.TypedValue.COMPLEX_UNIT_PX;
+        frame.setViewLayoutWidth(R.id.widget_scale_container,widthPx>0?widthPx:android.view.ViewGroup.LayoutParams.MATCH_PARENT,unit);
+        frame.setViewLayoutHeight(R.id.widget_scale_container,heightPx>0?heightPx:android.view.ViewGroup.LayoutParams.MATCH_PARENT,unit);
+        frame.addView(R.id.widget_scale_container,chosen);
+        outer.removeAllViews(R.id.content);outer.addView(R.id.content,frame);
+        List<Object> dest=actions(outer);if(dest!=null)dest.addAll(collections);
+    }
     private static void embedWithSizing(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
         RemoteViews chosen=select(c,new RemoteViews(source),size);
         List<Object> collections=prepare(c,chosen,child);
