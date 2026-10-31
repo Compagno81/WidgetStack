@@ -7,6 +7,11 @@ See [requirements](docs/WidgetStack-Requirements-and-Acceptance-Criteria.md),
 [recovery provenance](docs/SOURCE-RECOVERY.md), and
 [candidate notes](docs/RELEASE-CANDIDATE.md).
 
+Custom sizing uses the largest aspect-preserving fit within each home-screen
+copy. When prompted, tap **Tap to fit this stack** once on the home screen; tap
+again after resizing that copy. Auto needs no calibration. See
+[custom sizing details](docs/CUSTOM-FITTING-1.23.md).
+
 ## Build
 
 Use JDK 17, Android SDK 35, Build Tools 35.0.0, and the included Gradle 8.11.1

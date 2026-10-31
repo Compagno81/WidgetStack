@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <TextView android:id="@+id/viewport_probe_status"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:gravity="center" android:text="Tap to fit this stack\nMeasures its home-screen area for custom sizing"
+        android:textSize="15sp" android:textColor="#FF34463D" android:background="#CCF3F6F0" />
+</FrameLayout>

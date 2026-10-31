@@ -1,0 +1,21 @@
+{
+  "unit_framework_tests": {
+    "tests": 219,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Warning": 975
+  },
+  "platforms": [
+    31,
+    35
+  ],
+  "densities": [
+    "mdpi",
+    "xhdpi"
+  ],
+  "custom_geometry_cases": 72,
+  "scaled_edge_taps": 16
+}

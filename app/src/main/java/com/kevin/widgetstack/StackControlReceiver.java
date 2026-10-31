@@ -11,6 +11,7 @@ public final class StackControlReceiver extends BroadcastReceiver {
 
  static boolean handle(Context c,Intent i){
   String action=i.getAction();
+  if(MeasuredViewport.ACTION.equals(action)){MeasuredViewport.receive(c,i);return true;}
   if(StackProvider.PINNED.equals(action)){
    SavedStacks.place(c,i.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,-1),i.getIntExtra(SavedStacks.EXTRA_SAVED_ID,-1));return true;
   }

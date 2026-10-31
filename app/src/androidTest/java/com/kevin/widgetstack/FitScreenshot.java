@@ -24,7 +24,7 @@ final class FitScreenshot {
   Bitmap last=automation.takeScreenshot();if(last!=null)try{save(context,name+"-failure",last);}finally{last.recycle();}
   Assert.fail("Provider edge pixel did not settle: expected="+Integer.toHexString(expected)+" actual="+Integer.toHexString(actual));
  }
- private static void save(Context context,String name,Bitmap frame) throws IOException {
+ static void save(Context context,String name,Bitmap frame) throws IOException {
   File directory=context.getExternalFilesDir("fit-evidence");Assert.assertNotNull(directory);
   if(!directory.isDirectory()&&!directory.mkdirs())throw new IOException("Cannot create screenshot directory");
   try(FileOutputStream output=new FileOutputStream(new File(directory,name+".png"))){Assert.assertTrue("Screenshot compression failed",frame.compress(Bitmap.CompressFormat.PNG,100,output));}

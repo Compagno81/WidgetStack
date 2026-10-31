@@ -1,50 +1,43 @@
-# 1.22 reconstructed test candidate — remove hidden legacy sizing
+# 1.23 reconstructed test candidate — fit custom sizes to measured bounds
 
-The owner reports that 1.21 still leaves four-sided gaps around MyFitnessPal
-with both dimensions on Auto. The device report remains the acceptance case.
+The owner confirms Auto fills the available space, while changing width,
+height, or both introduces gaps across widget providers. The custom fitting
+path used launcher option hints as its target instead of the actual laid-out
+area. The preview design is unchanged.
 
-Further testing found a distinct product defect: old logicalSizePercent data
-could remain at 150 while the current width and height controls both displayed
-Auto. 1.21 used that hidden value to select the fixed fitting wrapper. A new
-production-host regression failed on API 31 and 35 with that saved state.
+Custom sizing now uses a per-placement physical measurement. On the home
+screen, tap **Tap to fit this stack** when prompted. This supplies the actual
+area through Android's click bounds, then displays the interactive provider.
+Width/height edits reuse that measurement. Resizing a copy asks for another
+tap; each copy is independent. Auto needs no tap. There is no persistent
+overlay, provider cropping, or distortion. Mismatched aspect ratios can leave
+space on one pair of sides; at least one pair reaches the content edges.
 
-Auto now means both dimensions are automatic regardless of historical percent
-records. Provider size options also ignore the obsolete multiplier. Legacy
-records remain preserved for recovery, but do not affect rendering. The editor
-explains the transition. Explicit dimensions and aspect-preserving custom fitting
-remain available, with their existing launcher-option limitations.
+An automatic RemoteViews measurement attempt was rejected by Android's remote
+method restrictions, so this candidate makes the calibration step explicit.
+See docs/CUSTOM-FITTING-1.23.md for behavior and lifecycle details.
 
-Validation: 205 unit/framework tests passed, with no failures/errors/skips. This
-includes actual provider bounds within AppWidgetHostView, 64 rail geometry
-combinations across API 31/35, resizing without republishing, attached-window
-edge taps, and the new legacy-settings regression. Debug APK, instrumentation
-APK and lint builds passed (no lint errors; existing warnings remain).
+Validation: 219 unit/framework tests passed on API 31/35 with no failures,
+errors or skips. New checks cover per-placement measurements, stale/empty tap
+rejection, option/density changes, 72 actual custom layout combinations at mdpi
+and xhdpi, and 16 attached-host edge taps while enlarging/reducing. Debug APK,
+instrumentation APK and lint builds passed: no lint errors, 975 warnings.
 
-Android runtime validation: two instrumented tests passed on Android 12/API 31,
-using a separately installed provider. One host runs in a separate UID/process.
-Across six resize cases, tests assert actual provider screen bounds, exact
-background pixels at the edge, and PendingIntent delivery from real edge taps.
-The cross-UID case carries a retained 150% legacy value with both axes on Auto.
-The same case fails on the old 1.21 APK. An old-build capture measured 80 × 60
-inside a 400 × 300 host. Logs, geometry and screenshots are committed under
-`docs/evidence-fit-1.22/android31/`.
+Four real Android 12/API 31 instrumentation tests passed. The same custom-size
+regression fails on the old 1.22 APK (80 × 60 inside 400 × 300) and passes on
+1.23 (400 × 300). Another case checks all 18 combinations of width-only,
+height-only and both dimensions across three host shapes, including exact edge
+pixels and real PendingIntent edge taps. Auto passes three shapes in an
+external host and three more in-process. Source logs, screenshots and geometry
+are under docs/evidence-fit-1.23/. Harness checks wait for input focus and
+completed layout before injecting taps or sampling positions; exact pixel and
+PendingIntent assertions remain required.
 
-The host used for these checks is a controlled framework host, and the provider
-has a MATCH_PARENT root. This does not prove arbitrary fixed provider internals
-or incorrect OEM host constraints can be stretched. No assertion is relaxed to
-make a failing product case pass; setup/lifecycle issues were corrected and
-screenshot sampling waits for a stable composed frame.
+No physical HyperOS or MyFitnessPal pass is claimed. Android runtime evidence
+uses a controlled host and separately installed provider. Keep issue #1 open
+until the owner confirms custom sizing on the phone.
 
-No physical HyperOS/MyFitnessPal pass is claimed. Provider internals are not
-cropped. A fixture/host pass alone does not establish that the owner's exact
-provider and launcher combination is resolved.
-
-Signing: same recovered testing key as 1.19–1.21, excluded from Git. This is
-reconstruction from supplied 1.14 source, not historical 1.18 source. Each release
-includes its APK, matching source ZIP, source commit, checksum and these notes.
-Toolchain: JDK 17, Gradle 8.11.1, SDK 35 / Build Tools 35.0.0.
-
-The signed-release workflow requires owner GitHub secrets ANDROID_KEYSTORE_BASE64,
-ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD.
-
-APK SHA-256: `935d585b834378ec894c0865393ad13179ef07075a8ee47f5ee0c52146382337`.
+Signing: same recovered testing key as 1.19–1.22, excluded from Git. Source is
+reconstructed from the supplied 1.14 archive. The release includes its APK,
+matching source ZIP, source commit, checksum and these notes. Toolchain: JDK 17,
+Gradle 8.11.1, SDK 35 / Build Tools 35.0.0.

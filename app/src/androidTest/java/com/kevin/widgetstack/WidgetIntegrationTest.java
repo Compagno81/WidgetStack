@@ -78,10 +78,11 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
    getInstrumentation().runOnMainSync(()->view.setLayoutParams(new FrameLayout.LayoutParams(Ui.dp(activity,dimensions[0]),Ui.dp(activity,dimensions[1]),Gravity.CENTER)));
    await("Auto provider must fill actual launcher area despite smaller size options",()->{
     TextView provider=findText(view,"External widget");View area=view.findViewById(R.id.content);
-    return provider!=null&&view.getWidth()==Ui.dp(activity,dimensions[0])&&view.getHeight()==Ui.dp(activity,dimensions[1])&&provider.getWidth()==area.getWidth()&&provider.getHeight()==area.getHeight()&&provider.getWidth()==view.getWidth()&&provider.getHeight()==view.getHeight();
+    return provider!=null&&!view.isLayoutRequested()&&!((View)view.getParent()).isLayoutRequested()&&view.getWidth()==Ui.dp(activity,dimensions[0])&&view.getHeight()==Ui.dp(activity,dimensions[1])&&provider.getWidth()==area.getWidth()&&provider.getHeight()==area.getHeight()&&provider.getWidth()==view.getWidth()&&provider.getHeight()==view.getHeight();
    });
-   final int[] xy=new int[2],wh=new int[2];getInstrumentation().runOnMainSync(()->{TextView provider=findText(view,"External widget");provider.getLocationOnScreen(xy);wh[0]=provider.getWidth();wh[1]=provider.getHeight();});
    getInstrumentation().waitForIdleSync();
+   final int[] xy=new int[2],wh=new int[2];getInstrumentation().runOnMainSync(()->{TextView provider=findText(view,"External widget");provider.getLocationOnScreen(xy);wh[0]=provider.getWidth();wh[1]=provider.getHeight();});
+   android.util.Log.i("AUTO_FIT","in-process "+dimensions[0]+"x"+dimensions[1]+" at="+xy[0]+","+xy[1]+" size="+wh[0]+"x"+wh[1]);
    FitScreenshot.assertPixel(getInstrumentation().getUiAutomation(),c,"in-process-"+dimensions[0]+"x"+dimensions[1],xy[0]+wh[0]-4,xy[1]+wh[1]/2,0xffb9d9ec);
    resetEvents();long now=SystemClock.uptimeMillis();
    MotionEvent down=MotionEvent.obtain(now,now,MotionEvent.ACTION_DOWN,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0),up=MotionEvent.obtain(now,now+80,MotionEvent.ACTION_UP,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0);

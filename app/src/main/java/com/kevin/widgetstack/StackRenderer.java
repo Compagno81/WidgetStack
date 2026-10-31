@@ -28,10 +28,10 @@ final class StackRenderer {
         return new Intent(c,screen).setData(Uri.parse("widgetstack://edit/"+id)).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id);
     }
     static Bundle optionsFor(Context c,int id){
-        AppWidgetManager m=AppWidgetManager.getInstance(c);if(id>=0)return m.getAppWidgetOptions(id);
+        AppWidgetManager m=AppWidgetManager.getInstance(c);if(id>=0)return MeasuredViewport.options(c,id,m.getAppWidgetOptions(id));
         Bundle best=null;long area=-1;
         for(int home:new StackStore(c).placements(id))if(owns(c,home)){
-            Bundle b=m.getAppWidgetOptions(home);long candidate=(long)b.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,240)*b.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,160);
+            Bundle b=MeasuredViewport.options(c,home,m.getAppWidgetOptions(home));long candidate=(long)b.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,240)*b.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,160);
             if(candidate>area){best=b;area=candidate;}
         }
         if(best!=null)return best;
@@ -194,14 +194,14 @@ final class StackRenderer {
     static void updateBarMotion(Context c,int id,int direction,int barMotion){
         if(!owns(c,id))return;
         StackStore store=new StackStore(c);StackState s=store.get(id);
-        if(s==null){s=new StackState(id);RemoteViews empty=shell(c,s,0,null,0,nextRootId(c));empty.setTextViewText(R.id.empty,"Tap to choose a saved stack");try{boolean fresh=empty.getViewId()!=View.NO_ID;AppWidgetManager.getInstance(c).updateAppWidget(id,empty);StackDiagnostics.note(c,"publish",id,"choose saved stack; fresh="+fresh);}catch(RuntimeException e){Log.w("WidgetStack","Unable to show stack chooser",e);}return;}
+        if(s==null){MeasuredViewport.stop(c,id);s=new StackState(id);RemoteViews empty=shell(c,s,0,null,0,nextRootId(c));empty.setTextViewText(R.id.empty,"Tap to choose a saved stack");try{boolean fresh=empty.getViewId()!=View.NO_ID;AppWidgetManager.getInstance(c).updateAppWidget(id,empty);StackDiagnostics.note(c,"publish",id,"choose saved stack; fresh="+fresh);}catch(RuntimeException e){Log.w("WidgetStack","Unable to show stack chooser",e);}return;}
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         for(int child:new ArrayList<>(s.children))if(m.getAppWidgetInfo(child)==null){s.remove(child);store.put(s);}
         RemoteViews root=renderForHome(c,s,direction,barMotion);
-        try{boolean fresh=root.getViewId()!=View.NO_ID;m.updateAppWidget(id,root);StackDiagnostics.note(c,"publish",id,"selected="+s.selected+" fresh="+fresh);}catch(RuntimeException e){
+        try{boolean fresh=root.getViewId()!=View.NO_ID;m.updateAppWidget(id,root);if(root.getLayoutId()!=R.layout.viewport_probe)MeasuredViewport.stop(c,id);StackDiagnostics.note(c,"publish",id,"selected="+s.selected+" fresh="+fresh);}catch(RuntimeException e){
             Log.e("WidgetStack","Launcher rejected widget update",e);StackDiagnostics.note(c,"publish failed",id,e.getClass().getSimpleName());
             RemoteViews fallback=shell(c,s,0,null,0,nextRootId(c));fallback.setTextViewText(R.id.empty,"Widget update was too large or unsupported.\nTap here to edit.");
-            try{m.updateAppWidget(id,fallback);}catch(RuntimeException ignored){}
+            MeasuredViewport.stop(c,id);try{m.updateAppWidget(id,fallback);}catch(RuntimeException ignored){}
         }
     }
     static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted){return render(c,s,direction,forceContracted,0);}
@@ -212,6 +212,7 @@ final class StackRenderer {
         int id=prefs.getInt("root",1000000)%0x00fffffe+1;prefs.edit().putInt("root",id).commit();return id;
     }
     static RemoteViews renderForHome(Context c,StackState s,int direction,int barMotion){
+        if(MeasuredViewport.needed(c,s))return MeasuredViewport.probe(c,s.id);
         Bundle options=optionsFor(c,s.id);
         ArrayList<SizeF> sizes=options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
         if(sizes==null||sizes.isEmpty())return render(c,s,direction,null,barMotion,nextRootId(c));

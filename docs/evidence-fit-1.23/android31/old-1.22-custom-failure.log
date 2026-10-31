@@ -1,0 +1,47 @@
+INSTRUMENTATION_STATUS: class=com.kevin.widgetstack.CrossUidControlsTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=InstrumentationTestRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.kevin.widgetstack.CrossUidControlsTest:
+INSTRUMENTATION_STATUS: test=testCustomMatchingAspectUsesEntireActualArea
+INSTRUMENTATION_STATUS_CODE: 1
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+INSTRUMENTATION_STATUS: class=com.kevin.widgetstack.CrossUidControlsTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=InstrumentationTestRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stack=junit.framework.AssertionFailedError: custom width must fill real host: Bundle[mParcelledData.dataSize=296] expected:<400> but was:<80>
+	at com.kevin.widgetstack.CrossUidControlsTest.testCustomMatchingAspectUsesEntireActualArea(CrossUidControlsTest.java:81)
+	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:220)
+	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:205)
+	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:192)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:195)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:181)
+	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:563)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2248)
+
+INSTRUMENTATION_STATUS: stream=
+Failure in testCustomMatchingAspectUsesEntireActualArea:
+junit.framework.AssertionFailedError: custom width must fill real host: Bundle[mParcelledData.dataSize=296] expected:<400> but was:<80>
+	at com.kevin.widgetstack.CrossUidControlsTest.testCustomMatchingAspectUsesEntireActualArea(CrossUidControlsTest.java:81)
+	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:220)
+	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:205)
+	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:192)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:195)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:181)
+	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:563)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2248)
+
+INSTRUMENTATION_STATUS: test=testCustomMatchingAspectUsesEntireActualArea
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+Test results for InstrumentationTestRunner=.F
+Time: 24.903
+
+FAILURES!!!
+Tests run: 1,  Failures: 1,  Errors: 0
+
+
+INSTRUMENTATION_CODE: -1

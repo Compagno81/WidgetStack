@@ -9,11 +9,11 @@ public final class EventsProvider extends ContentProvider {
    java.util.concurrent.CountDownLatch ready=new java.util.concurrent.CountDownLatch(1);
    new android.os.Handler(android.os.Looper.getMainLooper()).post(()->{
     try{
-     android.appwidget.AppWidgetHostView widget=activity.widget;result.putInt("home_id",activity.homeId);
+     android.appwidget.AppWidgetHostView widget=activity.widget;result.putInt("home_id",activity.homeId);result.putBoolean("focused",activity.hasWindowFocus());
      if("launcher_resize".equals(method)&&extras!=null)widget.setLayoutParams(new android.widget.FrameLayout.LayoutParams(extras.getInt("width"),extras.getInt("height"),android.view.Gravity.CENTER));
      int[] xy=new int[2];widget.getLocationOnScreen(xy);result.putInt("left",xy[0]);result.putInt("top",xy[1]);result.putInt("width",widget.getWidth());result.putInt("height",widget.getHeight());
      android.view.View child=findProvider(widget);
-     if(child!=null){android.graphics.Rect visible=new android.graphics.Rect();if(child.getGlobalVisibleRect(visible)){result.putInt("provider_width",visible.width());result.putInt("provider_height",visible.height());result.putInt("provider_left",visible.left-xy[0]);result.putInt("provider_top",visible.top-xy[1]);}}
+     if(child!=null){result.putBoolean("provider_clickable",child.isClickable());result.putBoolean("provider_enabled",child.isEnabled());android.graphics.Rect visible=new android.graphics.Rect();if(child.getGlobalVisibleRect(visible)){result.putInt("provider_width",visible.width());result.putInt("provider_height",visible.height());result.putInt("provider_left",visible.left-xy[0]);result.putInt("provider_top",visible.top-xy[1]);}}
 
     }finally{ready.countDown();}
    });

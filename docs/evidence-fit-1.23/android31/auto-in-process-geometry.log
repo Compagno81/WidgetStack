@@ -1,0 +1,4 @@
+--------- beginning of main
+10-31 07:04:45.171  4175  4190 I AUTO_FIT: in-process 400x300 at=100,288 size=400x300
+10-31 07:04:53.783  4175  4190 I AUTO_FIT: in-process 300x400 at=150,238 size=300x400
+10-31 07:04:58.862  4175  4190 I AUTO_FIT: in-process 400x200 at=100,338 size=400x200

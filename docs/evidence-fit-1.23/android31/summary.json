@@ -1,0 +1,13 @@
+{
+  "android_api": 31,
+  "positive_runtime_tests": 4,
+  "custom_fit_cases": 18,
+  "matching_aspect_regression_cases": 1,
+  "auto_resize_cases": 6,
+  "pending_intent_edge_taps": 24,
+  "old_apk_negative_control": "1.22 expected width400 but measured80; screenshot confirms80x60",
+  "positive_apk": "1.23-reconstructed",
+  "physical_HyperOS_verified": false,
+  "preview_redesign": false,
+  "custom_calibration": "Tap to fit per placement, repeated after launcher resize"
+}

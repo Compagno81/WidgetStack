@@ -1,0 +1,34 @@
+[
+  {
+    "image": "old-1.22-custom-gap.png",
+    "background_color": [
+      173,
+      203,
+      221
+    ],
+    "provider_pixel_bbox": [
+      260,
+      440,
+      340,
+      500
+    ],
+    "width": 80,
+    "height": 60
+  },
+  {
+    "image": "new-1.23-custom-fit.png",
+    "background_color": [
+      185,
+      217,
+      236
+    ],
+    "provider_pixel_bbox": [
+      100,
+      320,
+      500,
+      620
+    ],
+    "width": 400,
+    "height": 300
+  }
+]
