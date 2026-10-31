@@ -10,11 +10,12 @@ import android.widget.FrameLayout;
 public final class LauncherActivity extends Activity {
  public static volatile LauncherActivity current;
  public AppWidgetHostView widget;
+ public int homeId=-1;
  private AppWidgetHost host;
  @Override public void onCreate(Bundle state){
   super.onCreate(state);current=this;
   host=new AppWidgetHost(this,7777);host.startListening();
-  int id=getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,-1);
+  int id=getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,-1);homeId=id;
   AppWidgetHostView view=host.createView(this,id,AppWidgetManager.getInstance(this).getAppWidgetInfo(id));
   widget=view;view.setPadding(0,0,0,0);
   FrameLayout frame=new FrameLayout(this);

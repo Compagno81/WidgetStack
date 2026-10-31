@@ -1,0 +1,47 @@
+INSTRUMENTATION_STATUS: class=com.kevin.widgetstack.CrossUidControlsTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=InstrumentationTestRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.kevin.widgetstack.CrossUidControlsTest:
+INSTRUMENTATION_STATUS: test=testAutoActualBoundsAndEdgeTapFromAnotherUid
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kevin.widgetstack.CrossUidControlsTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=InstrumentationTestRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stack=junit.framework.AssertionFailedError: Provider must fill external host despite stale options
+	at com.kevin.widgetstack.CrossUidControlsTest.await(CrossUidControlsTest.java:22)
+	at com.kevin.widgetstack.CrossUidControlsTest.testAutoActualBoundsAndEdgeTapFromAnotherUid(CrossUidControlsTest.java:52)
+	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:220)
+	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:205)
+	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:192)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:195)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:181)
+	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:563)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2248)
+
+INSTRUMENTATION_STATUS: stream=
+Failure in testAutoActualBoundsAndEdgeTapFromAnotherUid:
+junit.framework.AssertionFailedError: Provider must fill external host despite stale options
+	at com.kevin.widgetstack.CrossUidControlsTest.await(CrossUidControlsTest.java:22)
+	at com.kevin.widgetstack.CrossUidControlsTest.testAutoActualBoundsAndEdgeTapFromAnotherUid(CrossUidControlsTest.java:52)
+	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:220)
+	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:205)
+	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:192)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:195)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:181)
+	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:563)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2248)
+
+INSTRUMENTATION_STATUS: test=testAutoActualBoundsAndEdgeTapFromAnotherUid
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+Test results for InstrumentationTestRunner=.F
+Time: 79.042
+
+FAILURES!!!
+Tests run: 1,  Failures: 1,  Errors: 0
+
+
+INSTRUMENTATION_CODE: -1

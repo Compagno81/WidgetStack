@@ -82,18 +82,16 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
    });
    final int[] xy=new int[2],wh=new int[2];getInstrumentation().runOnMainSync(()->{TextView provider=findText(view,"External widget");provider.getLocationOnScreen(xy);wh[0]=provider.getWidth();wh[1]=provider.getHeight();});
    getInstrumentation().waitForIdleSync();
-   android.graphics.Bitmap image=getInstrumentation().getUiAutomation().takeScreenshot();assertNotNull("Screenshot must be available",image);
-   int pixel=image.getPixel(xy[0]+wh[0]-4,xy[1]+wh[1]/2);
-   java.io.File directory=c.getExternalFilesDir("fit-evidence");assertNotNull(directory);directory.mkdirs();
-   try(java.io.FileOutputStream file=new java.io.FileOutputStream(new java.io.File(directory,"in-process-"+dimensions[0]+"x"+dimensions[1]+".png"))){assertTrue(image.compress(android.graphics.Bitmap.CompressFormat.PNG,100,file));}
-   image.recycle();
-   assertEquals("Provider background must reach the visible right edge",0xffb9d9ec,pixel);
+   FitScreenshot.assertPixel(getInstrumentation().getUiAutomation(),c,"in-process-"+dimensions[0]+"x"+dimensions[1],xy[0]+wh[0]-4,xy[1]+wh[1]/2,0xffb9d9ec);
    resetEvents();long now=SystemClock.uptimeMillis();
    MotionEvent down=MotionEvent.obtain(now,now,MotionEvent.ACTION_DOWN,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0),up=MotionEvent.obtain(now,now+80,MotionEvent.ACTION_UP,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0);
    down.setSource(InputDevice.SOURCE_TOUCHSCREEN);up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
    assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(down,true));assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(up,true));down.recycle();up.recycle();
    await("A tap at the displayed edge must open the external provider",()->eventRow()==-1);
-   pressBack();await("Main activity should return after provider",activity::hasWindowFocus);getInstrumentation().waitForIdleSync();
+   // The provider can open in an existing external task. Bring this test's
+   // activity back explicitly; Back is not guaranteed to return to our task.
+   getInstrumentation().runOnMainSync(()->activity.startActivity(new Intent(activity,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT|Intent.FLAG_ACTIVITY_NEW_TASK)));
+   await("Main activity should return after provider",activity::hasWindowFocus);getInstrumentation().waitForIdleSync();
    // MainActivity deliberately rebuilds its normal UI in onResume. Reattach
    // the test host after returning from the external provider activity.
    getInstrumentation().runOnMainSync(()->activity.setContentView((View)view.getParent()));

@@ -45,25 +45,20 @@ public final class CrossUidControlsTest extends ActivityInstrumentationTestCase2
    Bundle options=new Bundle();options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,80);options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,80);options.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,60);options.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,60);
    AppWidgetManager.getInstance(c).updateAppWidgetOptions(home,options);assertTrue(SavedStacks.place(c,home,saved));
   });
-  c.startActivity(new Intent().setComponent(new ComponentName("com.kevin.widgetfixture","com.kevin.widgetfixture.LauncherActivity")).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,home).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+  c.startActivity(new Intent().setComponent(new ComponentName("com.kevin.widgetfixture","com.kevin.widgetfixture.LauncherActivity")).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,home).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
   for(int[] size:new int[][]{{400,300},{300,400},{500,200}}){
-   await("External launcher must start",()->launcherBounds().getInt("width")>0);
-   await("External provider must be visible",()->hasText(getInstrumentation().getUiAutomation().getRootInActiveWindow(),"External widget"));
+   await("External launcher must bind this test widget ID",()->{Bundle geometry=launcherBounds();return geometry.getInt("home_id",-1)==home&&geometry.getInt("width")>0;});
    Bundle request=new Bundle();request.putInt("width",size[0]);request.putInt("height",size[1]);c.getContentResolver().call(EVENTS,"launcher_resize",null,request);
    await("Provider must fill external host despite stale options",()->{Bundle geometry=launcherBounds();return geometry.getInt("width")==size[0]&&geometry.getInt("height")==size[1]&&geometry.getInt("provider_width")==size[0]&&geometry.getInt("provider_height")==size[1]&&geometry.getInt("provider_left")==0&&geometry.getInt("provider_top")==0;});
    getInstrumentation().getUiAutomation().waitForIdle(100,10000);
    Bundle geometry=launcherBounds();int x=geometry.getInt("left")+size[0]-4,y=geometry.getInt("top")+size[1]/2;
-   android.graphics.Bitmap image=getInstrumentation().getUiAutomation().takeScreenshot();assertNotNull(image);assertEquals("External provider background reaches right edge",0xffb9d9ec,image.getPixel(x,y));
-   java.io.File directory=c.getExternalFilesDir("fit-evidence");assertNotNull(directory);directory.mkdirs();
-   try(java.io.FileOutputStream file=new java.io.FileOutputStream(new java.io.File(directory,"cross-uid-"+size[0]+"x"+size[1]+".png"))){assertTrue(image.compress(android.graphics.Bitmap.CompressFormat.PNG,100,file));}
-   image.recycle();
+   FitScreenshot.assertPixel(getInstrumentation().getUiAutomation(),c,"cross-uid-"+size[0]+"x"+size[1],x,y,0xffb9d9ec);
    c.getContentResolver().call(EVENTS,"reset",null,null);long now=SystemClock.uptimeMillis();
    for(int action:new int[]{MotionEvent.ACTION_DOWN,MotionEvent.ACTION_UP}){MotionEvent event=MotionEvent.obtain(now,SystemClock.uptimeMillis(),action,x,y,0);event.setSource(InputDevice.SOURCE_TOUCHSCREEN);assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(event,true));event.recycle();}
    await("Visible edge tap must deliver provider PendingIntent across UIDs",()->c.getContentResolver().call(EVENTS,"read",null,null).getInt("row",-999)==-1);
    long keyTime=SystemClock.uptimeMillis();for(int action:new int[]{KeyEvent.ACTION_DOWN,KeyEvent.ACTION_UP})assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(new KeyEvent(keyTime,SystemClock.uptimeMillis(),action,KeyEvent.KEYCODE_BACK,0),true));
   }
  }
- private boolean hasText(AccessibilityNodeInfo node,String prefix){if(node==null)return false;if(node.getText()!=null&&node.getText().toString().startsWith(prefix))return true;for(int i=0;i<node.getChildCount();i++)if(hasText(node.getChild(i),prefix))return true;return false;}
  private Bundle launcherBounds(){Bundle result=c.getContentResolver().call(EVENTS,"launcher_bounds",null,null);return result==null?new Bundle():result;}
  public void testTouchDeliveryFromAnotherUid() throws Exception {
   c=getActivity();
@@ -72,7 +67,7 @@ public final class CrossUidControlsTest extends ActivityInstrumentationTestCase2
   getInstrumentation().runOnMainSync(()->{
    StackStore store=new StackStore(c);StackState state=store.createSaved("Cross UID test");saved=state.id;state.add(a);state.add(b);store.put(state);assertTrue(SavedStacks.place(c,home,saved));
   });
-  c.startActivity(new Intent().setComponent(new ComponentName("com.kevin.widgetfixture","com.kevin.widgetfixture.LauncherActivity")).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,home).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+  c.startActivity(new Intent().setComponent(new ComponentName("com.kevin.widgetfixture","com.kevin.widgetfixture.LauncherActivity")).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,home).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
   tap("Next widget");await("Next tap did not select second child",()->new StackStore(c).get(home).selected==b);
   tap("Previous widget");await("Previous tap did not select first child",()->new StackStore(c).get(home).selected==a);
   tap("Widget 2");await("Dot tap did not select second child",()->new StackStore(c).get(home).selected==b);

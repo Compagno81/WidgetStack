@@ -1,0 +1,10 @@
+{
+  "android_api": 31,
+  "android_release": "12",
+  "emulator": "32.1.12 (9751036), software CPU / SwiftShader",
+  "old_1_21": "Expected failure: provider did not fill actual host with Auto axes and retained 150% setting",
+  "new_1_22_cross_uid": "PASS: host/provider bounds, screenshot edge pixels, external PendingIntent taps at 400x300, 300x400, 500x200 pixels",
+  "new_1_22_in_process": "PASS: host/provider bounds, screenshot edge pixels, external PendingIntent taps at 400x300, 300x400, 400x200 dp",
+  "physical_myfitnesspal_hyperos": "Not verified",
+  "test_provider": "Separately installed com.kevin.widgetfixture.PlainWidget, MATCH_PARENT root"
+}

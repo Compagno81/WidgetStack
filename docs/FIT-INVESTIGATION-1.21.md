@@ -55,3 +55,17 @@ The external fixture's geometry report likewise follows the real provider leaf's
 visible screen bounds. Test focus and Back injection use the correct cross-app
 mechanisms. Runtime runs remain incomplete until a clean end-to-end result is
 recorded; infrastructure crashes and interrupted runs are not passing evidence.
+
+## Completed Android runtime comparison for 1.22
+
+The older software emulator (32.1.12) completed clean runs after startup issues
+were resolved. The test fixture now starts with a fresh task and verifies the
+bound home ID, so an old RemoteViews hierarchy cannot be mistaken for the new
+build. Cross-app input goes through UiAutomation; the in-process host explicitly
+returns to its own task after launching a provider app. Exact screenshot colors
+are sampled after the composed frame settles.
+
+The final old 1.21 control fails the actual-bounds assertion. Both 1.22 test
+methods pass all three size cases, including edge pixels and real touch delivery.
+Evidence is in `evidence-fit-1.22/android31/`. The owner's MyFitnessPal/HyperOS
+case still requires physical confirmation; no whole-product completion is claimed.

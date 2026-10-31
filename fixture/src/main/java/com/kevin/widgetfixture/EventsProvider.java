@@ -9,7 +9,7 @@ public final class EventsProvider extends ContentProvider {
    java.util.concurrent.CountDownLatch ready=new java.util.concurrent.CountDownLatch(1);
    new android.os.Handler(android.os.Looper.getMainLooper()).post(()->{
     try{
-     android.appwidget.AppWidgetHostView widget=activity.widget;
+     android.appwidget.AppWidgetHostView widget=activity.widget;result.putInt("home_id",activity.homeId);
      if("launcher_resize".equals(method)&&extras!=null)widget.setLayoutParams(new android.widget.FrameLayout.LayoutParams(extras.getInt("width"),extras.getInt("height"),android.view.Gravity.CENTER));
      int[] xy=new int[2];widget.getLocationOnScreen(xy);result.putInt("left",xy[0]);result.putInt("top",xy[1]);result.putInt("width",widget.getWidth());result.putInt("height",widget.getHeight());
      android.view.View child=findProvider(widget);

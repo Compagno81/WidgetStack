@@ -20,12 +20,20 @@ combinations across API 31/35, resizing without republishing, attached-window
 edge taps, and the new legacy-settings regression. Debug APK, instrumentation
 APK and lint builds passed (no lint errors; existing warnings remain).
 
-Android runtime validation is still underway. Initial attempts uncovered test
-setup issues (permission grants before user unlock, incorrect cross-app Back
-injection, and reattaching an activity test host after onResume). A software
-emulator was also killed under combined build/runtime load. Neither failed nor
-incomplete runtime checks are claimed as passing. Runtime tests are being rerun
-without Gradle daemons competing for memory.
+Android runtime validation: two instrumented tests passed on Android 12/API 31,
+using a separately installed provider. One host runs in a separate UID/process.
+Across six resize cases, tests assert actual provider screen bounds, exact
+background pixels at the edge, and PendingIntent delivery from real edge taps.
+The cross-UID case carries a retained 150% legacy value with both axes on Auto.
+The same case fails on the old 1.21 APK. An old-build capture measured 80 × 60
+inside a 400 × 300 host. Logs, geometry and screenshots are committed under
+`docs/evidence-fit-1.22/android31/`.
+
+The host used for these checks is a controlled framework host, and the provider
+has a MATCH_PARENT root. This does not prove arbitrary fixed provider internals
+or incorrect OEM host constraints can be stretched. No assertion is relaxed to
+make a failing product case pass; setup/lifecycle issues were corrected and
+screenshot sampling waits for a stable composed frame.
 
 No physical HyperOS/MyFitnessPal pass is claimed. Provider internals are not
 cropped. A fixture/host pass alone does not establish that the owner's exact
@@ -38,3 +46,5 @@ Toolchain: JDK 17, Gradle 8.11.1, SDK 35 / Build Tools 35.0.0.
 
 The signed-release workflow requires owner GitHub secrets ANDROID_KEYSTORE_BASE64,
 ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD.
+
+APK SHA-256: `935d585b834378ec894c0865393ad13179ef07075a8ee47f5ee0c52146382337`.
