@@ -33,7 +33,9 @@ final class WidgetSizing {
         return requested;
     }
     static Bundle options(Bundle actual,StackState state,int child,float density) {
-        Bundle result=StackRenderer.logicalOptions(actual,state.logicalSizePercent(child));
+        // Percentage data can remain in recovered preferences, but zero-valued
+        // axes displayed as Auto must use current host options without a hidden multiplier.
+        Bundle result=new Bundle(actual);
         int width=state.widthPx(child),height=state.heightPx(child);
         if(width>0)for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH})result.putInt(key,Math.max(1,Math.round(width/density)));
         if(height>0)for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT})result.putInt(key,Math.max(1,Math.round(height/density)));

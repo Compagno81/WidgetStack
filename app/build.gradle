@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'com.kevin.widgetstack'
  compileSdk 35
- defaultConfig { applicationId 'com.kevin.widgetstack'; minSdk 31; targetSdk 35; versionCode 22; versionName '1.21-reconstructed'; testInstrumentationRunner 'android.test.InstrumentationTestRunner' }
+ defaultConfig { applicationId 'com.kevin.widgetstack'; minSdk 31; targetSdk 35; versionCode 23; versionName '1.22-reconstructed'; testInstrumentationRunner 'android.test.InstrumentationTestRunner' }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
  signingConfigs { debug { storeFile rootProject.file("signing/testing-debug.keystore"); storePassword "android"; keyAlias "AndroidDebugKey"; keyPassword "android" } }
  signingConfigs {

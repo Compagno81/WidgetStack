@@ -3,6 +3,7 @@ package com.kevin.widgetstack;
 import android.app.*;
 import android.appwidget.*;
 import android.content.*;
+import android.graphics.RectF;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
@@ -31,14 +32,21 @@ public class LauncherBoundsTest {
  }
  private void fillsContent(AppWidgetHostView host){
   ViewGroup content=host.findViewById(R.id.content);assertNotNull(content);assertEquals(1,content.getChildCount());
-  View provider=content.getChildAt(0);
-  assertEquals("provider left",0,provider.getLeft());assertEquals("provider top",0,provider.getTop());
-  assertEquals("provider right",content.getWidth(),provider.getRight());assertEquals("provider bottom",content.getHeight(),provider.getBottom());
-  assertEquals(1f,provider.getScaleX(),.0001f);assertEquals(1f,provider.getScaleY(),.0001f);
+  View provider=host.findViewById(R.id.empty);assertNotNull(provider);
+  RectF visible=new RectF(0,0,provider.getWidth(),provider.getHeight());View node=provider;
+  while(node!=content){ViewGroup parent=(ViewGroup)node.getParent();node.getMatrix().mapRect(visible);visible.offset(node.getLeft()-parent.getScrollX(),node.getTop()-parent.getScrollY());node=parent;}
+  assertEquals("provider left",0f,visible.left,1f);assertEquals("provider top",0f,visible.top,1f);
+  assertEquals("provider right",content.getWidth(),visible.right,1f);assertEquals("provider bottom",content.getHeight(),visible.bottom,1f);
+
  }
  @Test public void autoReflowsOnActualHostResizeWithoutRepublishing(){
   StackHost.get(c).views.put(12,provider());StackState state=state();AppWidgetHostView host=host(state,false);
   for(int[] size:new int[][]{{900,720},{720,900},{1200,400},{400,1200},{333,197}}){layout(host,size[0],size[1]);fillsContent(host);}
+ }
+ @Test public void autoDoesNotKeepUsingAnInvisibleLegacyPercentage(){
+  StackHost.get(c).views.put(12,provider());StackState state=state();state.setLogicalSizePercent(12,150);
+  assertEquals(0,state.widthPx(12));assertEquals(0,state.heightPx(12));
+  AppWidgetHostView host=host(state,false);layout(host,900,720);fillsContent(host);
  }
  @Test public void allRailEdgesOverlapAndContractionLeaveNoExtraContentGaps(){
   StackHost.get(c).views.put(12,provider());

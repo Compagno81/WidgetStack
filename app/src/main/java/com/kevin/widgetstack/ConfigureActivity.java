@@ -68,7 +68,7 @@ public final class ConfigureActivity extends Activity {
    });
    Ui.compactButton(this,controls,"Remove",()->new AlertDialog.Builder(this).setMessage("Remove this widget from the stack?").setPositiveButton("Remove",(d,w)->{s.remove(child);store.put(s);host.deleteAppWidgetId(child);changed(s);}).setNegativeButton("Cancel",null).show());
    Ui.text(this,row,"Layout: "+(s.widthPx(child)==0?"Auto":s.widthPx(child)+" px")+" × "+(s.heightPx(child)==0?"Auto":s.heightPx(child)+" px"),14);
-   if(s.logicalSizePercent(child)!=100)Ui.text(this,row,"Legacy layout size retained. Applying dimensions replaces the old percentage setting.",13);
+   if(s.logicalSizePercent(child)!=100)Ui.text(this,row,"Legacy percentage sizing is no longer used. Auto follows the launcher; set dimensions for a custom layout.",13);
    Ui.tonalButton(this,row,"Resize widget",()->WidgetSizeEditor.show(this,s,child,()->changed(s)));
 
   }

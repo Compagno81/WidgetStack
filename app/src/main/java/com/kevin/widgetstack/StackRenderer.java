@@ -237,7 +237,7 @@ final class StackRenderer {
             boolean landscape=c.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE;
             SizeF available=displaySize(actual,landscape),logical=displaySize(b,landscape);
             try{
-                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0&&s.logicalSizePercent(s.selected)==100)
+                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0)
                     RemoteViewsBridge.embedAuto(c,root,source,s.selected,logical);
                 else RemoteViewsBridge.embedFitted(c,root,source,s.selected,logical,available);
             }

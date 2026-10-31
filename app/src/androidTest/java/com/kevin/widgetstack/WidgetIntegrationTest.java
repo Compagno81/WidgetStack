@@ -62,7 +62,7 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
   resetEvents();
   getInstrumentation().runOnMainSync(()->findText(view,"External widget").performClick());
   await("Original widget PendingIntent should open external app",()->eventRow()==-1);
-  getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+  pressBack();
  }
  public void testAutoUsesActualLauncherBoundsAndRetainsEdgeClicksAfterResize() throws Exception {
   int child=allocate("PlainWidget"),id=stack(child);
@@ -82,13 +82,20 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
    final int[] xy=new int[2],wh=new int[2];getInstrumentation().runOnMainSync(()->{TextView provider=findText(view,"External widget");provider.getLocationOnScreen(xy);wh[0]=provider.getWidth();wh[1]=provider.getHeight();});
    getInstrumentation().waitForIdleSync();
    android.graphics.Bitmap image=getInstrumentation().getUiAutomation().takeScreenshot();assertNotNull("Screenshot must be available",image);
-   int pixel=image.getPixel(xy[0]+wh[0]-4,xy[1]+wh[1]/2);image.recycle();
+   int pixel=image.getPixel(xy[0]+wh[0]-4,xy[1]+wh[1]/2);
+   java.io.File directory=c.getExternalFilesDir("fit-evidence");assertNotNull(directory);directory.mkdirs();
+   try(java.io.FileOutputStream file=new java.io.FileOutputStream(new java.io.File(directory,"in-process-"+dimensions[0]+"x"+dimensions[1]+".png"))){assertTrue(image.compress(android.graphics.Bitmap.CompressFormat.PNG,100,file));}
+   image.recycle();
    assertEquals("Provider background must reach the visible right edge",0xffb9d9ec,pixel);
    resetEvents();long now=SystemClock.uptimeMillis();
    MotionEvent down=MotionEvent.obtain(now,now,MotionEvent.ACTION_DOWN,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0),up=MotionEvent.obtain(now,now+80,MotionEvent.ACTION_UP,xy[0]+wh[0]-4,xy[1]+wh[1]/2f,0);
-   getInstrumentation().sendPointerSync(down);getInstrumentation().sendPointerSync(up);down.recycle();up.recycle();
+   down.setSource(InputDevice.SOURCE_TOUCHSCREEN);up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+   assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(down,true));assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(up,true));down.recycle();up.recycle();
    await("A tap at the displayed edge must open the external provider",()->eventRow()==-1);
-   getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+   pressBack();getInstrumentation().waitForIdleSync();
+   // MainActivity deliberately rebuilds its normal UI in onResume. Reattach
+   // the test host after returning from the external provider activity.
+   getInstrumentation().runOnMainSync(()->activity.setContentView((View)view.getParent()));
    await("Test host should regain focus",view::hasWindowFocus);
   }
  }
@@ -106,7 +113,7 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
   resetEvents();
   getInstrumentation().runOnMainSync(()->{ListView l=findList(view);int pos=l.getFirstVisiblePosition();l.performItemClick(l.getChildAt(0),pos,l.getItemIdAtPosition(pos));});
   await("Collection row PendingIntent should open external app with row",()->eventRow()>=29);
-  getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+  pressBack();
  }
  public void testIndependentSelectionSizingAndPlacementDeletion() throws Exception {
   int a=allocate("PlainWidget"),b=allocate("PlainWidget"),first=stack(a,b),d=allocate("PlainWidget"),second=stack(d);
@@ -144,6 +151,10 @@ public class WidgetIntegrationTest extends ActivityInstrumentationTestCase2<Main
   await("Provider should refresh its content",()->findText(view,"Updated external widget")!=null);
   getInstrumentation().runOnMainSync(()->((LinearLayout)view.findViewById(R.id.indicators)).getChildAt(1).performClick());
   await("Dots should still select after refresh",()->new StackStore(c).get(id).selected==b);
+ }
+ private void pressBack(){
+  long now=SystemClock.uptimeMillis();
+  for(int action:new int[]{KeyEvent.ACTION_DOWN,KeyEvent.ACTION_UP})assertTrue(getInstrumentation().getUiAutomation().injectInputEvent(new KeyEvent(now,SystemClock.uptimeMillis(),action,KeyEvent.KEYCODE_BACK,0),true));
  }
  private static final Uri EVENTS=Uri.parse("content://com.kevin.widgetfixture.events");
  private void resetEvents(){c.getContentResolver().call(EVENTS,"reset",null,null);}
