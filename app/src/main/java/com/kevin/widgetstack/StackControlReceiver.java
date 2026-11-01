@@ -11,6 +11,16 @@ public final class StackControlReceiver extends BroadcastReceiver {
 
  static boolean handle(Context c,Intent i){
   String action=i.getAction();
+  if(CollectionProxyService.READY.equals(action)){
+   int child=i.getIntExtra("child",-1),view=i.getIntExtra("view_id",0);
+   if(child>=0&&view!=0)for(StackState state:new StackStore(c).all())if(state.id>=0&&state.children.contains(child)&&StackRenderer.owns(c,state.id)){
+    AppWidgetManager.getInstance(c).notifyAppWidgetViewDataChanged(state.id,view);
+    // Also republish from the host process: readiness can precede the
+    // launcher's initial empty publication, which would miss a data notification.
+    if(state.selected==child){HostService.ensure(c);StackHost.get(c).sync();StackHost.get(c).schedule(state.id);}
+   }
+   return true;
+  }
   if(MeasuredViewport.ACTION.equals(action)){MeasuredViewport.receive(c,i);return true;}
   if(StackProvider.PINNED.equals(action)){
    SavedStacks.place(c,i.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,-1),i.getIntExtra(SavedStacks.EXTRA_SAVED_ID,-1));return true;

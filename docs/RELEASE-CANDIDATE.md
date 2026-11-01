@@ -1,20 +1,25 @@
-# 1.27 — mutually exclusive navigation styles
+# 1.28 — agenda service identity and collection connection handling
 
-Appearance now has an explicit Navigation style choice: Bar or Corner arrows.
-Selecting Corner arrows replaces the bar. Bar thickness, overlap, buttons-only,
-auto-contract and shrink controls are hidden in arrow mode. Hidden contraction
-settings cannot block Apply. Arrow size remains adjustable (16–80 dp). The selected edge determines placement and direction:
-top/bottom use left and right corner arrows; left/right use up and down arrows.
-Each arrow directly selects the previous or next widget, wrapping at the ends.
-The pair overlays the content without reducing the widget area. Auto-contract
-is bypassed in this mode so the arrows stay available. Visibility and opacity
-follow the existing bar settings. Tap targets remain at least 48 dp.
+The owner reports Business Calendar 2 Agenda freezes navigation, while a custom
+scrollable grid works. Scrolling alone is not the cause.
 
-The editor preview supports the same corner placement and direct navigation.
-The option defaults off and persists per saved stack, together with size and
-selected edge. Existing navigation modes remain available.
+Collection service intents now explicitly carry the original child widget ID.
+Widget Stack captures RemoteViews before the original host applies them, so
+Android's usual adapter-binding ID injection has not happened. The proxy must
+supply the child ID, rather than omit it or use the outer stack ID. Forwarding
+clones the original intent and preserves its component, data and other extras.
+This repairs an Android adapter contract defect; Business Calendar 2 has not
+been run here, so its exact phone failure is not claimed as reproduced.
 
-Validation covers API 31/35 layout across four edges and three sizes, full-area
-content, clickable controls, persistence and the existing regression suite.
-Physical launcher testing of this new mode remains pending. Signed with the
-same recovered testing key as previous candidates.
+Connection metadata requests no longer wait for binding. Until connected, the
+proxy returns temporary empty metadata and requests a refresh when ready.
+Connection callbacks use a dedicated thread. The collection service runs in a
+separate process, and readiness is forwarded to the main host process, which
+owns current preferences and RemoteViews snapshots. It notifies data changes
+and republishes the selected widget to avoid missing an early readiness event.
+
+Regression tests on API 31/35 check nonblocking disconnected metadata, callback
+progress with the main looper paused, connected row counts, process isolation,
+and child-ID injection despite a different outer stack ID. Build and lint are
+required. Full device reproduction and Business Calendar 2/HyperOS acceptance
+remain pending. Same recovered testing signing key as previous candidates.

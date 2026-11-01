@@ -8,16 +8,26 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import java.lang.reflect.Method;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Routes legacy collection services using the child widget's real host identity.
  * Concept adapted from Widgets Anywhere's MIT RemoteViewsProxyService. */
 public final class CollectionProxyService extends RemoteViewsService {
+    static final String READY="com.kevin.widgetstack.COLLECTION_READY";
+    private HandlerThread connectionThread;
+    private Handler connectionHandler;
+    @Override public void onCreate(){
+        super.onCreate();connectionThread=new HandlerThread("WidgetCollectionConnections");connectionThread.start();connectionHandler=new Handler(connectionThread.getLooper());
+    }
+    @Override public void onDestroy(){super.onDestroy();if(connectionThread!=null)connectionThread.quitSafely();}
+    static Intent providerIntent(int child,Intent original){
+        // Captured RemoteViews have not been applied in their original host.
+        // Supply the ID that RemoteViews would normally add during adapter binding.
+        return original==null?null:new Intent(original).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,child);
+    }
     static Intent intent(Context c,int child,Intent original,int viewId) {
         return new Intent(c,CollectionProxyService.class)
-            .putExtra("child",child).putExtra("original",original).putExtra("view_id",viewId)
+            .putExtra("child",child).putExtra("original",providerIntent(child,original)).putExtra("view_id",viewId)
             .setData(new Uri.Builder().scheme("widgetstack").authority("collection")
                 .appendPath(Integer.toString(child)).appendPath(Integer.toString(viewId))
                 .appendPath(original.toUri(0)).build());
@@ -29,26 +39,25 @@ public final class CollectionProxyService extends RemoteViewsService {
         final int child,viewId;final Intent original;
         volatile Object remote;
         volatile Class<?> factoryInterface;
-        volatile CountDownLatch ready=new CountDownLatch(1);
         volatile boolean bound,servedEmpty;
         final AtomicBoolean refreshPosted=new AtomicBoolean();
-        final Handler handler=new Handler(Looper.getMainLooper());
+        final Handler handler=connectionHandler;
         final ServiceConnection connection=new ServiceConnection(){
             @Override public void onServiceConnected(ComponentName n,IBinder binder) {
                 try {
                     Class<?> stub=Class.forName("com.android.internal.widget.IRemoteViewsFactory$Stub");
                     factoryInterface=Class.forName("com.android.internal.widget.IRemoteViewsFactory");
                     remote=stub.getMethod("asInterface",IBinder.class).invoke(null,binder);
-                }catch(Exception e){Log.e("WidgetStack","Collection connection failed",e);}finally{ready.countDown();}
+                }catch(Exception e){Log.e("WidgetStack","Collection connection failed",e);}
                 refreshIfNeeded();
             }
-            @Override public void onServiceDisconnected(ComponentName n){remote=null;ready=new CountDownLatch(1);}
-            @Override public void onNullBinding(ComponentName n){ready.countDown();}
+            @Override public void onServiceDisconnected(ComponentName n){remote=null;refreshPosted.set(false);}
+            @Override public void onNullBinding(ComponentName n){}
         };
-        Factory(int id,int view,Intent i){child=id;viewId=view;original=i;}
+        Factory(int id,int view,Intent i){child=id;viewId=view;original=providerIntent(id,i);}
         @Override public void onCreate() {
             if(bound)return;
-            if(original==null||child<0){ready.countDown();return;}
+            if(original==null||child<0){return;}
             try {
                 Method dispatcher=null;
                 for(Method m:Context.class.getDeclaredMethods())if(m.getName().equals("getServiceDispatcher")&&m.getParameterCount()==3&&m.getParameterTypes()[0]==ServiceConnection.class&&m.getParameterTypes()[1]==Handler.class){dispatcher=m;break;}
@@ -62,20 +71,20 @@ public final class CollectionProxyService extends RemoteViewsService {
                 bind.setAccessible(true);
                 Object bindFlags=bind.getParameterTypes()[4]==long.class?(Object)Long.valueOf(Context.BIND_AUTO_CREATE):Integer.valueOf(Context.BIND_AUTO_CREATE);
                 bound=Boolean.TRUE.equals(bind.invoke(AppWidgetManager.getInstance(CollectionProxyService.this),CollectionProxyService.this,child,original,conn,bindFlags));
-                if(!bound)ready.countDown();
-            }catch(Exception e){Log.e("WidgetStack","Collection binding failed",e);ready.countDown();}
+            }catch(Exception e){Log.e("WidgetStack","Collection binding failed",e);}
         }
         private void refreshIfNeeded(){
             if(!servedEmpty||remote==null||!refreshPosted.compareAndSet(false,true))return;
             handler.postDelayed(()->{
-                for(StackState s:new StackStore(CollectionProxyService.this).all())if(s.id>=0&&s.selected==child){
-                    if(viewId!=0)AppWidgetManager.getInstance(CollectionProxyService.this).notifyAppWidgetViewDataChanged(s.id,viewId);
-                    StackHost.get(CollectionProxyService.this).schedule(s.id);
-                }
+                // The collection process has no host snapshots and must never
+                // render a stack or read cached cross-process preferences.
+                sendBroadcast(new Intent(CollectionProxyService.this,StackControlReceiver.class)
+                    .setAction(READY).putExtra("child",child).putExtra("view_id",viewId));
             },100);
         }
         private Object call(String method,Class<?>[] types,Object...args) {
-            if(remote==null&&Looper.myLooper()!=Looper.getMainLooper())try{ready.await(4,TimeUnit.SECONDS);}catch(InterruptedException e){Thread.currentThread().interrupt();}
+            // Never wait for a service connection in a metadata request.
+            // Serve a temporary empty collection and notify the host when ready.
             Object current=remote;if(current==null)return null;
             try{return factoryInterface.getMethod(method,types).invoke(current,args);}
             catch(Exception e){Log.w("WidgetStack","Collection call failed: "+method,e);return null;}

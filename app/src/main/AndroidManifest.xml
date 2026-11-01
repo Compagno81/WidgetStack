@@ -19,6 +19,6 @@
   <receiver android:name=".StackProvider" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter><intent-filter><action android:name="com.kevin.widgetstack.SELECT"/><action android:name="com.kevin.widgetstack.EXPAND"/><action android:name="com.kevin.widgetstack.PINNED"/><data android:scheme="widgetstack"/></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/stack_info"/></receiver>
   <receiver android:name=".BootReceiver" android:exported="false"><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"/><action android:name="android.intent.action.MY_PACKAGE_REPLACED"/></intent-filter></receiver>
   <service android:name=".HostService" android:exported="false" android:foregroundServiceType="specialUse"><property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Maintains AppWidgetHost listener for user-created home-screen stacks and forwards widget updates to the launcher. No overlay or lock-screen functionality."/></service>
-  <service android:name=".CollectionProxyService" android:exported="false" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+  <service android:name=".CollectionProxyService" android:process=":collections" android:exported="false" android:permission="android.permission.BIND_REMOTEVIEWS"/>
  </application>
 </manifest>
