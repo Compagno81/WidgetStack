@@ -1,7 +1,9 @@
-# 1.26 — adjustable corner-arrow navigation
+# 1.27 — mutually exclusive navigation styles
 
-Navigation bar settings now include Corner arrow navigation and an arrow-size
-slider (16–80 dp). The selected edge determines placement and direction:
+Appearance now has an explicit Navigation style choice: Bar or Corner arrows.
+Selecting Corner arrows replaces the bar. Bar thickness, overlap, buttons-only,
+auto-contract and shrink controls are hidden in arrow mode. Hidden contraction
+settings cannot block Apply. Arrow size remains adjustable (16–80 dp). The selected edge determines placement and direction:
 top/bottom use left and right corner arrows; left/right use up and down arrows.
 Each arrow directly selects the previous or next widget, wrapping at the ends.
 The pair overlays the content without reducing the widget area. Auto-contract
