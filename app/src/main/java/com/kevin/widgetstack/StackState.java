@@ -14,6 +14,8 @@ public final class StackState {
     public static final int TOP=0, BOTTOM=1, LEFT=2, RIGHT=3;
     public int railEdge=RIGHT, railWidth=36, railOpacity=20;
     public boolean animateSwitch=false, buttonsOnly=false, overlapBar=false, autoContract=false;
+    public boolean cornerArrows=false;
+    public int cornerArrowSize=32;
     public int contractedWidth=8;
     public int contractDelaySeconds=2;
     public boolean contractToCorner=false;
@@ -57,6 +59,7 @@ public final class StackState {
     }
     public void select(int child) { if (children.contains(child)) selected = child; }
     public void normalize() {
+        cornerArrowSize=Math.max(16,Math.min(80,cornerArrowSize));
         if(railEdge<TOP||railEdge>RIGHT)railEdge=RIGHT;
         contractDelaySeconds=Math.max(2,contractDelaySeconds);cornerEnd=cornerEnd==1?1:0;
         railWidth=Math.max(8,Math.min(80,railWidth)); railOpacity=Math.max(0,Math.min(100,railOpacity)); contractedWidth=Math.max(4,Math.min(railWidth-1,contractedWidth));

@@ -31,7 +31,7 @@ final class BarController {
     }
     static boolean contracted(StackState s){
         Expansion e=expanded.get(s.id);
-        return s.showRail&&s.autoContract&&(e==null||(e.collapsing&&SystemClock.uptimeMillis()>=e.animationEnd));
+        return s.showRail&&!s.cornerArrows&&s.autoContract&&(e==null||(e.collapsing&&SystemClock.uptimeMillis()>=e.animationEnd));
     }
     static boolean animating(int id){Expansion e=expanded.get(id);return e!=null&&SystemClock.uptimeMillis()<e.animationEnd;}
     static int width(StackState s){return contracted(s)?s.contractedWidth:s.railWidth;}
@@ -40,7 +40,7 @@ final class BarController {
         StackState s=new StackStore(c).get(id);Expansion old=expanded.get(id);
         boolean animate=s!=null&&(contracted(s)||(old!=null&&old.collapsing));
         cancel(id);
-        if(s==null||!s.showRail||!s.autoContract)return false;
+        if(s==null||!s.showRail||s.cornerArrows||!s.autoContract)return false;
         Expansion e=new Expansion(c,s,animate);expanded.put(id,e);handler.postDelayed(e,s.contractDelayMillis());
         if(animate)handler.postDelayed(e.settle,ANIMATION_MS);
         return animate;

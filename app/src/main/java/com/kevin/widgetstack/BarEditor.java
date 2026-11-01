@@ -9,7 +9,7 @@ import android.widget.*;
 /** Grouped native settings share one draft and a preview of the production widget layout. */
 final class BarEditor {
  static void show(Activity a,StackState target,Runnable saved){
-  StackState draft=new StackState(target.id);draft.railEdge=target.railEdge;draft.railWidth=target.railWidth;draft.railOpacity=target.railOpacity;draft.showRail=target.showRail;draft.animateSwitch=target.animateSwitch;draft.buttonsOnly=target.buttonsOnly;draft.overlapBar=target.overlapBar;draft.autoContract=target.autoContract;draft.contractedWidth=target.contractedWidth;draft.contractDelaySeconds=target.contractDelaySeconds;draft.contractToCorner=target.contractToCorner;draft.cornerEnd=target.cornerEnd;
+  StackState draft=new StackState(target.id);draft.railEdge=target.railEdge;draft.railWidth=target.railWidth;draft.railOpacity=target.railOpacity;draft.showRail=target.showRail;draft.animateSwitch=target.animateSwitch;draft.buttonsOnly=target.buttonsOnly;draft.overlapBar=target.overlapBar;draft.autoContract=target.autoContract;draft.contractedWidth=target.contractedWidth;draft.contractDelaySeconds=target.contractDelaySeconds;draft.contractToCorner=target.contractToCorner;draft.cornerEnd=target.cornerEnd;draft.cornerArrows=target.cornerArrows;draft.cornerArrowSize=target.cornerArrowSize;
   for(int id:target.children)draft.add(id);draft.select(target.selected);
   LinearLayout root=new LinearLayout(a);root.setOrientation(LinearLayout.VERTICAL);root.setPadding(Ui.dp(a,16),Ui.dp(a,8),Ui.dp(a,16),Ui.dp(a,8));
   Preview preview=new Preview(a,draft);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(a,160)));preview.setOnClickListener(v->preview.demonstrateExpansion());
@@ -51,11 +51,17 @@ final class BarEditor {
   thickness.setOnSeekBarChangeListener(listener(value->{draft.railWidth=value+8;preview.contracted=false;refresh.run();}));opacity.setOnSeekBarChangeListener(listener(value->{draft.railOpacity=value;refresh.run();}));
   compactSize.setOnSeekBarChangeListener(listener(value->{if(!refreshing[0]){draft.contractedWidth=value+4;preview.contracted=true;refresh.run();}}));
   visible.setOnCheckedChangeListener((v,on)->{draft.showRail=on;refresh.run();});buttons.setOnCheckedChangeListener((v,on)->{draft.buttonsOnly=on;refresh.run();});overlap.setOnCheckedChangeListener((v,on)->{draft.overlapBar=on;refresh.run();});automatic.setOnCheckedChangeListener((v,on)->{draft.autoContract=on;preview.contracted=on;refresh.run();});animation.setOnCheckedChangeListener((v,on)->draft.animateSwitch=on);refresh.run();
+  Switch cornerMode=toggle(a,behaviour,"Corner arrow navigation",draft.cornerArrows);
+  Ui.text(a,behaviour,"Two arrows overlay opposite corners of the selected edge. Top/bottom edges use left/right arrows; left/right edges use up/down arrows. Arrows switch widgets directly and stay visible.",14);
+  TextView arrowLabel=Ui.text(a,behaviour,"Corner arrow size: "+draft.cornerArrowSize+" dp",16);
+  SeekBar arrowSize=slider(a,behaviour,"Corner arrow size",64,draft.cornerArrowSize-16);
+  cornerMode.setOnCheckedChangeListener((v,on)->{draft.cornerArrows=on;refresh.run();});
+  arrowSize.setOnSeekBarChangeListener(listener(value->{draft.cornerArrowSize=value+16;arrowLabel.setText("Corner arrow size: "+draft.cornerArrowSize+" dp");preview.refresh();}));
   AlertDialog dialog=new AlertDialog.Builder(a).setTitle("Navigation bar").setView(root).setPositiveButton("Apply",null).setNegativeButton("Cancel",null).create();
   dialog.setOnShowListener(d->{int height=Math.round(a.getResources().getDisplayMetrics().heightPixels*.85f);dialog.getWindow().setLayout(-1,height);});dialog.show();
   dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v->{
    if(draft.autoContract){try{int seconds=Integer.parseInt(delay.getText().toString());if(seconds<2)throw new NumberFormatException();draft.contractDelaySeconds=seconds;}catch(NumberFormatException e){delay.setError("Enter whole seconds, 2 or more");delay.requestFocus();return;}}
-   target.railEdge=draft.railEdge;target.railWidth=draft.railWidth;target.railOpacity=draft.railOpacity;target.showRail=draft.showRail;target.animateSwitch=draft.animateSwitch;target.buttonsOnly=draft.buttonsOnly;target.overlapBar=draft.overlapBar;target.autoContract=draft.autoContract;target.contractedWidth=draft.contractedWidth;target.contractDelaySeconds=draft.contractDelaySeconds;target.contractToCorner=draft.contractToCorner;target.cornerEnd=draft.cornerEnd;saved.run();dialog.dismiss();
+   target.cornerArrows=draft.cornerArrows;target.cornerArrowSize=draft.cornerArrowSize;target.railEdge=draft.railEdge;target.railWidth=draft.railWidth;target.railOpacity=draft.railOpacity;target.showRail=draft.showRail;target.animateSwitch=draft.animateSwitch;target.buttonsOnly=draft.buttonsOnly;target.overlapBar=draft.overlapBar;target.autoContract=draft.autoContract;target.contractedWidth=draft.contractedWidth;target.contractDelaySeconds=draft.contractDelaySeconds;target.contractToCorner=draft.contractToCorner;target.cornerEnd=draft.cornerEnd;saved.run();dialog.dismiss();
   });
  }
  private static LinearLayout panel(Activity a,LinearLayout parent){LinearLayout p=new LinearLayout(a);p.setOrientation(LinearLayout.VERTICAL);parent.addView(p,new LinearLayout.LayoutParams(-1,-2));return p;}

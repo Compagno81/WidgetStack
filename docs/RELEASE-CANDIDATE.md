@@ -1,16 +1,18 @@
-# 1.25 — manual scale per stacked widget
+# 1.26 — adjustable corner-arrow navigation
 
-The Resize widget dialog now has a Scale slider from 25% to 300%, a live
-percentage label, a preview, and Reset scale to 100%. Apply saves it for the
-selected widget; Cancel discards the draft. Scaling enlarges or shrinks both
-axes proportionally around the center. Enlarged edges are clipped by the stack.
-Width/height still control layout independently. Auto dimensions support scale.
+Navigation bar settings now include Corner arrow navigation and an arrow-size
+slider (16–80 dp). The selected edge determines placement and direction:
+top/bottom use left and right corner arrows; left/right use up and down arrows.
+Each arrow directly selects the previous or next widget, wrapping at the ends.
+The pair overlays the content without reducing the widget area. Auto-contract
+is bypassed in this mode so the arrows stay available. Visibility and opacity
+follow the existing bar settings. Tap targets remain at least 48 dp.
 
-The new setting is separate from obsolete logicalSizePercent data, so old
-settings cannot unexpectedly enable zoom. It persists by child widget identity
-and defaults to 100%. Provider actions retain native transformed touch handling.
+The editor preview supports the same corner placement and direct navigation.
+The option defaults off and persists per saved stack, together with size and
+selected edge. Existing navigation modes remain available.
 
-Validation: framework tests on API 31/35, including independent persistence,
-legacy default behavior, transforms and provider taps at 50/100/150/300%; APK
-build and lint. Physical HyperOS/MyFitnessPal and emulator checks of this new
-version have not been performed. Same recovered testing signing key.
+Validation covers API 31/35 layout across four edges and three sizes, full-area
+content, clickable controls, persistence and the existing regression suite.
+Physical launcher testing of this new mode remains pending. Signed with the
+same recovered testing key as previous candidates.

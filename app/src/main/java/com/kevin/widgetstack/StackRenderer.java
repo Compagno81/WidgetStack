@@ -63,7 +63,7 @@ final class StackRenderer {
         b.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN);
         int width=forceContracted==null?BarController.width(s):forceContracted?s.contractedWidth:s.railWidth;
         boolean compact=forceContracted==null?BarController.contracted(s):forceContracted;
-        boolean reserve=s.showRail&&!s.overlapBar&&!(compact&&s.contractToCorner);
+        boolean reserve=s.showRail&&!s.cornerArrows&&!s.overlapBar&&!(compact&&s.contractToCorner);
         int w=reserve&&!s.horizontalRail()?width:0,h=reserve&&s.horizontalRail()?width:0;
         for(String k:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH})b.putInt(k,Math.max(32,outer.getInt(k,240)-w));
         for(String k:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT})b.putInt(k,Math.max(32,outer.getInt(k,160)-h));
@@ -104,6 +104,22 @@ final class StackRenderer {
     static RemoteViews shell(Context c,StackState s,int direction,Boolean forceContracted,int barMotion){return shell(c,s,direction,forceContracted,barMotion,View.NO_ID);}
     private static RemoteViews shell(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){
         s.normalize();
+        if(s.cornerArrows&&s.showRail){
+            int[] corners={R.layout.corner_arrows_0,R.layout.corner_arrows_1,R.layout.corner_arrows_2,R.layout.corner_arrows_3};
+            RemoteViews root=baseShell(c,corners[s.railEdge],rootId);
+            for(int button:new int[]{R.id.previous,R.id.next}){
+                root.setTextViewText(button,button==R.id.previous?(s.horizontalRail()?"←":"↑"):(s.horizontalRail()?"→":"↓"));
+                root.setContentDescription(button,button==R.id.previous?"Previous widget":"Next widget");
+                root.setTextViewTextSize(button,android.util.TypedValue.COMPLEX_UNIT_DIP,s.cornerArrowSize*.7f);
+                root.setViewLayoutWidth(button,Math.max(48,s.cornerArrowSize),android.util.TypedValue.COMPLEX_UNIT_DIP);
+                root.setViewLayoutHeight(button,Math.max(48,s.cornerArrowSize),android.util.TypedValue.COMPLEX_UNIT_DIP);
+                root.setFloat(button,"setAlpha",s.railOpacity/100f);
+                root.setBoolean(button,"setEnabled",s.children.size()>1);
+                root.setOnClickPendingIntent(button,navigation(c,s.id,-1,button==R.id.previous?-1:1));
+            }
+            root.setOnClickPendingIntent(R.id.empty,PendingIntent.getActivity(c,s.id,editIntent(c,s.id),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE));
+            return root;
+        }
         int[][] layouts={{R.layout.stack_top,R.layout.stack_top_next,R.layout.stack_top_previous},{R.layout.stack_bottom,R.layout.stack_bottom_next,R.layout.stack_bottom_previous},{R.layout.stack_left,R.layout.stack_left_next,R.layout.stack_left_previous},{R.layout.stack,R.layout.stack_next,R.layout.stack_previous}};
         if(s.overlapBar)layouts=new int[][]{{R.layout.stack_top_overlap,R.layout.stack_top_next_overlap,R.layout.stack_top_previous_overlap},{R.layout.stack_bottom_overlap,R.layout.stack_bottom_next_overlap,R.layout.stack_bottom_previous_overlap},{R.layout.stack_left_overlap,R.layout.stack_left_next_overlap,R.layout.stack_left_previous_overlap},{R.layout.stack_overlap,R.layout.stack_next_overlap,R.layout.stack_previous_overlap}};
         if(barMotion==0&&(forceContracted!=null?forceContracted:BarController.contracted(s)))return contractedShell(c,s,rootId);
