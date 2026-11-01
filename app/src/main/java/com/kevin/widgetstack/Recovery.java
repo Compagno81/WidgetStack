@@ -6,7 +6,7 @@ import android.widget.RemoteViews;
 /** Reversible pause. Does not edit saved stacks, selections or child bindings. */
 final class Recovery {
  private static android.content.SharedPreferences prefs(Context c){return c.getSharedPreferences("recovery",0);}
- static void initialize(Context c){if(!prefs(c).contains("initialized"))prefs(c).edit().putBoolean("initialized",true).putBoolean("paused",true).commit();}
+ static void initialize(Context c){if(!prefs(c).contains("initialized"))prefs(c).edit().putBoolean("initialized",true).putBoolean("paused",false).commit();}
  static boolean paused(Context c){return prefs(c).getBoolean("paused",false);}
  static RemoteViews view(Context c,int id){
   RemoteViews v=new RemoteViews(c.getPackageName(),R.layout.stack_placeholder);

@@ -50,7 +50,7 @@ final class StackHost extends AppWidgetHost {
                     case "updateAppWidget": capture(id,(RemoteViews)a[0]);break;
                     case "onViewDataChanged":
                         collectionChanged(id,(Integer)a[0],"provider data"); notifyPreviews(); break;
-                    case "onUpdateProviderInfo": views.remove(id); refresh(id);break;
+                    case "onUpdateProviderInfo": tracked.remove(id);views.remove(id); refresh(id);break;
                     case "updateAppWidgetDeferred": refresh(id);break;
                     case "toString": return "StackListener("+id+")";
                     case "hashCode": return System.identityHashCode(p);

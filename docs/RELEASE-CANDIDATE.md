@@ -1,27 +1,34 @@
-# 1.31 — recovery controls, starts with stacks paused
+# 1.32 — single-layout switching and read-only rendering
 
-The owner remains unable to control stacked agendas after 1.30. This build is
-for recovering app control, not a claim that calendar switching has been fixed.
+This returns to normal navigation work. It does not claim that configuration
+access was broken or that pausing widgets fixes calendar switching.
 
-On the first launch of this recovery version, all stacks are paused. Opening
-Widget Stack replaces home-screen stacks with a plain text placeholder that
-opens the app. It starts no collection adapters or agenda-loading service.
-A fresh public widget client publishes this non-collection placeholder to avoid
-reusing a client that previously submitted legacy agendas.
+Home-screen publication now sends one RemoteViews layout for the selected
+widget with a fresh root identity, without an outer responsive-size map.
+Provider layout selection still uses placement size hints, and Auto axes follow
+the actual parent. Size-option changes republish the selected layout. This is a
+simpler launcher-facing update path, not a reproduced API 37 launcher fix. The
+responsive-wrapper identity test passed on API 31/35 before this simplification;
+it did not reproduce the phone's fresh=false observation.
 
-Saved definitions, child widget bindings, placement references, selections,
-width/height and manual scale are retained. While paused, host listening,
-tracking, provider-size updates, collection refreshes and queued publications
-are suppressed. Old navigation buttons cannot change the saved selection.
-Paused app startup does not prune placement records. Refresh widgets also
-stays paused. The service does not restart itself while paused.
+A separate concrete bug was reproduced: rendering removed configured children
+when getAppWidgetInfo returned null, then wrote the reduced list into the shared
+saved definition. Under a forced missing-metadata condition, a two-widget stack
+became empty on both API 31 and 35. This can disable navigation. Rendering now
+retains configured IDs. Explicit removal callbacks and user edits still handle
+actual removals. Provider-info changes also release the tracking flag so later
+sync can retry. This prevents further rendering-time deletion; it cannot restore
+entries already removed by older builds.
 
-The main screen has Pause stacks / Resume stacks. Pause can be used at any
-time. Resuming is explicit, persists across app restarts, and may bring back
-the unresolved agenda problem. Install and open the app, then leave stacks
-paused while managing saved configurations. Do not clear app storage.
+Regression checks include size-option publications, fresh identity through
+parceling, twenty alternating serialized agenda layouts with exactly one ListView
+and clickable next/previous controls, and preserved stack membership/selection
+when metadata is missing. These layout fixtures do not load real calendar rows
+or reproduce native agenda switching on Xiaomi Android 17/API 37.
 
-Tests on API 31/35 cover pause initialization, preserving an explicit resume,
-preserving child identities, placements and sizes/scaling, blocking host work,
-and safe placeholder interaction. Build and lint are required. Native API 37
-launcher recovery remains unverified. Same recovered testing signing key.
+Fresh startup is active again. Existing explicit pause state is preserved; if
+1.31 left stacks paused, tap Resume stacks in the app. Pause remains optional.
+Saved dimensions, manual scale and navigation styles remain available.
+
+Full API 31/35 framework suite, APK build and lint are required. The native API
+37 issue remains open pending phone validation. Same recovered testing key.

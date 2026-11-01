@@ -215,7 +215,8 @@ final class StackRenderer {
         StackStore store=new StackStore(c);StackState s=store.get(id);
         if(s==null){MeasuredViewport.stop(c,id);s=new StackState(id);RemoteViews empty=shell(c,s,0,null,0,nextRootId(c));empty.setTextViewText(R.id.empty,"Tap to choose a saved stack");try{boolean fresh=empty.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,empty);StackDiagnostics.note(c,"publication submitted",id,"choose saved stack; fresh="+fresh);}catch(RuntimeException e){Log.w("WidgetStack","Unable to show stack chooser",e);}return;}
         AppWidgetManager m=AppWidgetManager.getInstance(c);
-        for(int child:new ArrayList<>(s.children))if(m.getAppWidgetInfo(child)==null){s.remove(child);store.put(s);}
+        // Provider metadata can be temporarily unavailable. Rendering must not
+        // remove configured children or disable navigation by rewriting the stack.
         RemoteViews root=renderForHome(c,s,direction,barMotion);
         try{boolean fresh=root.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,root);if(root.getLayoutId()!=R.layout.viewport_probe)MeasuredViewport.stop(c,id);StackDiagnostics.note(c,"publication submitted",id,"selected="+s.selected+" path="+(WidgetPublisher.usesDirectPublication(android.os.Build.VERSION.SDK_INT)?"direct35":"platform")+" fresh="+fresh);}catch(RuntimeException e){
             Log.e("WidgetStack","Launcher rejected widget update",e);StackDiagnostics.note(c,"publish failed",id,e.getClass().getSimpleName());
@@ -231,19 +232,10 @@ final class StackRenderer {
         int id=prefs.getInt("root",1000000)%0x00fffffe+1;prefs.edit().putInt("root",id).commit();return id;
     }
     static RemoteViews renderForHome(Context c,StackState s,int direction,int barMotion){
-        Bundle options=optionsFor(c,s.id);
-        ArrayList<SizeF> sizes=options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
-        if(sizes==null||sizes.isEmpty())return render(c,s,direction,null,barMotion,nextRootId(c));
-        java.util.Map<SizeF,RemoteViews> variants=new java.util.LinkedHashMap<>();
-        for(SizeF slot:sizes){
-            if(slot.getWidth()<=0||slot.getHeight()<=0||variants.size()>=16)continue;
-            Bundle exact=new Bundle(options);
-            for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH})exact.putInt(key,Math.max(1,Math.round(slot.getWidth())));
-            for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT})exact.putInt(key,Math.max(1,Math.round(slot.getHeight())));
-            exact.remove(AppWidgetManager.OPTION_APPWIDGET_SIZES);
-            variants.put(slot,render(c,s,direction,null,barMotion,nextRootId(c),exact));
-        }
-        return variants.isEmpty()?render(c,s,direction,null,barMotion,nextRootId(c)):new RemoteViews(variants);
+        // A placement has one active provider. Give the actual launcher-visible
+        // publication a fresh identity, without another size-variant envelope.
+        // Native MATCH_PARENT axes follow the slot; option changes republish it.
+        return render(c,s,direction,null,barMotion,nextRootId(c));
     }
     private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){return render(c,s,direction,forceContracted,barMotion,rootId,null);}
     private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId,Bundle exactOptions){
