@@ -85,6 +85,7 @@ final class StackRenderer {
     }
 
     static void updateSizes(Context c,int stack) {
+        if(Recovery.paused(c))return;
         StackState s=new StackStore(c).get(stack);if(s==null)return;
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         for(int child:s.children) {
@@ -204,10 +205,12 @@ final class StackRenderer {
     }
     static void update(Context c,int id){update(c,id,0);}
     static void update(Context c,int id,int direction){
+        if(Recovery.paused(c)){Recovery.publish(c,id);return;}
         if(BarController.animating(id))return; // settle callback incorporates the newest snapshot
         updateBarMotion(c,id,direction,0);
     }
     static void updateBarMotion(Context c,int id,int direction,int barMotion){
+        if(Recovery.paused(c)){Recovery.publish(c,id);return;}
         if(!owns(c,id))return;
         StackStore store=new StackStore(c);StackState s=store.get(id);
         if(s==null){MeasuredViewport.stop(c,id);s=new StackState(id);RemoteViews empty=shell(c,s,0,null,0,nextRootId(c));empty.setTextViewText(R.id.empty,"Tap to choose a saved stack");try{boolean fresh=empty.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,empty);StackDiagnostics.note(c,"publication submitted",id,"choose saved stack; fresh="+fresh);}catch(RuntimeException e){Log.w("WidgetStack","Unable to show stack chooser",e);}return;}

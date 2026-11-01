@@ -1,31 +1,27 @@
-# 1.30 — row-only refreshes and Android 17 publication compatibility
+# 1.31 — recovery controls, starts with stacks paused
 
-The owner's 1.29 report identifies Xiaomi Android 17/API 37. Agenda interaction
-continues to work; switching widgets stops visibly responding. The log records
-a received navigation tap, a changed selection and many publication submissions
-for two home-screen copies. Submitting an update does not prove launcher apply.
+The owner remains unable to control stacked agendas after 1.30. This build is
+for recovering app control, not a claim that calendar switching has been fixed.
 
-Two issues are corrected:
+On the first launch of this recovery version, all stacks are paused. Opening
+Widget Stack replaces home-screen stacks with a plain text placeholder that
+opens the app. It starts no collection adapters or agenda-loading service.
+A fresh public widget client publishes this non-collection placeholder to avoid
+reusing a client that previously submitted legacy agendas.
 
-- Collection readiness and provider data-change callbacks no longer schedule
-  full stack publications. They request row refreshes only, and only for copies
-  currently showing that child. Old readiness events cannot refresh a different
-  agenda just because its view IDs overlap. Avoiding root reconstruction removes
-  a feedback path that can replace adapters and trigger further readiness events.
-- The private Android 15 publication workaround is restricted to API 35. API 36,
-  37 and future versions use the Android platform publication path. The API 35
-  regression result did not establish private-API compatibility on API 37.
+Saved definitions, child widget bindings, placement references, selections,
+width/height and manual scale are retained. While paused, host listening,
+tracking, provider-size updates, collection refreshes and queued publications
+are suppressed. Old navigation buttons cannot change the saved selection.
+Paused app startup does not prune placement records. Refresh widgets also
+stays paused. The service does not restart itself while paused.
 
-The report now distinguishes collection row requests from provider layout
-updates and publication submissions. It includes active selection/count for
-each placement and the publication path. No widget contents are included.
+The main screen has Pause stacks / Resume stacks. Pause can be used at any
+time. Resuming is explicit, persists across app restarts, and may bring back
+the unresolved agenda problem. Install and open the app, then leave stacks
+paused while managing saved configurations. Do not clear app storage.
 
-Regression tests repeatedly deliver readiness events with two copies showing
-different children: no root publications may be queued, only the active copy
-may receive row notifications, and selection must remain unchanged. A policy
-test checks API 37 selects the standard path. Existing API 31/35 tests, APK build
-and lint remain required. These are not native Android 17 tests; physical agenda
-switching on the reported Xiaomi device remains unverified.
-
-Same recovered testing key, with matching source and APK ZIP provided. The
-1.29 direct-publication experiment is no longer used on this owner's API level.
+Tests on API 31/35 cover pause initialization, preserving an explicit resume,
+preserving child identities, placements and sizes/scaling, blocking host work,
+and safe placeholder interaction. Build and lint are required. Native API 37
+launcher recovery remains unverified. Same recovered testing signing key.

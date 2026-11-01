@@ -8,6 +8,7 @@ public final class StackApplication extends Application {
     static boolean compatibility;
     @Override public void onCreate() {
         super.onCreate();
+        Recovery.initialize(this);
         try {
             compatibility = HiddenApiBypass.addHiddenApiExemptions(
                 "Landroid/widget/RemoteViews", "Landroid/appwidget/AppWidgetHost",

@@ -31,6 +31,7 @@ final class StackHost extends AppWidgetHost {
     }
     private StackHost(Context c) { super(c, HOST_ID);context=c; }
     void sync() {
+        if(Recovery.paused(context))return;
         Set<Integer> wanted=new HashSet<>();
         for(StackState s:new StackStore(context).all()) wanted.addAll(s.children);
         for(int id:new HashSet<>(tracked)) if(!wanted.contains(id)) { tracked.remove(id);views.remove(id); }
@@ -38,6 +39,7 @@ final class StackHost extends AppWidgetHost {
         if(!listening) try { startListening();listening=true; } catch(RuntimeException e) { Log.e("WidgetStack","Host start failed",e); }
     }
     void track(int id) {
+        if(Recovery.paused(context))return;
         AppWidgetProviderInfo info=AppWidgetManager.getInstance(context).getAppWidgetInfo(id);
         if(info==null) return;
         tracked.add(id);
@@ -71,6 +73,7 @@ final class StackHost extends AppWidgetHost {
         if(info!=null) { createView(context,id,info);handler.post(()->track(id)); }
     }
     private void capture(int id,RemoteViews rv) {
+        if(Recovery.paused(context))return;
         try{if(rv!=null) views.put(id,new RemoteViews(rv)); else views.remove(id);}
         catch(RuntimeException|LinkageError|StackOverflowError e){views.remove(id);Log.e("WidgetStack","Invalid widget update",e);}
         StackDiagnostics.note(context,"provider layout received",id,rv==null?"empty":"snapshot");
@@ -79,6 +82,7 @@ final class StackHost extends AppWidgetHost {
     }
     private void notifyPreviews(){handler.post(()->{for(Runnable observer:new HashSet<>(previewListeners))observer.run();});}
     void collectionChanged(int child,int view,String reason){
+        if(Recovery.paused(context))return;
         if(child<0||view==0)return;
         for(StackState s:new StackStore(context).all())if(s.id>=0&&s.selected==child&&StackRenderer.owns(context,s.id)){
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(s.id,view);
@@ -88,6 +92,7 @@ final class StackHost extends AppWidgetHost {
         // start another readiness event and perpetually discard incoming updates.
     }
     void schedule(int stack) {
+        if(Recovery.paused(context))return;
         if(!queued.add(stack)) return;
         handler.postDelayed(()->{queued.remove(stack);StackRenderer.update(context,stack);},120);
     }

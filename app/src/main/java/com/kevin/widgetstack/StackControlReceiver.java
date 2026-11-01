@@ -26,6 +26,7 @@ public final class StackControlReceiver extends BroadcastReceiver {
   boolean own=StackRenderer.owns(c,id);
   StackDiagnostics.note(c,select?"navigation received":"expand received",id,"owned="+own);
   if(!own)return true;
+  if(Recovery.paused(c)){Recovery.publish(c,id);return true;}
   StackStore store=new StackStore(c);store.migrateLegacy();StackState state=store.get(id);
   if(state==null){StackDiagnostics.note(c,"navigation ignored",id,"no saved assignment");return true;}
   int before=state.selected,direction=i.getIntExtra("direction",0);

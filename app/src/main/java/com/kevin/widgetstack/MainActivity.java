@@ -8,8 +8,9 @@ import android.widget.*;
 
 public final class MainActivity extends Activity {
  @Override public void onCreate(Bundle b){super.onCreate(b);}
- @Override public void onResume(){super.onResume();SavedStacks.reconcile(this);refresh(false);render();}
+ @Override public void onResume(){super.onResume();if(!Recovery.paused(this))SavedStacks.reconcile(this);refresh(false);render();}
  private void refresh(boolean reset){
+  if(Recovery.paused(this)){for(StackState state:new StackStore(this).all())if(state.id>=0)Recovery.publish(this,state.id);return;}
   StackStore store=new StackStore(this);StackHost host=StackHost.get(this);host.sync();HostService.ensure(this);
   for(StackState s:store.saved()){
    if(reset){for(int child:s.children)host.track(child);for(int home:store.placements(s.id))SavedStacks.recoverControls(this,home);}
@@ -19,6 +20,10 @@ public final class MainActivity extends Activity {
  String versionLabel(){try{return "Widget Stack "+getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "Widget Stack";}}
  void render(){
   StackStore store=new StackStore(this);LinearLayout root=Ui.page(this,"Widget Stack");
+  if(Recovery.paused(this)){
+   Ui.text(this,root,"Stacks are paused for recovery. Your saved stacks are preserved. You can manage them below; resuming may bring back the agenda issue.",16);
+   Ui.tonalButton(this,root,"Resume stacks",()->{Recovery.resume(this);render();});
+  }else Ui.tonalButton(this,root,"Pause stacks",()->{Recovery.pause(this);render();});
   Ui.text(this,root,"Build a stack of your favorite widgets, then place it on your home screen.",16);
   Ui.primaryButton(this,root,"Create saved stack",()->{StackState s=store.createSaved(null);startActivity(SavedStacks.edit(this,s.id));});
   Ui.section(this,root,"Your stacks");

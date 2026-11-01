@@ -9,6 +9,7 @@ import android.util.Log;
 
 public final class HostService extends Service {
     static void ensure(Context c) {
+        if(Recovery.paused(c))return;
         if(new StackStore(c).all().isEmpty()) return;
         try { c.startForegroundService(new Intent(c,HostService.class)); }
         catch(RuntimeException e) { Log.w("WidgetStack","Open Widget Stack to resume live updates",e); }
@@ -25,6 +26,7 @@ public final class HostService extends Service {
         else startForeground(41,n);
     }
     @Override public int onStartCommand(Intent intent,int flags,int id) {
+        if(Recovery.paused(this)){stopSelf();return START_NOT_STICKY;}
         new StackStore(this).migrateLegacy();
         if(new StackStore(this).all().isEmpty()){stopSelf();return START_NOT_STICKY;}
         StackHost.get(this).sync();
