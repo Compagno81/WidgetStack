@@ -13,6 +13,10 @@ final class StackDiagnostics {
         String version="";try{version=c.getPackageManager().getPackageInfo(c.getPackageName(),0).versionName;}catch(Exception ignored){}
         StackStore store=new StackStore(c);int copies=0;for(StackState s:store.saved())copies+=store.placements(s.id).size();
         StringBuilder text=new StringBuilder("Widget Stack "+version+"\n"+Build.MANUFACTURER+" "+Build.MODEL+" · Android "+Build.VERSION.RELEASE+" (API "+Build.VERSION.SDK_INT+")\nSaved stacks: "+store.saved().size()+" · Home-screen copies: "+copies+"\n");
+        text.append("Publication path: ").append(WidgetPublisher.usesDirectPublication(Build.VERSION.SDK_INT)?"direct API 35":"Android platform").append('\n');
+        for(StackState definition:store.saved())for(int home:store.placements(definition.id)){
+            StackState placement=store.get(home);if(placement!=null)text.append("Home #").append(home).append(" selected=").append(placement.selected).append(" widgets=").append(placement.children.size()).append('\n');
+        }
         try{JSONArray events=new JSONArray(c.getSharedPreferences("troubleshooting",0).getString("events","[]"));for(int i=0;i<events.length();i++)text.append(events.getString(i)).append('\n');}catch(Exception ignored){}
         return text.toString();
     }

@@ -47,10 +47,7 @@ final class StackHost extends AppWidgetHost {
                 try { switch(m.getName()) {
                     case "updateAppWidget": capture(id,(RemoteViews)a[0]);break;
                     case "onViewDataChanged":
-                        for(StackState s:new StackStore(context).all()) if(s.id>=0&&s.selected==id) {
-                            AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(s.id,(Integer)a[0]);
-                            schedule(s.id);
-                        } notifyPreviews(); break;
+                        collectionChanged(id,(Integer)a[0],"provider data"); notifyPreviews(); break;
                     case "onUpdateProviderInfo": views.remove(id); refresh(id);break;
                     case "updateAppWidgetDeferred": refresh(id);break;
                     case "toString": return "StackListener("+id+")";
@@ -76,10 +73,20 @@ final class StackHost extends AppWidgetHost {
     private void capture(int id,RemoteViews rv) {
         try{if(rv!=null) views.put(id,new RemoteViews(rv)); else views.remove(id);}
         catch(RuntimeException|LinkageError|StackOverflowError e){views.remove(id);Log.e("WidgetStack","Invalid widget update",e);}
+        StackDiagnostics.note(context,"provider layout received",id,rv==null?"empty":"snapshot");
         for(StackState s:new StackStore(context).all()) if(s.id>=0&&s.selected==id) schedule(s.id);
         notifyPreviews();
     }
     private void notifyPreviews(){handler.post(()->{for(Runnable observer:new HashSet<>(previewListeners))observer.run();});}
+    void collectionChanged(int child,int view,String reason){
+        if(child<0||view==0)return;
+        for(StackState s:new StackStore(context).all())if(s.id>=0&&s.selected==child&&StackRenderer.owns(context,s.id)){
+            AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(s.id,view);
+            StackDiagnostics.note(context,"collection rows requested",s.id,"child="+child+" view="+view+" reason="+reason);
+        }
+        // Data readiness must not rebuild the root: replacing an adapter can
+        // start another readiness event and perpetually discard incoming updates.
+    }
     void schedule(int stack) {
         if(!queued.add(stack)) return;
         handler.postDelayed(()->{queued.remove(stack);StackRenderer.update(context,stack);},120);

@@ -1,31 +1,31 @@
-# 1.29 — independent navigation publication after an agenda
+# 1.30 — row-only refreshes and Android 17 publication compatibility
 
-The owner reports that agendas continue to scroll and respond to taps, and the
-configuration button works, while next/previous controls stop visibly switching
-widgets. Several agendas expose this; merely having scrolling is not sufficient.
+The owner's 1.29 report identifies Xiaomi Android 17/API 37. Agenda interaction
+continues to work; switching widgets stops visibly responding. The log records
+a received navigation tap, a changed selection and many publication submissions
+for two home-screen copies. Submitting an update does not prove launcher apply.
 
-Android 15's AppWidgetManager can route all subsequent updates through a shared
-collection conversion executor after a legacy list has been posted, including
-updates with no collection. A blocked conversion can leave the last published
-agenda interactive while subsequent selected widgets never reach the launcher.
-The new framework regression deliberately blocks that executor: the public
-update queues, while the new publication path delivers two later widget updates.
-This establishes the queue dependency, not a physical Xiaomi reproduction.
+Two issues are corrected:
 
-For API 35+, Widget Stack now submits its already-prepared RemoteViews directly
-to the widget system service, retaining the launcher's asynchronous adapter
-binding and the bridge's collection item caches. Earlier Android versions retain
-the public update path. This uses private Android APIs, like the existing widget
-bridge; OEM/version compatibility remains a test requirement. Failures are
-recorded rather than silently reentering the blocked conversion queue.
+- Collection readiness and provider data-change callbacks no longer schedule
+  full stack publications. They request row refreshes only, and only for copies
+  currently showing that child. Old readiness events cannot refresh a different
+  agenda just because its view IDs overlap. Avoiding root reconstruction removes
+  a feedback path that can replace adapters and trigger further readiness events.
+- The private Android 15 publication workaround is restricted to API 35. API 36,
+  37 and future versions use the Android platform publication path. The API 35
+  regression result did not establish private-API compatibility on API 37.
 
-Additional tests verify that adapters with identical view IDs retain separate
-child identities and leave original provider snapshots unchanged. Navigation
-selection transitions are now in the troubleshooting report. The main screen
-has Copy troubleshooting report, and About reads the actual installed version
-instead of showing the stale hardcoded 1.22 label.
+The report now distinguishes collection row requests from provider layout
+updates and publication submissions. It includes active selection/count for
+each placement and the publication path. No widget contents are included.
 
-The preceding 1.28 child-ID and connection fixes remain in place. Validation
-includes the full API 31/35 framework suite, APK build and lint. Physical Google,
-Xiaomi and Business Calendar 2 agenda switching on HyperOS remains unverified.
-This is a test candidate, not a claim that the phone failure is confirmed fixed.
+Regression tests repeatedly deliver readiness events with two copies showing
+different children: no root publications may be queued, only the active copy
+may receive row notifications, and selection must remain unchanged. A policy
+test checks API 37 selects the standard path. Existing API 31/35 tests, APK build
+and lint remain required. These are not native Android 17 tests; physical agenda
+switching on the reported Xiaomi device remains unverified.
+
+Same recovered testing key, with matching source and APK ZIP provided. The
+1.29 direct-publication experiment is no longer used on this owner's API level.

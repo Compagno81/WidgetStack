@@ -8,9 +8,10 @@ import java.lang.reflect.*;
 
 /** Keep interactive legacy adapters out of Android 15's shared conversion queue. */
 final class WidgetPublisher {
+ static boolean usesDirectPublication(int api){return api==35;}
  static void update(Context c,int id,RemoteViews views){
   AppWidgetManager manager=AppWidgetManager.getInstance(c);
-  if(Build.VERSION.SDK_INT<35){manager.updateAppWidget(id,views);return;}
+  if(!usesDirectPublication(Build.VERSION.SDK_INT)){manager.updateAppWidget(id,views);return;}
   try{
    Field field=AppWidgetManager.class.getDeclaredField("mService");field.setAccessible(true);Object service=field.get(manager);
    if(service==null){manager.updateAppWidget(id,views);return;}
