@@ -1,25 +1,31 @@
-# 1.28 — agenda service identity and collection connection handling
+# 1.29 — independent navigation publication after an agenda
 
-The owner reports Business Calendar 2 Agenda freezes navigation, while a custom
-scrollable grid works. Scrolling alone is not the cause.
+The owner reports that agendas continue to scroll and respond to taps, and the
+configuration button works, while next/previous controls stop visibly switching
+widgets. Several agendas expose this; merely having scrolling is not sufficient.
 
-Collection service intents now explicitly carry the original child widget ID.
-Widget Stack captures RemoteViews before the original host applies them, so
-Android's usual adapter-binding ID injection has not happened. The proxy must
-supply the child ID, rather than omit it or use the outer stack ID. Forwarding
-clones the original intent and preserves its component, data and other extras.
-This repairs an Android adapter contract defect; Business Calendar 2 has not
-been run here, so its exact phone failure is not claimed as reproduced.
+Android 15's AppWidgetManager can route all subsequent updates through a shared
+collection conversion executor after a legacy list has been posted, including
+updates with no collection. A blocked conversion can leave the last published
+agenda interactive while subsequent selected widgets never reach the launcher.
+The new framework regression deliberately blocks that executor: the public
+update queues, while the new publication path delivers two later widget updates.
+This establishes the queue dependency, not a physical Xiaomi reproduction.
 
-Connection metadata requests no longer wait for binding. Until connected, the
-proxy returns temporary empty metadata and requests a refresh when ready.
-Connection callbacks use a dedicated thread. The collection service runs in a
-separate process, and readiness is forwarded to the main host process, which
-owns current preferences and RemoteViews snapshots. It notifies data changes
-and republishes the selected widget to avoid missing an early readiness event.
+For API 35+, Widget Stack now submits its already-prepared RemoteViews directly
+to the widget system service, retaining the launcher's asynchronous adapter
+binding and the bridge's collection item caches. Earlier Android versions retain
+the public update path. This uses private Android APIs, like the existing widget
+bridge; OEM/version compatibility remains a test requirement. Failures are
+recorded rather than silently reentering the blocked conversion queue.
 
-Regression tests on API 31/35 check nonblocking disconnected metadata, callback
-progress with the main looper paused, connected row counts, process isolation,
-and child-ID injection despite a different outer stack ID. Build and lint are
-required. Full device reproduction and Business Calendar 2/HyperOS acceptance
-remain pending. Same recovered testing signing key as previous candidates.
+Additional tests verify that adapters with identical view IDs retain separate
+child identities and leave original provider snapshots unchanged. Navigation
+selection transitions are now in the troubleshooting report. The main screen
+has Copy troubleshooting report, and About reads the actual installed version
+instead of showing the stale hardcoded 1.22 label.
+
+The preceding 1.28 child-ID and connection fixes remain in place. Validation
+includes the full API 31/35 framework suite, APK build and lint. Physical Google,
+Xiaomi and Business Calendar 2 agenda switching on HyperOS remains unverified.
+This is a test candidate, not a claim that the phone failure is confirmed fixed.

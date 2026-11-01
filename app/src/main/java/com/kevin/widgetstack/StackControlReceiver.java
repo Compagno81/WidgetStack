@@ -37,6 +37,7 @@ public final class StackControlReceiver extends BroadcastReceiver {
   if(select){
    if(direction!=0)state.step(direction);else state.select(i.getIntExtra("child",-1));
    store.selectOnHome(id,state.selected);
+   StackDiagnostics.note(c,"selection changed",id,before+" -> "+state.selected);
   }
   // A receiver must finish promptly. Keeping it pending until contraction blocks
   // subsequent launcher broadcasts on real devices. The foreground host owns timers.

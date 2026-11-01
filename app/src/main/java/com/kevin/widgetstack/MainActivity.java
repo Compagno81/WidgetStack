@@ -16,6 +16,7 @@ public final class MainActivity extends Activity {
    StackRenderer.updateSizes(this,s.id);for(int home:store.placements(s.id))StackRenderer.update(this,home);
   }
  }
+ String versionLabel(){try{return "Widget Stack "+getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "Widget Stack";}}
  void render(){
   StackStore store=new StackStore(this);LinearLayout root=Ui.page(this,"Widget Stack");
   Ui.text(this,root,"Build a stack of your favorite widgets, then place it on your home screen.",16);
@@ -37,6 +38,11 @@ public final class MainActivity extends Activity {
   }
   Ui.text(this,root,"Home-screen copies share their widgets and settings. Each copy can show a different widget.",14);
   Ui.tonalButton(this,root,"Refresh widgets",()->{refresh(true);Toast.makeText(this,"Widgets refreshed",Toast.LENGTH_SHORT).show();});
-  Ui.tonalButton(this,root,"About",()->new AlertDialog.Builder(this).setTitle("Widget Stack 1.22-reconstructed").setMessage("Home-screen widget stacks. Android 12 or newer.\n\nUses widget-stacking concepts and compatibility code adapted from Widgets Anywhere, © 2020/2023 Zachary Wander, MIT licence.\n\nAndroid Hidden API Bypass 6.1, Apache 2.0. Full licences are included in this app's assets and the source package.").setNeutralButton("App settings",(d,w)->startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,android.net.Uri.parse("package:"+getPackageName())))).setPositiveButton("Done",null).show());
+  Ui.tonalButton(this,root,"Copy troubleshooting report",()->{
+   android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+   clipboard.setPrimaryClip(ClipData.newPlainText("Widget Stack troubleshooting",StackDiagnostics.report(this)));
+   Toast.makeText(this,"Troubleshooting report copied",Toast.LENGTH_SHORT).show();
+  });
+  Ui.tonalButton(this,root,"About",()->new AlertDialog.Builder(this).setTitle(versionLabel()).setMessage("Home-screen widget stacks. Android 12 or newer.\n\nUses widget-stacking concepts and compatibility code adapted from Widgets Anywhere, © 2020/2023 Zachary Wander, MIT licence.\n\nAndroid Hidden API Bypass 6.1, Apache 2.0. Full licences are included in this app's assets and the source package.").setNeutralButton("App settings",(d,w)->startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,android.net.Uri.parse("package:"+getPackageName())))).setPositiveButton("Done",null).show());
  }
 }
