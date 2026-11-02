@@ -39,14 +39,17 @@ final class MeasuredViewport {
         return out;
     }
     static boolean needed(Context c,StackState s){return s.id>=0&&(s.widthPx(s.selected)>0||s.heightPx(s.selected)>0)&&!has(c,s.id);}
-    static RemoteViews probe(Context c,int id){
+    static RemoteViews probe(Context c,int id){return probe(c,id,null);}
+    static RemoteViews probe(Context c,int id,Bundle editor){
         String sig=signature(c,id);SharedPreferences p=prefs(c);int token=p.getInt(key(id,"token"),-1);
         if(token<0||!sig.equals(p.getString(key(id,"pending_signature"),null)))token=StackRenderer.nextRootId(c);
         p.edit().putInt(key(id,"token"),token).putString(key(id,"pending_signature"),sig).commit();
-        Intent i=new Intent(c,StackControlReceiver.class).setAction(ACTION).setData(Uri.parse("widgetstack://measure/"+id+"/"+token)).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id).putExtra(TOKEN,token).putExtra(SIGNATURE,sig);
+        Intent i=new Intent(c,editor==null?StackControlReceiver.class:ConfigureActivity.class).setAction(ACTION).setData(Uri.parse("widgetstack://measure/"+id+"/"+token)).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id).putExtra(TOKEN,token).putExtra(SIGNATURE,sig);
         // Mutable solely so the launcher can attach the clicked root bounds.
-        // The destination is our explicit, non-exported receiver.
-        PendingIntent callback=PendingIntent.getBroadcast(c,0,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_MUTABLE);
+        // The destination is an explicit, non-exported component. Editor taps
+        // launch the activity directly, avoiding a background broadcast trampoline.
+        if(editor!=null)i.putExtra("resize_draft",editor).putExtra(SavedStacks.EXTRA_SAVED_ID,new StackStore(c).definitionId(id)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent callback=editor==null?PendingIntent.getBroadcast(c,0,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_MUTABLE):PendingIntent.getActivity(c,0,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_MUTABLE);
         RemoteViews root=new RemoteViews(c.getPackageName(),R.layout.viewport_probe,token);
         root.setContentDescription(R.id.viewport_probe_status,"Tap to fit this stack");
         root.setOnClickPendingIntent(R.id.viewport_probe_status,callback);

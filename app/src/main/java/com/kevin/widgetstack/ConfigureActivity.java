@@ -21,10 +21,13 @@ public final class ConfigureActivity extends Activity {
   else{finish();return;}
   existing=true;
   if(b!=null){pending=b.getInt("pending",-1);externalFlow=b.getBoolean("externalFlow");}
+  if(MeasuredViewport.ACTION.equals(getIntent().getAction()))MeasuredViewport.receive(this,getIntent());
   host.sync();HostService.ensure(this);
   if(homeId>=0)SavedStacks.recoverControls(this,homeId);
   else for(int home:store.placements(stackId))SavedStacks.recoverControls(this,home);
   render();
+  Bundle draft=getIntent().getBundleExtra("resize_draft");
+  if(draft!=null){StackState current=state();int child=draft.getInt("child",-1);if(current!=null&&current.children.contains(child))WidgetSizeEditor.show(this,current,child,()->{SavedStacks.changed(this,stackId);render();});}
  }
  @Override protected void onSaveInstanceState(Bundle b){super.onSaveInstanceState(b);b.putInt("pending",pending);b.putBoolean("existing",existing);b.putBoolean("externalFlow",externalFlow);}
  private StackState state(){return store.get(stackId);}

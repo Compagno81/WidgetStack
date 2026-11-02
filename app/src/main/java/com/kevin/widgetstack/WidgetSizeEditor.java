@@ -36,16 +36,18 @@ final class WidgetSizeEditor {
             draft=new StackState(saved.id);draft.add(child);draft.select(child);draft.showRail=false;
             draft.setDimensions(child,saved.widthPx(child),saved.heightPx(child));
             draft.setVisualScalePercent(child,saved.visualScalePercent(child));draft.setAlignment(child,saved.alignment(child));
+            Bundle restored=activity.getIntent().getBundleExtra("resize_draft");
+            if(restored!=null&&restored.getInt("child",-1)==child){draft.setDimensions(child,restored.getInt("width"),restored.getInt("height"));draft.setVisualScalePercent(child,restored.getInt("scale",100));draft.setAlignment(child,restored.getInt("alignment",4));previewId=restored.getInt("instance",previewId);activity.getIntent().removeExtra("resize_draft");}
             dialog=new Dialog(activity);dialog.setTitle("Resize widget");
             ScrollView scroll=new ScrollView(activity);LinearLayout root=new LinearLayout(activity);root.setOrientation(LinearLayout.VERTICAL);int padding=Ui.dp(activity,16);root.setPadding(padding,padding,padding,padding);scroll.addView(root);
             Ui.text(activity,root,"Resize widget",24);
             Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders use 50 px steps.",14);
             dimensions=Ui.text(activity,root,"",14);
-            if(!copies.isEmpty()){Spinner copy=new Spinner(activity);java.util.List<String> names=new java.util.ArrayList<>();for(int id:copies)names.add("Preview instance "+id);copy.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,names));root.addView(copy);copy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){previewId=copies.get(n);renderPreview();}});}
+            if(!copies.isEmpty()){Spinner copy=new Spinner(activity);java.util.List<String> names=new java.util.ArrayList<>();for(int id:copies)names.add("Preview instance "+id);copy.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,names));if(copies.contains(previewId))copy.setSelection(copies.indexOf(previewId));root.addView(copy);copy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){previewId=copies.get(n);renderPreview();}});}
 
             Ui.tonalButton(activity,root,"Measure selected launcher instance",()->{
                 if(previewId<0){Toast.makeText(activity,"Place this stack on the home screen first.",Toast.LENGTH_LONG).show();return;}
-                try{WidgetPublisher.update(activity,previewId,MeasuredViewport.probe(activity,previewId));Toast.makeText(activity,"Go home and tap the measurement panel, then reopen Resize widget.",Toast.LENGTH_LONG).show();}catch(Exception e){Toast.makeText(activity,"Could not show the measurement panel.",Toast.LENGTH_LONG).show();}
+                try{WidgetPublisher.update(activity,previewId,MeasuredViewport.probe(activity,previewId,returnDraft()));Toast.makeText(activity,"Go home and tap the measurement panel to return here.",Toast.LENGTH_LONG).show();}catch(Exception e){Toast.makeText(activity,"Could not show the measurement panel.",Toast.LENGTH_LONG).show();}
             });
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
             Ui.text(activity,root,"Preview shows the widget area for the selected instance. Use the controls below to resize. Provider actions are disabled.",13);
@@ -82,6 +84,7 @@ final class WidgetSizeEditor {
             dialog.setOnDismissListener(d->{closed=true;handler.removeCallbacks(refresh);handler.removeCallbacks(previewRender);StackRenderer.updateSizes(activity,saved.id);});
             sync();
         }
+        Bundle returnDraft(){Bundle b=new Bundle();b.putInt("child",child);b.putInt("instance",previewId);b.putInt("width",draft.widthPx(child));b.putInt("height",draft.heightPx(child));b.putInt("scale",draft.visualScalePercent(child));b.putInt("alignment",draft.alignment(child));return b;}
         void show(){
             dialog.show();dialog.getWindow().setLayout(-1,-1);
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);

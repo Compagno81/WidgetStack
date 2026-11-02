@@ -127,4 +127,18 @@ public class MeasuredViewportTest {
    }
   }
  }
+
+ @Test public void measurementTapLaunchesEditorDirectlyWithDraft(){
+  StackStore store=new StackStore(c);StackState state=store.createSaved("Return");state.add(12);store.put(state);store.assign(701,state.id);
+  Bundle draft=new Bundle();draft.putInt("child",12);draft.putInt("height",850);draft.putInt("scale",135);draft.putInt("alignment",8);draft.putInt("instance",701);
+  RemoteViews probe=MeasuredViewport.probe(c,701,draft);View v=probe.apply(c,new FrameLayout(c));assertTrue(v.findViewById(R.id.viewport_probe_status).performClick());
+  Intent launched=shadowOf((Application)c).getNextStartedActivity();assertNotNull(launched);assertEquals(ConfigureActivity.class.getName(),launched.getComponent().getClassName());assertEquals(state.id,launched.getIntExtra(SavedStacks.EXTRA_SAVED_ID,-1));
+  assertEquals(850,launched.getBundleExtra("resize_draft").getInt("height"));launched.setSourceBounds(new Rect(0,0,400,300));MeasuredViewport.receive(c,launched);assertTrue(MeasuredViewport.has(c,701));
+ }
+ @Test public void returnDraftRestoresUnsavedValuesWithoutSavingThem(){
+  StackStore store=new StackStore(c);StackState state=store.createSaved("Draft");state.add(12);store.put(state);store.assign(701,state.id);
+  Activity a=Robolectric.buildActivity(Activity.class).setup().get();Bundle b=new Bundle();b.putInt("child",12);b.putInt("instance",701);b.putInt("width",500);b.putInt("height",850);b.putInt("scale",135);b.putInt("alignment",8);a.getIntent().putExtra("resize_draft",b);
+  WidgetSizeEditor.Session session=new WidgetSizeEditor.Session(a,state,12,()->{});
+  assertEquals(850,session.draft.heightPx(12));assertEquals(135,session.draft.visualScalePercent(12));assertEquals(8,session.draft.alignment(12));assertEquals(701,session.previewId);assertEquals(0,store.get(state.id).heightPx(12));assertFalse(a.getIntent().hasExtra("resize_draft"));
+ }
 }
