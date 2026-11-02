@@ -10,9 +10,10 @@ import android.widget.*;
 final class BarEditor {
  static void show(Activity a,StackState target,Runnable saved){
   StackState draft=new StackState(target.id);draft.railEdge=target.railEdge;draft.railWidth=target.railWidth;draft.railOpacity=target.railOpacity;draft.showRail=target.showRail;draft.animateSwitch=target.animateSwitch;draft.buttonsOnly=target.buttonsOnly;draft.overlapBar=target.overlapBar;draft.autoContract=target.autoContract;draft.contractedWidth=target.contractedWidth;draft.contractDelaySeconds=target.contractDelaySeconds;draft.contractToCorner=target.contractToCorner;draft.cornerEnd=target.cornerEnd;draft.cornerArrows=target.cornerArrows;draft.cornerArrowSize=target.cornerArrowSize;
-  for(int id:target.children)draft.add(id);draft.select(target.selected);
+  for(int id:target.children){draft.add(id);draft.setDimensions(id,target.widthPx(id),target.heightPx(id));draft.setVisualScalePercent(id,target.visualScalePercent(id));draft.setAlignment(id,target.alignment(id));}draft.select(target.selected);
   LinearLayout root=new LinearLayout(a);root.setOrientation(LinearLayout.VERTICAL);root.setPadding(Ui.dp(a,16),Ui.dp(a,8),Ui.dp(a,16),Ui.dp(a,8));
   Preview preview=new Preview(a,draft);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(a,160)));preview.setOnClickListener(v->preview.demonstrateExpansion());
+  Ui.text(a,root,PreviewViewport.label(a,target.id),14);
   TextView previewHint=new TextView(a);previewHint.setText("Live preview. Only stack controls respond; widget content is protected.");previewHint.setTextSize(12);root.addView(previewHint);
   RadioGroup tabs=new RadioGroup(a);tabs.setOrientation(LinearLayout.HORIZONTAL);tabs.setContentDescription("Settings section");root.addView(tabs);
   ScrollView scroll=new ScrollView(a);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));LinearLayout pages=new LinearLayout(a);pages.setOrientation(LinearLayout.VERTICAL);scroll.addView(pages);

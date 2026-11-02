@@ -24,17 +24,17 @@ class StackPreview extends FrameLayout {
         refresh();
     }
     void refresh(){
-        state.normalize();AppWidgetManager manager=AppWidgetManager.getInstance(getContext());Bundle options=StackRenderer.optionsFor(getContext(),state.id);
+        state.normalize();AppWidgetManager manager=AppWidgetManager.getInstance(getContext());Bundle options=PreviewViewport.options(getContext(),state.id);
         boolean landscape=getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;
         float density=getResources().getDisplayMetrics().density;
-        homeWidth=Math.round(Math.max(32,options.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH:AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,240))*density);
-        homeHeight=Math.round(Math.max(32,options.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT:AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,160))*density);
+        homeWidth=Math.round(Math.max(1,options.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH:AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,240))*density);
+        homeHeight=Math.round(Math.max(1,options.getInt(landscape?AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT:AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,160))*density);
         boolean compact=state.autoContract&&state.showRail&&contracted;
         AppWidgetProviderInfo own=state.id>=0?manager.getAppWidgetInfo(state.id):null;
         boolean available=StackRenderer.owns(getContext(),state.id)||new StackStore(getContext()).isSaved(state.id);
         boolean live=available&&!state.children.isEmpty()&&StackHost.get(getContext()).views.containsKey(state.selected);
         if(own!=null)host.setAppWidget(state.id,own);host.setPadding(0,0,0,0);
-        android.widget.RemoteViews views=live?StackRenderer.render(getContext(),state,0,compact,barMotion):StackRenderer.shell(getContext(),state,0,compact,barMotion);
+        android.widget.RemoteViews views=live?StackRenderer.renderPreview(getContext(),state,compact,barMotion):StackRenderer.shell(getContext(),state,0,compact,barMotion);
         if(!live){views.setTextViewText(R.id.empty,state.children.isEmpty()?"Add a widget for a live preview":"Waiting for the selected widget to load");views.setOnClickPendingIntent(R.id.empty,null);}
         host.updateAppWidget(views);requestLayout();invalidate();
     }

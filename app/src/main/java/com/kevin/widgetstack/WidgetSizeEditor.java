@@ -32,7 +32,7 @@ final class WidgetSizeEditor {
         final Runnable previewRender=this::refreshPreviewNow;
         Session(Activity activity,StackState saved,int child,Runnable applied) {
             this.activity=activity;this.saved=saved;this.child=child;this.applied=applied;snapshot=StackHost.get(activity).views.get(child);
-            previewId=saved.id;java.util.List<Integer> copies=new StackStore(activity).placements(saved.id);if(!copies.isEmpty())previewId=copies.get(0);
+            previewId=PreviewViewport.instance(activity,saved.id);
             draft=new StackState(saved.id);draft.add(child);draft.select(child);draft.showRail=false;
             draft.setDimensions(child,saved.widthPx(child),saved.heightPx(child));
             draft.setVisualScalePercent(child,saved.visualScalePercent(child));draft.setAlignment(child,saved.alignment(child));
@@ -43,12 +43,6 @@ final class WidgetSizeEditor {
             Ui.text(activity,root,"Resize widget",24);
             Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders use 50 px steps.",14);
             dimensions=Ui.text(activity,root,"",14);
-            if(!copies.isEmpty()){Spinner copy=new Spinner(activity);java.util.List<String> names=new java.util.ArrayList<>();for(int id:copies)names.add("Preview instance "+id);copy.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,names));if(copies.contains(previewId))copy.setSelection(copies.indexOf(previewId));root.addView(copy);copy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){previewId=copies.get(n);renderPreview();}});}
-
-            Ui.tonalButton(activity,root,"Measure selected launcher instance",()->{
-                if(previewId<0){Toast.makeText(activity,"Place this stack on the home screen first.",Toast.LENGTH_LONG).show();return;}
-                try{WidgetPublisher.update(activity,previewId,MeasuredViewport.probe(activity,previewId,returnDraft()));Toast.makeText(activity,"Go home and tap the measurement panel to return here.",Toast.LENGTH_LONG).show();}catch(Exception e){Toast.makeText(activity,"Could not show the measurement panel.",Toast.LENGTH_LONG).show();}
-            });
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
             Ui.text(activity,root,"Preview shows the widget area for the selected instance. Use the controls below to resize. Provider actions are disabled.",13);
             Ui.tonalButton(activity,root,"Refresh preview snapshot",()->{snapshot=StackHost.get(activity).views.get(child);renderPreview();});
@@ -124,7 +118,8 @@ final class WidgetSizeEditor {
             fields[i].setText(value==0?"":Integer.toString(value));fields[i].setError(null);sliders[i].setProgress(Math.round(value/50f));
         }syncing=false;}
         void schedule(){handler.removeCallbacks(refresh);handler.postDelayed(refresh,180);renderPreview();}
-        android.os.Bundle viewportOptions(){StackState placement=new StackStore(activity).get(previewId);return placement==null?StackRenderer.hostedOptions(activity,saved.id):StackRenderer.childOptions(StackRenderer.optionsFor(activity,previewId),placement);}
+        android.os.Bundle viewportOptions(){return StackRenderer.childOptions(PreviewViewport.options(activity,saved.id),saved);}
+
         android.util.SizeF logicalSize(){
             android.os.Bundle actual=viewportOptions();
             return StackRenderer.displaySize(WidgetSizing.options(actual,draft,child,activity.getResources().getDisplayMetrics().density),activity.getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE);
@@ -162,7 +157,7 @@ final class WidgetSizeEditor {
                 host.updateAppWidget(frame);
             }catch(Exception e){host.updateAppWidget(null);}
             else host.updateAppWidget(null);
-            session.dimensions.setText(Math.round(logicalWidth)+" × "+Math.round(logicalHeight)+" px widget area · "+(MeasuredViewport.has(getContext(),session.previewId)?"measured launcher size":"estimated launcher size")+". Preview reduced to fit.");
+            session.dimensions.setText(Math.round(logicalWidth)+" × "+Math.round(logicalHeight)+" px widget area · "+(MeasuredViewport.has(getContext(),session.previewId)?"measured launcher size":"shared preview size")+". Preview reduced to fit.");
             requestLayout();invalidate();
         }
         @Override protected void onMeasure(int ws,int hs){

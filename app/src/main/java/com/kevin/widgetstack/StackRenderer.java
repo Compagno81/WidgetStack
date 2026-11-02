@@ -224,6 +224,7 @@ final class StackRenderer {
             MeasuredViewport.stop(c,id);try{WidgetPublisher.update(c,id,fallback);}catch(RuntimeException ignored){}
         }
     }
+    static RemoteViews renderPreview(Context c,StackState s,Boolean compact,int motion){return render(c,s,0,compact,motion,View.NO_ID,PreviewViewport.options(c,s.id));}
     static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted){return render(c,s,direction,forceContracted,0);}
     static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion){return render(c,s,direction,forceContracted,barMotion,View.NO_ID);}
     /** A durable root ID makes the launcher inflate each publication instead of reusing stale controls. */

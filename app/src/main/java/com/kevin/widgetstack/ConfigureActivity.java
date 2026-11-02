@@ -21,13 +21,13 @@ public final class ConfigureActivity extends Activity {
   else{finish();return;}
   existing=true;
   if(b!=null){pending=b.getInt("pending",-1);externalFlow=b.getBoolean("externalFlow");}
-  if(MeasuredViewport.ACTION.equals(getIntent().getAction()))MeasuredViewport.receive(this,getIntent());
+  if(MeasuredViewport.ACTION.equals(getIntent().getAction())){MeasuredViewport.receive(this,getIntent());PreviewViewport.choose(this,stackId,homeId);}
   host.sync();HostService.ensure(this);
   if(homeId>=0)SavedStacks.recoverControls(this,homeId);
   else for(int home:store.placements(stackId))SavedStacks.recoverControls(this,home);
   render();
   Bundle draft=getIntent().getBundleExtra("resize_draft");
-  if(draft!=null){StackState current=state();int child=draft.getInt("child",-1);if(current!=null&&current.children.contains(child))WidgetSizeEditor.show(this,current,child,()->{SavedStacks.changed(this,stackId);render();});}
+  if(draft!=null&&!draft.getBoolean("navigation_measure")){StackState current=state();int child=draft.getInt("child",-1);if(current!=null&&current.children.contains(child))WidgetSizeEditor.show(this,current,child,()->{SavedStacks.changed(this,stackId);render();});}
  }
  @Override protected void onSaveInstanceState(Bundle b){super.onSaveInstanceState(b);b.putInt("pending",pending);b.putBoolean("existing",existing);b.putBoolean("externalFlow",externalFlow);}
  private StackState state(){return store.get(stackId);}
@@ -45,6 +45,7 @@ public final class ConfigureActivity extends Activity {
   LinearLayout nav=Ui.card(this,root);
   BarEditor.Preview preview=new BarEditor.Preview(this,s);nav.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(this,190)));
   preview.setOnClickListener(v->BarEditor.show(this,s,()->changed(s)));
+  PreviewViewport.controls(this,nav,stackId,()->preview.refresh());
   Ui.tonalButton(this,nav,"Customize navigation bar",()->BarEditor.show(this,s,()->changed(s)));
   Ui.text(this,nav,"Tap a dot to choose a widget, or use the end buttons to move between widgets. Scrolling inside a widget stays with that widget.",13);
   Ui.section(this,root,"Widgets");
