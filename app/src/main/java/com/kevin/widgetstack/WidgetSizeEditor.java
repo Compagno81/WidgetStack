@@ -26,20 +26,28 @@ final class WidgetSizeEditor {
         final SeekBar[] sliders=new SeekBar[2];
         final TextView dimensions;
         boolean syncing,closed;
+        int previewId;
         final Runnable refresh=this::requestProvider;
         final Runnable observer=()->renderPreview();
         Session(Activity activity,StackState saved,int child,Runnable applied) {
             this.activity=activity;this.saved=saved;this.child=child;this.applied=applied;
+            previewId=saved.id;java.util.List<Integer> copies=new StackStore(activity).placements(saved.id);if(!copies.isEmpty())previewId=copies.get(0);
             draft=new StackState(saved.id);draft.add(child);draft.select(child);draft.showRail=false;
             draft.setDimensions(child,saved.widthPx(child),saved.heightPx(child));
-            draft.setVisualScalePercent(child,saved.visualScalePercent(child));
+            draft.setVisualScalePercent(child,saved.visualScalePercent(child));draft.setAlignment(child,saved.alignment(child));
             dialog=new Dialog(activity);dialog.setTitle("Resize widget");
             ScrollView scroll=new ScrollView(activity);LinearLayout root=new LinearLayout(activity);root.setOrientation(LinearLayout.VERTICAL);int padding=Ui.dp(activity,16);root.setPadding(padding,padding,padding,padding);scroll.addView(root);
             Ui.text(activity,root,"Resize widget",24);
             Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders and dragging use 50 px steps.",14);
             dimensions=Ui.text(activity,root,"",14);
+            if(!copies.isEmpty()){Spinner copy=new Spinner(activity);java.util.List<String> names=new java.util.ArrayList<>();for(int id:copies)names.add("Preview instance "+id);copy.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,names));root.addView(copy);copy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){previewId=copies.get(n);renderPreview();}});}
+
+            Ui.tonalButton(activity,root,"Measure selected launcher instance",()->{
+                if(previewId<0){Toast.makeText(activity,"Place this stack on the home screen first.",Toast.LENGTH_LONG).show();return;}
+                try{WidgetPublisher.update(activity,previewId,MeasuredViewport.probe(activity,previewId));Toast.makeText(activity,"Go home and tap the measurement panel, then reopen Resize widget.",Toast.LENGTH_LONG).show();}catch(Exception e){Toast.makeText(activity,"Could not show the measurement panel.",Toast.LENGTH_LONG).show();}
+            });
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
-            Ui.text(activity,root,"Drag the blue edges or corners. Provider actions are disabled in this preview.",13);
+            Ui.text(activity,root,"Preview shows the widget area for the selected instance. Use the controls below to resize. Provider actions are disabled.",13);
             final TextView zoomLabel=Ui.text(activity,root,"Scale: "+draft.visualScalePercent(child)+"%",17);
             Ui.text(activity,root,"Zoom this widget proportionally. 100% is normal; enlarged edges may be clipped.",14);
             SeekBar zoom=new SeekBar(activity);zoom.setMax(275);zoom.setProgress(draft.visualScalePercent(child)-25);zoom.setContentDescription("Widget scale, 25 to 300 percent");root.addView(zoom,new LinearLayout.LayoutParams(-1,Ui.dp(activity,48)));
@@ -48,6 +56,9 @@ final class WidgetSizeEditor {
                 public void onStartTrackingTouch(SeekBar bar){} public void onStopTrackingTouch(SeekBar bar){}
             });
             Ui.compactButton(activity,Ui.row(activity,root),"Reset scale to 100%",()->zoom.setProgress(75));
+            Ui.text(activity,root,"Alignment",17);
+            Spinner alignment=new Spinner(activity);alignment.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,new String[]{"Top left","Top centre","Top right","Centre left","Centre","Centre right","Bottom left","Bottom centre","Bottom right"}));alignment.setSelection(draft.alignment(child));root.addView(alignment);
+            alignment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){draft.setAlignment(child,n);renderPreview();}});
             axis(root,0,"Width");axis(root,1,"Height");
             LinearLayout buttons=Ui.row(activity,root);
             Ui.compactButton(activity,buttons,"Cancel",dialog::dismiss);
@@ -58,7 +69,7 @@ final class WidgetSizeEditor {
                 StackState latest=new StackStore(activity).get(saved.id);
                 if(latest==null||!latest.children.contains(child)){dialog.dismiss();return;}
                 latest.setDimensions(child,draft.widthPx(child),draft.heightPx(child));
-                latest.setVisualScalePercent(child,draft.visualScalePercent(child));
+                latest.setVisualScalePercent(child,draft.visualScalePercent(child));latest.setAlignment(child,draft.alignment(child));saved.setAlignment(child,draft.alignment(child));
                 saved.setVisualScalePercent(child,draft.visualScalePercent(child));
                 new StackStore(activity).put(latest);
                 saved.setDimensions(child,draft.widthPx(child),draft.heightPx(child));
@@ -107,8 +118,9 @@ final class WidgetSizeEditor {
             fields[i].setText(value==0?"":Integer.toString(value));fields[i].setError(null);sliders[i].setProgress(Math.round(value/50f));
         }syncing=false;}
         void schedule(){handler.removeCallbacks(refresh);handler.postDelayed(refresh,180);renderPreview();}
+        android.os.Bundle viewportOptions(){StackState placement=new StackStore(activity).get(previewId);return placement==null?StackRenderer.hostedOptions(activity,saved.id):StackRenderer.childOptions(StackRenderer.optionsFor(activity,previewId),placement);}
         android.util.SizeF logicalSize(){
-            android.os.Bundle actual=StackRenderer.hostedOptions(activity,saved.id);
+            android.os.Bundle actual=viewportOptions();
             return StackRenderer.displaySize(WidgetSizing.options(actual,draft,child,activity.getResources().getDisplayMetrics().density),activity.getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE);
         }
         void requestProvider(){
@@ -133,10 +145,15 @@ final class WidgetSizeEditor {
         }
         void refresh(){
             android.util.SizeF size=session.logicalSize();float density=getResources().getDisplayMetrics().density;
-            logicalWidth=session.draft.widthPx(session.child)>0?session.draft.widthPx(session.child):size.getWidth()*density;logicalHeight=session.draft.heightPx(session.child)>0?session.draft.heightPx(session.child):size.getHeight()*density;
+            android.util.SizeF viewport=StackRenderer.displaySize(session.viewportOptions(),getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE);
+            logicalWidth=viewport.getWidth()*density;logicalHeight=viewport.getHeight()*density;
             android.widget.RemoteViews source=StackHost.get(getContext()).views.get(session.child);
-            if(source!=null)try{host.updateAppWidget(RemoteViewsBridge.select(getContext(),source,size));}catch(Exception e){host.updateAppWidget(null);}
-            session.dimensions.setText(Math.round(logicalWidth)+" × "+Math.round(logicalHeight)+" px requested; preview fits the editor.");
+            if(source!=null)try{
+                android.widget.RemoteViews frame=new android.widget.RemoteViews(getContext().getPackageName(),R.layout.sizing_preview);
+                RemoteViewsBridge.embedAligned(getContext(),frame,source,session.child,size,session.draft.widthPx(session.child),session.draft.heightPx(session.child),session.draft.visualScalePercent(session.child),session.draft.alignment(session.child),viewport);
+                host.updateAppWidget(frame);
+            }catch(Exception e){host.updateAppWidget(null);}
+            session.dimensions.setText(Math.round(logicalWidth)+" × "+Math.round(logicalHeight)+" px widget area · "+(MeasuredViewport.has(getContext(),session.previewId)?"measured launcher size":"estimated launcher size")+". Preview reduced to fit.");
             requestLayout();invalidate();
         }
         @Override protected void onMeasure(int ws,int hs){
@@ -146,7 +163,7 @@ final class WidgetSizeEditor {
         @Override protected void onLayout(boolean changed,int l,int t,int r,int b){
             float margin=24*getResources().getDisplayMetrics().density;
             scale=Math.min(1,WidgetSizing.fit(Math.max(1,getWidth()-margin*2),Math.max(1,getHeight()-margin*2),logicalWidth,logicalHeight));
-            scale*=session.draft.visualScalePercent(session.child)/100f;
+
             float left=(getWidth()-logicalWidth*scale)/2,top=(getHeight()-logicalHeight*scale)/2;
             host.layout(0,0,Math.round(logicalWidth),Math.round(logicalHeight));host.setPivotX(0);host.setPivotY(0);host.setScaleX(scale);host.setScaleY(scale);host.setTranslationX(left);host.setTranslationY(top);
             bounds.set(left,top,left+logicalWidth*scale,top+logicalHeight*scale);
@@ -158,17 +175,6 @@ final class WidgetSizeEditor {
         }
         @Override public boolean onInterceptTouchEvent(MotionEvent event){return true;}
         @Override public boolean onTouchEvent(MotionEvent e){
-            if(e.getAction()==MotionEvent.ACTION_DOWN){
-                float hit=24*getResources().getDisplayMetrics().density;edges=0;
-                if(e.getY()>=bounds.top-hit&&e.getY()<=bounds.bottom+hit){if(Math.abs(e.getX()-bounds.left)<hit)edges|=1;else if(Math.abs(e.getX()-bounds.right)<hit)edges|=2;}
-                if(e.getX()>=bounds.left-hit&&e.getX()<=bounds.right+hit){if(Math.abs(e.getY()-bounds.top)<hit)edges|=4;else if(Math.abs(e.getY()-bounds.bottom)<hit)edges|=8;}
-                startX=e.getX();startY=e.getY();startWidth=logicalWidth;startHeight=logicalHeight;startScale=scale;
-                if(edges!=0)getParent().requestDisallowInterceptTouchEvent(true);
-            }else if(e.getAction()==MotionEvent.ACTION_MOVE&&edges!=0){
-                if((edges&3)!=0)session.set(0,snap(startWidth+(e.getX()-startX)/startScale*((edges&1)!=0?-1:1)));
-                if((edges&12)!=0)session.set(1,snap(startHeight+(e.getY()-startY)/startScale*((edges&4)!=0?-1:1)));
-                session.sync();session.schedule();
-            }else if(e.getAction()==MotionEvent.ACTION_UP||e.getAction()==MotionEvent.ACTION_CANCEL){edges=0;getParent().requestDisallowInterceptTouchEvent(false);if(e.getAction()==MotionEvent.ACTION_UP)performClick();}
             return true;
         }
         int snap(float value){return Math.max(50,Math.min(StackState.MAX_SIZE_PX,Math.round(value/50)*50));}

@@ -73,6 +73,9 @@ final class RemoteViewsBridge {
     }
     /** Each explicit axis is a physical layout size; Auto follows its actual parent. */
     static void embedSized(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent) throws ReflectiveOperationException {
+        embedAligned(c,outer,source,child,requested,widthPx,heightPx,percent,4,requested);
+    }
+    static void embedAligned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent,int alignment,SizeF available) throws ReflectiveOperationException {
         RemoteViews chosen=select(c,new RemoteViews(source),requested);
         List<Object> collections=prepare(c,chosen,child);
         if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
@@ -82,6 +85,10 @@ final class RemoteViewsBridge {
         frame.setViewLayoutHeight(R.id.widget_scale_container,heightPx>0?heightPx:android.view.ViewGroup.LayoutParams.MATCH_PARENT,unit);
         frame.setFloat(R.id.widget_scale_container,"setScaleX",percent/100f);
         frame.setFloat(R.id.widget_scale_container,"setScaleY",percent/100f);
+        float density=c.getResources().getDisplayMetrics().density;
+        float w=widthPx>0?widthPx:available.getWidth()*density,h=heightPx>0?heightPx:available.getHeight()*density;
+        frame.setFloat(R.id.widget_scale_container,"setTranslationX",(available.getWidth()*density-w*percent/100f)*(alignment%3-1)/2f);
+        frame.setFloat(R.id.widget_scale_container,"setTranslationY",(available.getHeight()*density-h*percent/100f)*(alignment/3-1)/2f);
         frame.addView(R.id.widget_scale_container,chosen);
         outer.removeAllViews(R.id.content);outer.addView(R.id.content,frame);
         List<Object> dest=actions(outer);if(dest!=null)dest.addAll(collections);
