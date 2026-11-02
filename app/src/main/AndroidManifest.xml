@@ -15,6 +15,7 @@
   <activity android:name=".WidgetPickerActivity" android:exported="false" android:label="Choose a widget"/>
   <activity android:name=".StackChooserActivity" android:exported="true" android:label="Choose a saved stack"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/></intent-filter></activity>
   <activity android:name=".ConfigureActivity" android:exported="false" android:label="Edit saved stack"/>
+  <receiver android:name=".TaskerReceiver" android:exported="true"><intent-filter><action android:name="com.kevin.widgetstack.SET_POSITION"/></intent-filter></receiver>
   <receiver android:name=".StackControlReceiver" android:exported="false"/>
   <receiver android:name=".StackProvider" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter><intent-filter><action android:name="com.kevin.widgetstack.SELECT"/><action android:name="com.kevin.widgetstack.EXPAND"/><action android:name="com.kevin.widgetstack.PINNED"/><data android:scheme="widgetstack"/></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/stack_info"/></receiver>
   <receiver android:name=".BootReceiver" android:exported="false"><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"/><action android:name="android.intent.action.MY_PACKAGE_REPLACED"/></intent-filter></receiver>

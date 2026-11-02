@@ -48,6 +48,8 @@ public final class MainActivity extends Activity {
    clipboard.setPrimaryClip(ClipData.newPlainText("Widget Stack troubleshooting",StackDiagnostics.report(this)));
    Toast.makeText(this,"Troubleshooting report copied",Toast.LENGTH_SHORT).show();
   });
+  android.widget.Switch automation=new android.widget.Switch(this);automation.setText("Enable Tasker control");automation.setChecked(TaskerReceiver.enabled(this));automation.setOnCheckedChangeListener((button,checked)->TaskerReceiver.enable(this,checked));root.addView(automation);
+  Ui.tonalButton(this,root,"Tasker setup and instance IDs",()->new AlertDialog.Builder(this).setTitle("Tasker control").setMessage(TaskerReceiver.instructions(this)).setNeutralButton("Copy",(d,w)->{android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);clipboard.setPrimaryClip(ClipData.newPlainText("Tasker setup",TaskerReceiver.instructions(this)));}).setPositiveButton("Done",null).show());
   Ui.tonalButton(this,root,"About",()->new AlertDialog.Builder(this).setTitle(versionLabel()).setMessage("Home-screen widget stacks. Android 12 or newer.\n\nUses widget-stacking concepts and compatibility code adapted from Widgets Anywhere, © 2020/2023 Zachary Wander, MIT licence.\n\nAndroid Hidden API Bypass 6.1, Apache 2.0. Full licences are included in this app's assets and the source package.").setNeutralButton("App settings",(d,w)->startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,android.net.Uri.parse("package:"+getPackageName())))).setPositiveButton("Done",null).show());
  }
 }

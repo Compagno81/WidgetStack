@@ -36,6 +36,7 @@ public final class ConfigureActivity extends Activity {
   TextView stackName=Ui.text(this,identity,s.name,20);stackName.setTypeface(android.graphics.Typeface.create("sans-serif-medium",android.graphics.Typeface.NORMAL));stackName.setOnClickListener(v->{EditText name=new EditText(this);name.setText(s.name);new AlertDialog.Builder(this).setTitle("Stack name").setView(name).setPositiveButton("Save",(d,w)->{s.name=name.getText().toString().trim();if(s.name.isEmpty())s.name="Saved stack";changed(s);}).setNegativeButton("Cancel",null).show();});
   Ui.text(this,identity,"Changes apply to all home-screen copies. Tap the name to rename.",14);
   Ui.text(this,identity,store.placements(stackId).isEmpty()?"Preview uses a sample size until placed on your home screen.":"Resize each copy with your home-screen widget handles.",13);
+  if(homeId>=0)Ui.text(this,identity,"Tasker instance_id: "+homeId+" · stack_id: "+stackId,14);
   if(homeId>=0&&StackRenderer.owns(this,homeId))Ui.button(this,root,"Use a different saved stack",()->startActivityForResult(new Intent(this,StackChooserActivity.class).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,homeId).putExtra(StackChooserActivity.EXTRA_CHOOSE,true),SWITCH_STACK));
   Ui.section(this,root,"Navigation controls");
   LinearLayout nav=Ui.card(this,root);
