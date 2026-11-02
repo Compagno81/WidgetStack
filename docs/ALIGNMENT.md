@@ -7,3 +7,5 @@ The editor uses the same RemoteViews embedding routine as the launcher, inside a
 Use **Measure selected launcher instance**, go home and tap its measurement panel, then reopen Resize widget to use the actual launcher bounds. Provider refreshes can replace the panel before it is tapped; repeat the measurement if necessary.
 
 The dimension label distinguishes measured launcher bounds from estimated launcher options. Estimates can differ from actual launcher allocation; measured bounds are invalidated on size/configuration changes. Navigation-bar state, provider updates, collection loading and launcher-specific rendering can still differ. This does not guarantee pixel equality on every launcher, or fix the Business Calendar issue. Preview actions remain blocked.
+
+In 1.36, preview refresh is explicit and widget inflation is asynchronous; see PREVIEW-RESPONSIVENESS.md.

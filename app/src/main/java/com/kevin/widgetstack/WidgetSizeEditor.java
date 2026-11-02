@@ -14,7 +14,7 @@ final class WidgetSizeEditor {
     static void show(Activity activity,StackState saved,int child,Runnable applied) {
         Session session=new Session(activity,saved,child,applied);session.show();
     }
-    private static final class Session {
+    static final class Session {
         final Activity activity;
         final StackState saved,draft;
         final int child;
@@ -28,9 +28,10 @@ final class WidgetSizeEditor {
         boolean syncing,closed;
         int previewId;
         final Runnable refresh=this::requestProvider;
-        final Runnable observer=()->renderPreview();
+        android.widget.RemoteViews snapshot;
+        final Runnable previewRender=this::refreshPreviewNow;
         Session(Activity activity,StackState saved,int child,Runnable applied) {
-            this.activity=activity;this.saved=saved;this.child=child;this.applied=applied;
+            this.activity=activity;this.saved=saved;this.child=child;this.applied=applied;snapshot=StackHost.get(activity).views.get(child);
             previewId=saved.id;java.util.List<Integer> copies=new StackStore(activity).placements(saved.id);if(!copies.isEmpty())previewId=copies.get(0);
             draft=new StackState(saved.id);draft.add(child);draft.select(child);draft.showRail=false;
             draft.setDimensions(child,saved.widthPx(child),saved.heightPx(child));
@@ -38,7 +39,7 @@ final class WidgetSizeEditor {
             dialog=new Dialog(activity);dialog.setTitle("Resize widget");
             ScrollView scroll=new ScrollView(activity);LinearLayout root=new LinearLayout(activity);root.setOrientation(LinearLayout.VERTICAL);int padding=Ui.dp(activity,16);root.setPadding(padding,padding,padding,padding);scroll.addView(root);
             Ui.text(activity,root,"Resize widget",24);
-            Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders and dragging use 50 px steps.",14);
+            Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders use 50 px steps.",14);
             dimensions=Ui.text(activity,root,"",14);
             if(!copies.isEmpty()){Spinner copy=new Spinner(activity);java.util.List<String> names=new java.util.ArrayList<>();for(int id:copies)names.add("Preview instance "+id);copy.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,names));root.addView(copy);copy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){previewId=copies.get(n);renderPreview();}});}
 
@@ -48,6 +49,8 @@ final class WidgetSizeEditor {
             });
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
             Ui.text(activity,root,"Preview shows the widget area for the selected instance. Use the controls below to resize. Provider actions are disabled.",13);
+            Ui.tonalButton(activity,root,"Refresh preview snapshot",()->{snapshot=StackHost.get(activity).views.get(child);renderPreview();});
+            Ui.text(activity,root,"Preview holds a snapshot while you edit. Refresh it to show newer provider content.",13);
             final TextView zoomLabel=Ui.text(activity,root,"Scale: "+draft.visualScalePercent(child)+"%",17);
             Ui.text(activity,root,"Zoom this widget proportionally. 100% is normal; enlarged edges may be clipped.",14);
             SeekBar zoom=new SeekBar(activity);zoom.setMax(275);zoom.setProgress(draft.visualScalePercent(child)-25);zoom.setContentDescription("Widget scale, 25 to 300 percent");root.addView(zoom,new LinearLayout.LayoutParams(-1,Ui.dp(activity,48)));
@@ -76,13 +79,13 @@ final class WidgetSizeEditor {
                 dialog.dismiss();applied.run();
             });
             dialog.setContentView(scroll);
-            dialog.setOnDismissListener(d->{closed=true;handler.removeCallbacks(refresh);StackHost.get(activity).previewListeners.remove(observer);StackRenderer.updateSizes(activity,saved.id);});
+            dialog.setOnDismissListener(d->{closed=true;handler.removeCallbacks(refresh);handler.removeCallbacks(previewRender);StackRenderer.updateSizes(activity,saved.id);});
             sync();
         }
         void show(){
             dialog.show();dialog.getWindow().setLayout(-1,-1);
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-            StackHost.get(activity).previewListeners.add(observer);requestProvider();
+            renderPreview();
         }
         void axis(LinearLayout root,int axis,String label){
             Ui.text(activity,root,label+" (px)",17);
@@ -129,9 +132,11 @@ final class WidgetSizeEditor {
             catch(RuntimeException e){dimensions.setText("Provider could not update its layout. Try Auto or reopen setup.");}
             renderPreview();
         }
-        void renderPreview(){if(!closed)preview.refresh();}
+        void refreshPreviewNow(){if(!closed)preview.refresh();}
+        void renderPreview(){if(!closed){handler.removeCallbacks(previewRender);handler.postDelayed(previewRender,120);}}
     }
-    private static final class SizingPreview extends FrameLayout {
+    static final java.util.concurrent.Executor PREVIEW_EXECUTOR=new java.util.concurrent.ThreadPoolExecutor(1,1,30,java.util.concurrent.TimeUnit.SECONDS,new java.util.concurrent.ArrayBlockingQueue<>(1),r->{Thread t=new Thread(r,"WidgetSizingPreview");t.setDaemon(true);return t;},new java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy());
+    static final class SizingPreview extends FrameLayout {
         final Session session;
         final AppWidgetHostView host;
         final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -140,19 +145,20 @@ final class WidgetSizeEditor {
         int edges;
         SizingPreview(Context c,Session session){
             super(c);this.session=session;setWillNotDraw(false);setBackgroundColor(0xfff0f5fa);
-            host=new AppWidgetHostView(c);host.setPadding(0,0,0,0);host.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);host.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);addView(host);
+            host=new AppWidgetHostView(c);host.setExecutor(PREVIEW_EXECUTOR);host.setPadding(0,0,0,0);host.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);host.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);addView(host);
             setContentDescription("Non-interactive widget preview. Use width and height fields for accessible sizing.");
         }
         void refresh(){
             android.util.SizeF size=session.logicalSize();float density=getResources().getDisplayMetrics().density;
             android.util.SizeF viewport=StackRenderer.displaySize(session.viewportOptions(),getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE);
             logicalWidth=viewport.getWidth()*density;logicalHeight=viewport.getHeight()*density;
-            android.widget.RemoteViews source=StackHost.get(getContext()).views.get(session.child);
+            android.widget.RemoteViews source=session.snapshot;
             if(source!=null)try{
                 android.widget.RemoteViews frame=new android.widget.RemoteViews(getContext().getPackageName(),R.layout.sizing_preview);
                 RemoteViewsBridge.embedAligned(getContext(),frame,source,session.child,size,session.draft.widthPx(session.child),session.draft.heightPx(session.child),session.draft.visualScalePercent(session.child),session.draft.alignment(session.child),viewport);
                 host.updateAppWidget(frame);
             }catch(Exception e){host.updateAppWidget(null);}
+            else host.updateAppWidget(null);
             session.dimensions.setText(Math.round(logicalWidth)+" × "+Math.round(logicalHeight)+" px widget area · "+(MeasuredViewport.has(getContext(),session.previewId)?"measured launcher size":"estimated launcher size")+". Preview reduced to fit.");
             requestLayout();invalidate();
         }
