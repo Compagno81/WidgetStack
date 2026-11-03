@@ -42,6 +42,7 @@ public final class TaskerPluginActivity extends Activity {
  }
  void positions(int index){
   List<String> labels=new ArrayList<>();StackState s=index>=0&&index<targets.size()?store.get(targets.get(index).saved):null;
+  if(s!=null)s=VisibilityProfiles.filtered(this,s);
   if(s!=null)for(int n=0;n<s.children.size();n++){
    AppWidgetProviderInfo info=AppWidgetManager.getInstance(this).getAppWidgetInfo(s.children.get(n));
    labels.add((n+1)+" · "+(info==null?"Widget":info.loadLabel(getPackageManager())));

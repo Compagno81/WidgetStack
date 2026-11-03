@@ -1,0 +1,11 @@
+# Widget visibility profiles (1.40)
+
+Open a saved stack's configuration → **Widget visibility profiles**. Create and name profiles, choose their visible widgets, and activate one. Profiles belong to that saved stack. Each saved stack has an independent active profile. All launcher/Canvas copies of the same saved stack use the same active profile, while each copy keeps its own current selection if it remains visible.
+
+Profiles filter the widgets inside the stack. Navigation skips hidden widgets, and their content is not rendered. Their bindings, dimensions, scale, alignment, order and provider configuration remain saved. If the current widget becomes hidden, that copy switches to the next available visible widget. An empty profile shows a configuration message with stack configuration still accessible. **Show all widgets** disables filtering. Deleting an active profile also restores Show all widgets. New profiles initially include all current widgets; widgets added later must be enabled in existing profiles. Membership tracks widget IDs, so reordering does not change the checklist.
+
+In Tasker add **Plugin → Widget Stack · Profile**, choose the saved stack, choose its profile (or Show all widgets), enable Tasker control, and Save action. Profile names can be changed without breaking saved tasks. A deleted profile or a profile belonging to a different stack is ignored. Existing position actions continue working; positions refer to the visible widget sequence in the currently active profile. Reconfigure position actions if you change that sequence.
+
+Manual Send Intent remains available: action `com.kevin.widgetstack.ACTIVATE_PROFILE`, package `com.kevin.widgetstack`, class `com.kevin.widgetstack.TaskerReceiver`, target Broadcast Receiver, extras `stack_id:-2` and `profile_id:1` using IDs shown by the app. `profile_id:0` means Show all widgets for that stack. Both string and integer extras are accepted. External automation requires Enable Tasker control.
+
+The previous experimental whole-stack visibility approach was not released. This version filters children, not launcher placements. Native Xiaomi/Tasker verification remains required. Business Calendar compatibility is unchanged.

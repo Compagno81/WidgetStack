@@ -78,17 +78,18 @@ class StackPreview extends FrameLayout {
         if(event.getAction()==MotionEvent.ACTION_DOWN)barGesture=onBar((event.getX()-offsetX)/scale,(event.getY()-offsetY)/scale);
         return true; // Shield all hosted content, including clicks, scrolls and long presses.
     }
+    void stepVisible(int direction){StackState visible=VisibilityProfiles.filtered(getContext(),state);visible.step(direction);state.select(visible.selected);}
     @Override public boolean onTouchEvent(MotionEvent event){
         if(!barGesture)return true;
         if(event.getAction()==MotionEvent.ACTION_UP){
             float x=(event.getX()-offsetX)/scale,y=(event.getY()-offsetY)/scale;
             if(onBar(x,y)){
-                if(state.cornerArrows){state.step((state.horizontalRail()?x/homeWidth:y/homeHeight)<.5f?-1:1);refresh();return true;}
+                if(state.cornerArrows){stepVisible((state.horizontalRail()?x/homeWidth:y/homeHeight)<.5f?-1:1);refresh();return true;}
                 if(!state.autoContract||!contracted){
                     float fraction=state.horizontalRail()?x/homeWidth:y/homeHeight;
-                    if(state.buttonsOnly)state.step(fraction<.5f?-1:1);
-                    else if(fraction<.25f)state.step(-1);else if(fraction>.75f)state.step(1);
-                    else if(fraction<.65f&&!state.children.isEmpty())state.select(state.children.get(Math.min(state.children.size()-1,(int)((fraction-.25f)/.4f*state.children.size()))));
+                    if(state.buttonsOnly)stepVisible(fraction<.5f?-1:1);
+                    else if(fraction<.25f)stepVisible(-1);else if(fraction>.75f)stepVisible(1);
+                    else if(fraction<.65f){StackState visible=VisibilityProfiles.filtered(getContext(),state);if(!visible.children.isEmpty())state.select(visible.children.get(Math.min(visible.children.size()-1,(int)((fraction-.25f)/.4f*visible.children.size()))));}
                     else performClick();
                 }
                 demonstrateExpansion();

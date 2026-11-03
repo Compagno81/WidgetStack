@@ -5,6 +5,7 @@ import java.util.*;
 
 /** Opt-in public automation endpoint; positions are one-based. */
 public final class TaskerReceiver extends BroadcastReceiver {
+ public static final String PROFILE="com.kevin.widgetstack.ACTIVATE_PROFILE";
  public static final String ACTION="com.kevin.widgetstack.SET_POSITION";
  static boolean enabled(Context c){return c.getSharedPreferences("automation",0).getBoolean("enabled",false);}
  static void enable(Context c,boolean value){c.getSharedPreferences("automation",0).edit().putBoolean("enabled",value).apply();}
@@ -19,6 +20,7 @@ public final class TaskerReceiver extends BroadcastReceiver {
   for(int id:targets){
    if(id<0||!store.isPlacement(id))continue;
    StackState state=store.get(id);
+   if(state!=null)state=VisibilityProfiles.filtered(c,state);
    if(state==null||position>state.children.size())continue;
    store.selectOnHome(id,state.children.get(position-1));changed.add(id);
   }
@@ -29,6 +31,7 @@ public final class TaskerReceiver extends BroadcastReceiver {
   try{return Integer.parseInt(String.valueOf(value));}catch(NumberFormatException e){return Integer.MIN_VALUE;}
  }
  @Override public void onReceive(Context c,Intent i){
+  if(PROFILE.equals(i.getAction())){if(enabled(c))new VisibilityProfiles(c).activate(number(i,"stack_id"),number(i,"profile_id"));return;}
   for(int id:select(c,i)){
    StackDiagnostics.note(c,"automation selection",id,"position="+number(i,"position"));
    if(Recovery.paused(c))continue;

@@ -82,6 +82,7 @@ final class StackStore {
         return edit.remove("stack_"+id).commit();
     }}
     void prunePlacements(Set<Integer> active){synchronized(LOCK){for(StackState s:saved())for(int home:placements(s.id))if(!active.contains(home))delete(home);}}
+    static StackState copy(StackState state){return decode(state.id,encode(state));}
     private static StackState decode(int id,JSONObject j){
         StackState s=new StackState(id);s.name=j.optString("name",s.name);s.showRail=j.optBoolean("showRail",true);
         s.cornerArrows=j.optBoolean("cornerArrows",false);s.cornerArrowSize=j.optInt("cornerArrowSize",32);s.railEdge=j.optInt("railEdge",StackState.RIGHT);s.railWidth=j.optInt("railWidth",36);s.railOpacity=j.optInt("railOpacity",20);s.animateSwitch=j.optBoolean("animateSwitch",false);s.buttonsOnly=j.optBoolean("buttonsOnly",false);s.overlapBar=j.optBoolean("overlapBar",false);s.autoContract=j.optBoolean("autoContract",false);s.contractedWidth=j.optInt("contractedWidth",8);s.contractDelaySeconds=j.optInt("contractDelaySeconds",2);s.contractToCorner=j.optBoolean("contractToCorner",false);s.cornerEnd=j.optInt("cornerEnd",0);

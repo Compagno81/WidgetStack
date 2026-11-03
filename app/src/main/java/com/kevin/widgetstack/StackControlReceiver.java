@@ -29,6 +29,7 @@ public final class StackControlReceiver extends BroadcastReceiver {
   if(Recovery.paused(c)){Recovery.publish(c,id);return true;}
   StackStore store=new StackStore(c);store.migrateLegacy();StackState state=store.get(id);
   if(state==null){StackDiagnostics.note(c,"navigation ignored",id,"no saved assignment");return true;}
+  state=VisibilityProfiles.filtered(c,state);
   int before=state.selected,direction=i.getIntExtra("direction",0);
   if(select){
    if(direction!=0)state.step(direction);else state.select(i.getIntExtra("child",-1));

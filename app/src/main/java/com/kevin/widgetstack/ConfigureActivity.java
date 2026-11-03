@@ -30,6 +30,7 @@ public final class ConfigureActivity extends Activity {
   if(draft!=null&&!draft.getBoolean("navigation_measure")){StackState current=state();int child=draft.getInt("child",-1);if(current!=null&&current.children.contains(child))WidgetSizeEditor.show(this,current,child,()->{SavedStacks.changed(this,stackId);render();});}
  }
  @Override protected void onSaveInstanceState(Bundle b){super.onSaveInstanceState(b);b.putInt("pending",pending);b.putBoolean("existing",existing);b.putBoolean("externalFlow",externalFlow);}
+ @Override protected void onResume(){super.onResume();if(store!=null&&state()!=null)render();}
  private StackState state(){return store.get(stackId);}
  private void changed(StackState s){store.put(s);SavedStacks.changed(this,stackId);render();}
  void render(){
@@ -48,6 +49,8 @@ public final class ConfigureActivity extends Activity {
   PreviewViewport.controls(this,nav,stackId,()->preview.refresh());
   Ui.tonalButton(this,nav,"Customize navigation bar",()->BarEditor.show(this,s,()->changed(s)));
   Ui.text(this,nav,"Tap a dot to choose a widget, or use the end buttons to move between widgets. Scrolling inside a widget stays with that widget.",13);
+  Ui.text(this,root,"Active widget profile: "+new VisibilityProfiles(this).activeName(stackId),14);
+  Ui.tonalButton(this,root,"Widget visibility profiles",()->startActivity(new Intent(this,ProfilesActivity.class).putExtra(SavedStacks.EXTRA_SAVED_ID,stackId)));
   Ui.section(this,root,"Widgets");
   Ui.text(this,root,"Tap a widget name to choose the starting widget for new copies. Resize each widget independently to request a compact or roomy provider layout. The result fits the stack without changing its proportions.",14);
   if(s.children.isEmpty()){LinearLayout empty=Ui.card(this,root);Ui.text(this,empty,"Add your first widget",17);}

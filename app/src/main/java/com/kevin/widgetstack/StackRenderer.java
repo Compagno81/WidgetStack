@@ -240,8 +240,10 @@ final class StackRenderer {
     }
     private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){return render(c,s,direction,forceContracted,barMotion,rootId,null);}
     private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId,Bundle exactOptions){
+        s=VisibilityProfiles.filtered(c,s);
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         RemoteViews root=shell(c,s,direction,forceContracted,barMotion,rootId);
+        if(s.children.isEmpty()&&new VisibilityProfiles(c).active(new StackStore(c).definitionId(s.id))!=0)root.setTextViewText(R.id.empty,"No widgets enabled in this profile.\nTap to configure.");
         RemoteViews source=StackHost.get(c).views.get(s.selected);
         if(source!=null){
             Bundle actual=childOptions(exactOptions==null?optionsFor(c,s.id):exactOptions,s,forceContracted);
