@@ -21,7 +21,7 @@ final class BarController {
             animationEnd=animate?SystemClock.uptimeMillis()+ANIMATION_MS:0;
             settle=()->{if(expanded.get(id)!=this)return;if(collapsing)expanded.remove(id);else animationEnd=0;refresh();};
         }
-        void refresh(){if(StackRenderer.owns(context,id)){StackRenderer.updateSizes(context,id);StackRenderer.update(context,id);}}
+        void refresh(){if(StackRenderer.owns(context,id)){StackRenderer.updateBarMotion(context,id,0,0);}}
         @Override public void run(){
             if(expanded.get(id)!=this)return;
             collapsing=true;animationEnd=SystemClock.uptimeMillis()+ANIMATION_MS;

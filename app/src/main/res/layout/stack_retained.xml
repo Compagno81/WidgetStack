@@ -1,0 +1,5 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent">
+    <!-- Search controls before foreign resource IDs, but draw them above pages. -->
+    <FrameLayout android:id="@+id/retained_controls" android:layout_width="match_parent" android:layout_height="match_parent" android:elevation="2dp" />
+    <ViewFlipper android:id="@+id/retained_pages" android:layout_width="match_parent" android:layout_height="match_parent" android:animateFirstView="false" />
+</FrameLayout>

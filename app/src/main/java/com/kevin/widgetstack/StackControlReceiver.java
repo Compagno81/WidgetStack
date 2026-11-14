@@ -40,8 +40,9 @@ public final class StackControlReceiver extends BroadcastReceiver {
   // subsequent launcher broadcasts on real devices. The foreground host owns timers.
   HostService.ensure(c);
   boolean expanding=BarController.expand(c,id);
-  StackHost.get(c).sync();StackRenderer.updateSizes(c,id);
+  StackHost.get(c).sync();
   StackRenderer.updateBarMotion(c,id,before==state.selected?0:direction!=0?direction:1,expanding?1:0);
+  StackHost.get(c).deliverPending(id,state.selected);
   return true;
  }
 }

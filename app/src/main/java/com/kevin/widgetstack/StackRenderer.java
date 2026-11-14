@@ -41,8 +41,8 @@ final class StackRenderer {
     static Bundle hostedOptions(Context c,int id){
         StackStore store=new StackStore(c);int saved=store.definitionId(id);StackState definition=store.get(saved);
         if(definition==null)return new Bundle();java.util.List<Bundle> candidates=new ArrayList<>();
-        if(store.isSaved(saved))for(int home:store.placements(saved))if(owns(c,home))candidates.add(childOptions(optionsFor(c,home),store.get(home)));
-        if(candidates.isEmpty())candidates.add(childOptions(optionsFor(c,id),definition));
+        if(store.isSaved(saved))for(int home:store.placements(saved))if(owns(c,home))candidates.add(providerOptions(optionsFor(c,home),store.get(home)));
+        if(candidates.isEmpty())candidates.add(providerOptions(optionsFor(c,id),definition));
         Bundle out=new Bundle(candidates.get(0));ArrayList<SizeF> sizes=new ArrayList<>();
         for(Bundle b:candidates){
             for(String key:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT})out.putInt(key,Math.min(out.getInt(key),b.getInt(key)));
@@ -54,6 +54,10 @@ final class StackRenderer {
         out.putParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES,sizes);return out;
     }
 
+    private static Bundle providerOptions(Bundle outer,StackState s){
+        // Auto-contract is control chrome, not a provider configuration change.
+        return childOptions(outer,s,s.autoContract&&!s.cornerArrows?Boolean.FALSE:null);
+    }
     static Bundle childOptions(Bundle outer, boolean showRail) {
         StackState s=new StackState(-1);s.showRail=showRail;return childOptions(outer,s);
     }
@@ -205,21 +209,32 @@ final class StackRenderer {
     }
     static void update(Context c,int id){update(c,id,0);}
     static void update(Context c,int id,int direction){
-        if(Recovery.paused(c)){Recovery.publish(c,id);return;}
+        if(Recovery.paused(c)){RetainedWidgets.forget(id);Recovery.publish(c,id);return;}
         if(BarController.animating(id))return; // settle callback incorporates the newest snapshot
-        updateBarMotion(c,id,direction,0);
+        publish(c,id,direction,0,false);
     }
-    static void updateBarMotion(Context c,int id,int direction,int barMotion){
-        if(Recovery.paused(c)){Recovery.publish(c,id);return;}
+    static void updateBarMotion(Context c,int id,int direction,int barMotion){publish(c,id,direction,barMotion,true);}
+    static void updateLegacy(Context c,int id){RetainedWidgets.forget(id);publish(c,id,0,0,false,true);}
+    private static void publish(Context c,int id,int direction,int barMotion,boolean navigation){publish(c,id,direction,barMotion,navigation,false);}
+    private static void publish(Context c,int id,int direction,int barMotion,boolean navigation,boolean legacy){
+        if(Recovery.paused(c)){RetainedWidgets.forget(id);Recovery.publish(c,id);return;}
         if(!owns(c,id))return;
         StackStore store=new StackStore(c);StackState s=store.get(id);
-        if(s==null){MeasuredViewport.stop(c,id);s=new StackState(id);RemoteViews empty=shell(c,s,0,null,0,nextRootId(c));empty.setTextViewText(R.id.empty,"Tap to choose a saved stack");try{boolean fresh=empty.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,empty);StackDiagnostics.note(c,"publication submitted",id,"choose saved stack; fresh="+fresh);}catch(RuntimeException e){Log.w("WidgetStack","Unable to show stack chooser",e);}return;}
+        if(s==null){RetainedWidgets.forget(id);MeasuredViewport.stop(c,id);s=new StackState(id);RemoteViews empty=shell(c,s,0,null,0,nextRootId(c));empty.setTextViewText(R.id.empty,"Tap to choose a saved stack");try{boolean fresh=empty.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,empty);StackDiagnostics.note(c,"publication submitted",id,"choose saved stack; fresh="+fresh);}catch(RuntimeException e){Log.w("WidgetStack","Unable to show stack chooser",e);}return;}
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         // Provider metadata can be temporarily unavailable. Rendering must not
         // remove configured children or disable navigation by rewriting the stack.
-        RemoteViews root=renderForHome(c,s,direction,barMotion);
-        try{boolean fresh=root.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,root);if(root.getLayoutId()!=R.layout.viewport_probe)MeasuredViewport.stop(c,id);StackDiagnostics.note(c,"publication submitted",id,"selected="+s.selected+" path="+(WidgetPublisher.usesDirectPublication(android.os.Build.VERSION.SDK_INT)?"direct35":"platform")+" fresh="+fresh);}catch(RuntimeException e){
-            Log.e("WidgetStack","Launcher rejected widget update",e);StackDiagnostics.note(c,"publish failed",id,e.getClass().getSimpleName());
+        if(navigation)try{if(RetainedWidgets.navigate(c,s,barMotion))return;}catch(RuntimeException e){RetainedWidgets.forget(id);}
+        RemoteViews root;
+        boolean retain=!legacy&&!VisibilityProfiles.filtered(c,s).children.isEmpty();
+        try{root=retain?RetainedWidgets.full(c,s):renderForHome(c,s,direction,barMotion);}
+        catch(Exception|LinkageError e){StackDiagnostics.note(c,"retention fallback",id,e.getMessage());retain=false;RetainedWidgets.forget(id);root=renderForHome(c,s,direction,barMotion);}
+
+        try{boolean fresh=root.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,root);if(retain)RetainedWidgets.remember(c,s);else RetainedWidgets.forget(id);if(root.getLayoutId()!=R.layout.viewport_probe)MeasuredViewport.stop(c,id);StackDiagnostics.note(c,"publication submitted",id,"selected="+s.selected+" path="+(WidgetPublisher.usesDirectPublication(android.os.Build.VERSION.SDK_INT)?"direct35":"platform")+" fresh="+fresh);}catch(RuntimeException e){
+            RetainedWidgets.forget(id);Log.e("WidgetStack","Launcher rejected widget update",e);StackDiagnostics.note(c,"publish failed",id,e.getClass().getSimpleName());
+            // Keep the active widget usable if retaining every page exceeds a
+            // launcher/Binder limit. Do not replace it with an error unnecessarily.
+            if(retain)try{WidgetPublisher.update(c,id,renderForHome(c,s,direction,barMotion));return;}catch(RuntimeException ignored){}
             RemoteViews fallback=shell(c,s,0,null,0,nextRootId(c));fallback.setTextViewText(R.id.empty,"Widget update was too large or unsupported.\nTap here to edit.");
             MeasuredViewport.stop(c,id);try{WidgetPublisher.update(c,id,fallback);}catch(RuntimeException ignored){}
         }

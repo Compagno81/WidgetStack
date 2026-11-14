@@ -17,4 +17,12 @@ public class HostServiceAdmissionTest {
  }
  @Test public void permissionDenialAlsoStopsCleanly(){org.robolectric.android.controller.ServiceController<PermissionDeniedService> controller=Robolectric.buildService(PermissionDeniedService.class).create();assertEquals(Service.START_NOT_STICKY,controller.get().onStartCommand(null,0,1));controller.destroy();}
  @Test public void permittedStartStillCreatesForegroundNotification(){org.robolectric.android.controller.ServiceController<HostService> controller=Robolectric.buildService(HostService.class).create();assertTrue(controller.get().foregroundReady);controller.destroy();}
+ @Test public void repeatedEnsureDoesNotScheduleEveryStackAgain(){
+  org.robolectric.util.ReflectionHelpers.setStaticField(StackHost.class,"instance",null);
+  org.robolectric.android.controller.ServiceController<HostService> controller=Robolectric.buildService(HostService.class).create();HostService service=controller.get();
+  new StackStore(service).createSaved("Service repeat regression");
+  assertEquals(Service.START_STICKY,service.onStartCommand(null,0,1));
+  StackHost host=StackHost.get(service);host.queued.clear();
+  assertEquals(Service.START_STICKY,service.onStartCommand(null,0,2));assertTrue(host.queued.isEmpty());controller.destroy();
+ }
 }

@@ -42,7 +42,8 @@ public class HostService extends Service {
         if(Recovery.paused(this)){stopSelf();return START_NOT_STICKY;}
         new StackStore(this).migrateLegacy();
         if(new StackStore(this).all().isEmpty()){stopSelf();return START_NOT_STICKY;}
-        StackHost.get(this).sync();hostStarted=true;
+        boolean firstStart=!hostStarted;StackHost.get(this).sync();hostStarted=true;
+        if(!firstStart)return START_STICKY;
         for(StackState s:new StackStore(this).all()){StackRenderer.updateSizes(this,s.id);StackHost.get(this).schedule(s.id);}
         return START_STICKY;
     }

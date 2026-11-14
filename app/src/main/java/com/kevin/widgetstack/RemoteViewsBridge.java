@@ -89,7 +89,7 @@ final class RemoteViewsBridge {
         float w=widthPx>0?widthPx:available.getWidth()*density,h=heightPx>0?heightPx:available.getHeight()*density;
         frame.setFloat(R.id.widget_scale_container,"setTranslationX",(available.getWidth()*density-w*percent/100f)*(alignment%3-1)/2f);
         frame.setFloat(R.id.widget_scale_container,"setTranslationY",(available.getHeight()*density-h*percent/100f)*(alignment/3-1)/2f);
-        frame.addView(R.id.widget_scale_container,chosen);
+        frame.removeAllViews(R.id.widget_scale_container);frame.addView(R.id.widget_scale_container,chosen);
         outer.removeAllViews(R.id.content);outer.addView(R.id.content,frame);
         List<Object> dest=actions(outer);if(dest!=null)dest.addAll(collections);
     }
@@ -114,7 +114,7 @@ final class RemoteViewsBridge {
         frame.setViewLayoutHeight(R.id.widget_scale_container,bounds.getHeight(),unit);
         frame.setFloat(R.id.widget_scale_container,"setScaleX",scale);
         frame.setFloat(R.id.widget_scale_container,"setScaleY",scale);
-        frame.addView(R.id.widget_scale_container,chosen);outer.addView(R.id.content,frame);
+        frame.removeAllViews(R.id.widget_scale_container);frame.addView(R.id.widget_scale_container,chosen);outer.addView(R.id.content,frame);
         }
         // Android's collection conversion scans root actions on some OS releases.
         // Repeating only collection adapter actions at the root makes them discoverable.
@@ -128,6 +128,45 @@ final class RemoteViewsBridge {
         @SuppressWarnings("unchecked") Map<String,Object> destItems=(Map<String,Object>)field(dst,"mUriToCollectionMapping");
         for(int i=0;i<ids.size();i++){String uri=ids.valueAt(i);destIds.put(ids.keyAt(i),uri);}
         destItems.putAll(items);
+    }
+    static void makeRetained(RemoteViews page) throws ReflectiveOperationException {retainActions(page,false,0);}
+    /** Normalize dynamic provider subtrees for recycling, and do not replay
+     * imperative scrolling when the provider snapshot has not changed. */
+    static RemoteViews retainedCopy(Context c,RemoteViews source,SizeF size,boolean unchanged) throws ReflectiveOperationException {
+        RemoteViews copy=select(c,new RemoteViews(source),size);
+        retainActions(copy,unchanged,0);
+        return copy;
+    }
+    private static void retainActions(RemoteViews views,boolean unchanged,int depth) throws ReflectiveOperationException {
+        if(depth>32)throw new IllegalArgumentException("Widget hierarchy too deep");
+        List<Object> list=actions(views);if(list==null)return;
+        Set<Integer> cleared=new java.util.HashSet<>();
+        for(Object action:list)if(action.getClass().getSimpleName().equals("ViewGroupActionRemove"))cleared.add(actionViewId(action));
+        int ordinal=0;
+        for(java.util.Iterator<Object> it=list.iterator();it.hasNext();){
+            Object action=it.next();int stable=ordinal++;
+            String name=action.getClass().getSimpleName();
+            if(unchanged){
+                String method=null;
+                for(Class<?> type=action.getClass();type!=null&&method==null;type=type.getSuperclass())for(String key:new String[]{"mMethodName","methodName"})try{
+                    Field f=type.getDeclaredField(key);f.setAccessible(true);method=(String)f.get(action);break;
+                }catch(NoSuchFieldException ignored){}
+                if(method!=null&&(method.contains("Scroll")||method.equals("scrollTo")||method.equals("scrollBy")||method.equals("setSelection")||method.equals("setDisplayedChild")||method.equals("showNext")||method.equals("showPrevious"))){it.remove();continue;}
+            }
+            if(name.equals("ViewGroupActionAdd")){
+                if(!cleared.contains(actionViewId(action)))throw new IllegalArgumentException("Provider appends views without clearing its container");
+                Field f=action.getClass().getDeclaredField("mStableId");f.setAccessible(true);
+                if(f.getInt(action)==-1)f.setInt(action,stable);
+            }
+            for(Field f:action.getClass().getDeclaredFields())if(f.getType()==RemoteViews.class&&!f.isSynthetic()&&!Modifier.isStatic(f.getModifiers())){
+                f.setAccessible(true);RemoteViews nested=(RemoteViews)f.get(action);if(nested!=null)retainActions(nested,unchanged,depth+1);
+            }
+        }
+    }
+    static Set<Integer> collectionIds(Context c,RemoteViews source,int child) throws ReflectiveOperationException {
+        Set<Integer> ids=new java.util.HashSet<>();
+        for(Object action:prepare(c,new RemoteViews(source),child))ids.add(actionViewId(action));
+        return ids;
     }
     private static int actionViewId(Object action) {
         for(Class<?> type=action.getClass();type!=null;type=type.getSuperclass())

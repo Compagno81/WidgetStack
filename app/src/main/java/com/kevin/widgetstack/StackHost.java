@@ -26,6 +26,14 @@ final class StackHost extends AppWidgetHost {
     boolean listening;
     final Set<Runnable> previewListeners=new HashSet<>();
     final Set<Integer> queued = new HashSet<>();
+    final Map<Integer,Map<Integer,Set<Integer>>> pendingCollections=new HashMap<>();
+    void deliverPending(int home,int child){
+        Map<Integer,Set<Integer>> pending=pendingCollections.get(home);
+        if(pending==null)return;
+        Set<Integer> ids=pending.remove(child);
+        if(pending.isEmpty())pendingCollections.remove(home);
+        if(ids!=null)for(int view:ids)collectionChanged(child,view,"deferred provider data");
+    }
     static synchronized StackHost get(Context c) {
         if(instance==null) instance=new StackHost(c.getApplicationContext()); return instance;
     }
@@ -84,12 +92,22 @@ final class StackHost extends AppWidgetHost {
     void collectionChanged(int child,int view,String reason){
         if(Recovery.paused(context))return;
         if(child<0||view==0)return;
-        for(StackState s:new StackStore(context).all())if(s.id>=0&&s.selected==child&&StackRenderer.owns(context,s.id)){
+        for(StackState original:new StackStore(context).all())if(original.id>=0&&original.children.contains(child)&&StackRenderer.owns(context,original.id)){
+            StackState s=VisibilityProfiles.filtered(context,original);
+            boolean safe=RetainedWidgets.canNotify(context,s.id,child,view);
+            if(!safe&&s.selected!=child){
+                pendingCollections.computeIfAbsent(s.id,k->new HashMap<>()).computeIfAbsent(child,k->new HashSet<>()).add(view);
+                continue;
+            }
+            // Only genuine data events take this compatibility path. A navigation
+            // tap by itself never clears pages. The single-page layout removes
+            // ambiguous foreign IDs before the normal framework notification.
+            if(!safe&&RetainedWidgets.contains(s.id))StackRenderer.updateLegacy(context,s.id);
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(s.id,view);
             StackDiagnostics.note(context,"collection rows requested",s.id,"child="+child+" view="+view+" reason="+reason);
         }
-        // Data readiness must not rebuild the root: replacing an adapter can
-        // start another readiness event and perpetually discard incoming updates.
+        // Once in the single-page compatibility path, READY only notifies; it
+        // cannot recursively rebuild the root on every service connection.
     }
     void schedule(int stack) {
         if(Recovery.paused(context))return;

@@ -1,0 +1,17 @@
+{
+  "version": "1.41-reconstructed",
+  "version_code": 42,
+  "base_commit": "6f094d64630df5c19087c25d0e1eccfe43fd5eed",
+  "apk_sha256": "fbc541cdfb9b1a89ae3e1c693b8a53cf77142204fb48ba779bb9638cd078db3f",
+  "signer_sha256": "eb7cc6e833e7221ea3fab1fde4e64b2a2c21e57765a8d48b1cd651d3e44ae925",
+  "framework_sdks": [
+    31,
+    35
+  ],
+  "tests": 316,
+  "failures": 0,
+  "errors": 0,
+  "lint": "passed (existing warnings remain)",
+  "assembleDebug": "passed",
+  "physical_device_validation": false
+}

@@ -20,7 +20,7 @@ public final class StackProvider extends AppWidgetProvider {
     @Override public void onAppWidgetOptionsChanged(Context c,AppWidgetManager m,int id,Bundle options){MeasuredViewport.invalidate(c,id);StackRenderer.updateSizes(c,id);StackHost.get(c).sync();StackRenderer.update(c,id);}
     @Override public void onDeleted(Context c,int[] ids){
         StackStore store=new StackStore(c);store.migrateLegacy();
-        for(int id:ids){MeasuredViewport.invalidate(c,id);BarController.cancel(id);int saved=store.definitionId(id);store.delete(id);if(saved!=id)StackRenderer.updateSizes(c,saved);}
+        for(int id:ids){RetainedWidgets.forget(id);MeasuredViewport.invalidate(c,id);BarController.cancel(id);int saved=store.definitionId(id);store.delete(id);if(saved!=id)StackRenderer.updateSizes(c,saved);}
         if(store.all().isEmpty())c.stopService(new Intent(c,HostService.class));
     }
 }
