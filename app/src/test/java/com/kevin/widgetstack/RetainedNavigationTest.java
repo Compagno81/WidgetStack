@@ -70,5 +70,28 @@ public class RetainedNavigationTest {
   assertSame(first,list(root,0));assertEquals(position,first.getFirstVisiblePosition());
   assertEquals("←",((TextView)root.findViewById(R.id.previous)).getText().toString());assertTrue(root.findViewById(R.id.next).isClickable());
  }
+ @Test @Config(sdk=35) public void responsiveBitmapCollectionsLoadAndRetainTheirRows()throws Exception{
+  for(int child:s.children){
+   java.util.Map<android.util.SizeF,RemoteViews> variants=new java.util.LinkedHashMap<>();
+   for(int width:new int[]{200,400}){
+    RemoteViews rv=new RemoteViews("android",android.R.layout.list_content);
+    RemoteViews.RemoteCollectionItems.Builder rows=new RemoteViews.RemoteCollectionItems.Builder().setHasStableIds(true).setViewTypeCount(1);
+    for(int n=0;n<50;n++){
+     RemoteViews row=new RemoteViews(c.getPackageName(),R.layout.retention_fixture);
+     android.graphics.Bitmap b=android.graphics.Bitmap.createBitmap(20,20,android.graphics.Bitmap.Config.ARGB_8888);b.eraseColor(child==11?android.graphics.Color.RED:android.graphics.Color.BLUE);
+     row.setImageViewBitmap(android.R.id.icon,b);row.setTextViewText(android.R.id.text1,"Widget "+child+" row "+n);rows.addItem(n,row);
+    }
+    rv.setRemoteAdapter(android.R.id.list,rows.build());variants.put(new android.util.SizeF(width,300),rv);
+   }
+   StackHost.get(c).views.put(child,parcel(new RemoteViews(variants)));
+  }
+  View root=mount();layout(root);
+  for(int index=0;index<2;index++){
+   ListView list=list(root,index);assertNotNull(list.getAdapter());assertEquals(50,list.getCount());
+   View row=list.getAdapter().getView(0,null,list);assertNotNull(((ImageView)row.findViewById(android.R.id.icon)).getDrawable());
+   assertEquals("Widget "+(index==0?11:22)+" row 0",((TextView)row.findViewById(android.R.id.text1)).getText().toString());
+  }
+  s.select(22);next(0).reapply(c,root);layout(root);
+ }
  @Test public void changingMembershipRequiresFullPublication(){RetainedWidgets.remember(c,s);s.add(33);assertFalse(RetainedWidgets.navigate(c,s,0));}
 }
