@@ -1,7 +1,7 @@
 # Widget Stack
 
-Current candidate: **1.41 reconstructed**, based on the verified 1.40 release.
-See [navigation state retention](docs/NAVIGATION-STATE-1.41.md) for behaviour and compatibility limits.
+Current candidate: **1.42 reconstructed**, with single-page compatibility rendering on Android 16 and newer.
+See [candidate notes](docs/RELEASE-CANDIDATE.md) for the Android 17 loading mitigation and scroll-retention tradeoff.
 
 Android stacks of live third-party widgets. Recovered from the owner-supplied
 1.14 Android Studio archive; new work is reconstruction, not historical 1.18 source.

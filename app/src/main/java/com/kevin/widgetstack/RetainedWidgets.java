@@ -11,6 +11,11 @@ import java.util.*;
 final class RetainedWidgets {
     private static final Map<Integer,List<Integer>> published=new HashMap<>();
     private static final Map<Integer,Map<Integer,RemoteViews>> snapshots=new HashMap<>();
+    // Retention was validated through API 35. API 37 reports missing native
+    // collection rows and failed inflation when another widget hosts a stack.
+    // Use the established single-page publication on newer platform versions
+    // until the nested apply/conversion path has device coverage.
+    static boolean supportedOn(int api){return api>=31&&api<=35;}
     static void forget(int id){published.remove(id);snapshots.remove(id);}
     static boolean contains(int id){return published.containsKey(id);}
     static void clear(){published.clear();snapshots.clear();}
@@ -32,6 +37,7 @@ final class RetainedWidgets {
 
     static RemoteViews full(Context c,StackState original) throws ReflectiveOperationException {return full(c,original,0);}
     static RemoteViews full(Context c,StackState original,int motion) throws ReflectiveOperationException {
+        if(!supportedOn(android.os.Build.VERSION.SDK_INT))throw new UnsupportedOperationException("Single-page compatibility mode on API "+android.os.Build.VERSION.SDK_INT);
         StackState s=VisibilityProfiles.filtered(c,original);
         RemoteViews root=controls(c,s,motion);
         root.removeAllViews(R.id.retained_pages);
@@ -74,6 +80,7 @@ final class RetainedWidgets {
     }
     static boolean navigate(Context c,StackState original,int motion){
         StackState s=VisibilityProfiles.filtered(c,original);
+        if(!supportedOn(android.os.Build.VERSION.SDK_INT)){forget(s.id);return false;}
         if(s.children.isEmpty()||!s.children.equals(published.get(s.id)))return false;
         try{
             RemoteViews root=full(c,s,motion);WidgetPublisher.update(c,s.id,root);remember(c,s);return true;

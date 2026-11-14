@@ -15,6 +15,7 @@ final class StackDiagnostics {
         StringBuilder text=new StringBuilder("Widget Stack "+version+"\n"+Build.MANUFACTURER+" "+Build.MODEL+" · Android "+Build.VERSION.RELEASE+" (API "+Build.VERSION.SDK_INT+")\nSaved stacks: "+store.saved().size()+" · Home-screen copies: "+copies+"\n");
         text.append("Stacks paused: ").append(Recovery.paused(c)).append('\n');
         text.append("Publication path: ").append(WidgetPublisher.usesDirectPublication(Build.VERSION.SDK_INT)?"direct API 35":"Android platform").append('\n');
+        text.append("Rendering mode: ").append(RetainedWidgets.supportedOn(Build.VERSION.SDK_INT)?"retained pages where compatible":"single-page compatibility (scroll retention disabled)").append('\n');
         for(StackState definition:store.saved())for(int home:store.placements(definition.id)){
             StackState placement=store.get(home);if(placement!=null)text.append("Home #").append(home).append(" selected=").append(placement.selected).append(" widgets=").append(placement.children.size()).append('\n');
         }

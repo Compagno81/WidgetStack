@@ -224,7 +224,8 @@ final class StackRenderer {
         AppWidgetManager m=AppWidgetManager.getInstance(c);
         // Provider metadata can be temporarily unavailable. Rendering must not
         // remove configured children or disable navigation by rewriting the stack.
-        if(navigation)try{if(RetainedWidgets.navigate(c,s,barMotion))return;}catch(RuntimeException e){RetainedWidgets.forget(id);}
+        if(!RetainedWidgets.supportedOn(android.os.Build.VERSION.SDK_INT)){legacy=true;RetainedWidgets.forget(id);}
+        if(navigation&&!legacy)try{if(RetainedWidgets.navigate(c,s,barMotion))return;}catch(RuntimeException e){RetainedWidgets.forget(id);}
         RemoteViews root;
         boolean retain=!legacy&&!VisibilityProfiles.filtered(c,s).children.isEmpty();
         try{root=retain?RetainedWidgets.full(c,s):renderForHome(c,s,direction,barMotion);}
