@@ -9,7 +9,7 @@ import android.widget.*;
 /** Grouped native settings share one draft and a preview of the production widget layout. */
 final class BarEditor {
  static void show(Activity a,StackState target,Runnable saved){
-  StackState draft=new StackState(target.id);draft.railEdge=target.railEdge;draft.railWidth=target.railWidth;draft.railOpacity=target.railOpacity;draft.showRail=target.showRail;draft.animateSwitch=target.animateSwitch;draft.buttonsOnly=target.buttonsOnly;draft.overlapBar=target.overlapBar;draft.autoContract=target.autoContract;draft.contractedWidth=target.contractedWidth;draft.contractDelaySeconds=target.contractDelaySeconds;draft.contractToCorner=target.contractToCorner;draft.cornerEnd=target.cornerEnd;draft.cornerArrows=target.cornerArrows;draft.cornerArrowSize=target.cornerArrowSize;
+  StackState draft=new StackState(target.id);draft.pairedBars=target.pairedBars;draft.topBottomPair=target.topBottomPair;draft.hiddenOpacity=target.hiddenOpacity;draft.railEdge=target.railEdge;draft.railWidth=target.railWidth;draft.railOpacity=target.railOpacity;draft.showRail=target.showRail;draft.animateSwitch=target.animateSwitch;draft.buttonsOnly=target.buttonsOnly;draft.overlapBar=target.overlapBar;draft.autoContract=target.autoContract;draft.contractedWidth=target.contractedWidth;draft.contractDelaySeconds=target.contractDelaySeconds;draft.contractToCorner=target.contractToCorner;draft.cornerEnd=target.cornerEnd;draft.cornerArrows=target.cornerArrows;draft.cornerArrowSize=target.cornerArrowSize;
   for(int id:target.children){draft.add(id);draft.setDimensions(id,target.widthPx(id),target.heightPx(id));draft.setVisualScalePercent(id,target.visualScalePercent(id));draft.setAlignment(id,target.alignment(id));}draft.select(target.selected);
   LinearLayout root=new LinearLayout(a);root.setOrientation(LinearLayout.VERTICAL);root.setPadding(Ui.dp(a,16),Ui.dp(a,8),Ui.dp(a,16),Ui.dp(a,8));
   Preview preview=new Preview(a,draft);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(a,160)));preview.setOnClickListener(v->preview.demonstrateExpansion());
@@ -27,15 +27,25 @@ final class BarEditor {
   Switch visible=toggle(a,appearance,"Show navigation controls",draft.showRail);
   Ui.text(a,appearance,"Navigation style",16);
   RadioGroup styles=new RadioGroup(a);styles.setOrientation(LinearLayout.HORIZONTAL);styles.setContentDescription("Navigation style");appearance.addView(styles);
-  RadioButton barStyle=choice(a,"Bar"),arrowStyle=choice(a,"Corner arrows");styles.addView(barStyle,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));styles.addView(arrowStyle,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));barStyle.setChecked(!draft.cornerArrows);arrowStyle.setChecked(draft.cornerArrows);
+  RadioButton barStyle=choice(a,"Bar"),arrowStyle=choice(a,"Corner arrows");styles.addView(barStyle,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));styles.addView(arrowStyle,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));RadioButton pairStyle=choice(a,"Opposite edges");
+  styles.addView(pairStyle,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));
+  pairStyle.setChecked(draft.pairedBars);barStyle.setChecked(!draft.cornerArrows&&!draft.pairedBars);arrowStyle.setChecked(draft.cornerArrows);
   Ui.text(a,appearance,"Position",16);RadioGroup edges=new RadioGroup(a);edges.setContentDescription("Bar position");edges.setOrientation(LinearLayout.HORIZONTAL);appearance.addView(edges);
   String[] labels={"Top","Bottom","Left","Right"};
   for(int i=0;i<labels.length;i++){RadioButton b=choice(a,labels[i]);edges.addView(b,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));final int edge=i;b.setChecked(i==draft.railEdge);b.setOnCheckedChangeListener((v,on)->{if(on){draft.railEdge=edge;preview.refresh();}});}
+  RadioGroup pairs=new RadioGroup(a);pairs.setOrientation(LinearLayout.HORIZONTAL);appearance.addView(pairs);
+  RadioButton sides=choice(a,"Left and right"),endsPair=choice(a,"Top and bottom");
+  for(RadioButton b:new RadioButton[]{sides,endsPair})pairs.addView(b,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));
+  (draft.topBottomPair?endsPair:sides).setChecked(true);
+  pairs.setOnCheckedChangeListener((group,id)->{draft.topBottomPair=id==endsPair.getId();preview.refresh();});
   TextView width=Ui.text(a,appearance,"",16);SeekBar thickness=slider(a,appearance,"Bar thickness",72,draft.railWidth-8);
   TextView alpha=Ui.text(a,appearance,"",16);SeekBar opacity=slider(a,appearance,"Bar opacity",100,draft.railOpacity);
   Switch buttons=toggle(a,behaviour,"Buttons only",draft.buttonsOnly),overlap=toggle(a,behaviour,"Overlap widget",draft.overlapBar),automatic=toggle(a,behaviour,"Auto-contract",draft.autoContract);
   LinearLayout compact=panel(a,behaviour);compact.setContentDescription("Contracted size settings");TextView compactLabel=Ui.text(a,compact,"",16);SeekBar compactSize=slider(a,compact,"Contracted bar thickness",draft.railWidth-5,draft.contractedWidth-4);
-  Ui.text(a,compact,"Shrink to",16);RadioGroup shrink=new RadioGroup(a);shrink.setContentDescription("Shrink mode");shrink.setOrientation(LinearLayout.HORIZONTAL);compact.addView(shrink);
+  TextView hiddenAlpha=Ui.text(a,compact,"",16);
+  SeekBar hidden=slider(a,compact,"Hidden opacity",100,draft.hiddenOpacity);
+  hidden.setOnSeekBarChangeListener(listener(value->{draft.hiddenOpacity=value;hiddenAlpha.setText("Hidden opacity: "+value+"%");preview.contracted=true;preview.refresh();}));
+  TextView shrinkLabel=Ui.text(a,compact,"Shrink to",16);RadioGroup shrink=new RadioGroup(a);shrink.setContentDescription("Shrink mode");shrink.setOrientation(LinearLayout.HORIZONTAL);compact.addView(shrink);
   RadioButton strip=choice(a,"Edge strip"),square=choice(a,"Corner square");shrink.addView(strip,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));shrink.addView(square,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));strip.setChecked(!draft.contractToCorner);square.setChecked(draft.contractToCorner);
   LinearLayout corners=panel(a,compact);corners.setContentDescription("Corner settings");Ui.text(a,corners,"Corner on the selected edge",16);RadioGroup ends=new RadioGroup(a);ends.setContentDescription("Square corner");ends.setOrientation(LinearLayout.HORIZONTAL);corners.addView(ends);
   RadioButton first=choice(a,"Top / left"),last=choice(a,"Bottom / right");ends.addView(first,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));ends.addView(last,new RadioGroup.LayoutParams(0,Ui.dp(a,48),1));first.setChecked(draft.cornerEnd==0);last.setChecked(draft.cornerEnd==1);
@@ -46,28 +56,37 @@ final class BarEditor {
   Ui.text(a,compact,"Delay in seconds (minimum 2)",16);
   EditText delay=new EditText(a);delay.setContentDescription("Auto-contract delay in seconds");delay.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);delay.setSingleLine(true);delay.setText(String.valueOf(draft.contractDelaySeconds));compact.addView(delay,new LinearLayout.LayoutParams(-1,-2));
   delay.addTextChangedListener(new android.text.TextWatcher(){public void beforeTextChanged(CharSequence s,int start,int count,int after){}public void onTextChanged(CharSequence s,int start,int before,int count){try{int seconds=Integer.parseInt(s.toString());if(seconds<2)throw new NumberFormatException();draft.contractDelaySeconds=seconds;delay.setError(null);}catch(NumberFormatException e){delay.setError("Enter whole seconds, 2 or more");}}public void afterTextChanged(android.text.Editable s){}});
-  Ui.text(a,compact,"Tap the contracted strip to expand. Each navigation tap restarts the delay. Both shrink modes animate. The corner square sits inside a 48 dp corner tap target to keep it visible and easy to expand. Its visual size remains adjustable.",14);
+  TextView compactHint=Ui.text(a,compact,"Tap the contracted strip to expand. Each navigation tap restarts the delay. Both shrink modes animate. The corner square sits inside a 48 dp corner tap target to keep it visible and easy to expand. Its visual size remains adjustable.",14);
   Ui.text(a,behaviour,"Buttons only gives each arrow half the bar. Overlap keeps the widget full size; the bar receives touches on the covered edge.",14);
   Switch animation=toggle(a,animationPanel,"Slide animation",draft.animateSwitch);animation.setText("Slide when switching widgets");Ui.text(a,animationPanel,"Slides the incoming widget when a dot or arrow changes the selection.",14);
-  Ui.text(a,appearance,"Two arrows overlay opposite corners of the selected edge. Top/bottom edges use left/right arrows; left/right edges use up/down arrows. Arrows switch widgets directly and stay visible.",14);
+  TextView cornerHint=Ui.text(a,appearance,"Two arrows overlay opposite corners of the selected edge. Top/bottom edges use left/right arrows; left/right edges use up/down arrows. Arrows switch widgets directly and stay visible.",14);
   TextView arrowLabel=Ui.text(a,appearance,"Corner arrow size: "+draft.cornerArrowSize+" dp",16);
   SeekBar arrowSize=slider(a,appearance,"Corner arrow size",64,draft.cornerArrowSize-16);
   final boolean[] refreshing={false};Runnable refresh=()->{
    if(refreshing[0])return;refreshing[0]=true;draft.normalize();width.setText("Expanded bar thickness: "+draft.railWidth+" dp");alpha.setText("Opacity: "+draft.railOpacity+"%");compactLabel.setText((draft.contractToCorner?"Corner square size: ":"Contracted bar thickness: ")+draft.contractedWidth+" dp");compactSize.setMax(draft.railWidth-5);compactSize.setProgress(draft.contractedWidth-4);compact.setVisibility(!draft.cornerArrows&&draft.autoContract?View.VISIBLE:View.GONE);
    for(View control:new View[]{width,thickness,buttons,overlap,automatic})control.setVisibility(draft.cornerArrows?View.GONE:View.VISIBLE);
+   pairs.setVisibility(draft.pairedBars?View.VISIBLE:View.GONE);edges.setVisibility(draft.pairedBars?View.GONE:View.VISIBLE);
+   buttons.setVisibility(draft.pairedBars||draft.cornerArrows?View.GONE:View.VISIBLE);
+   for(View control:new View[]{hidden,hiddenAlpha})control.setVisibility(draft.pairedBars?View.VISIBLE:View.GONE);
+   hiddenAlpha.setText("Hidden opacity: "+draft.hiddenOpacity+"%");
+   for(View control:new View[]{shrinkLabel,shrink,compactHint})control.setVisibility(draft.pairedBars?View.GONE:View.VISIBLE);
+   corners.setVisibility(!draft.pairedBars&&draft.contractToCorner?View.VISIBLE:View.GONE);
+   cornerHint.setVisibility(draft.cornerArrows?View.VISIBLE:View.GONE);
+   if(draft.pairedBars)compactLabel.setText("Hidden bar thickness: "+draft.contractedWidth+" dp");
    arrowLabel.setVisibility(draft.cornerArrows?View.VISIBLE:View.GONE);arrowSize.setVisibility(draft.cornerArrows?View.VISIBLE:View.GONE);preview.refresh();refreshing[0]=false;
   };
   thickness.setOnSeekBarChangeListener(listener(value->{draft.railWidth=value+8;preview.contracted=false;refresh.run();}));opacity.setOnSeekBarChangeListener(listener(value->{draft.railOpacity=value;refresh.run();}));
   compactSize.setOnSeekBarChangeListener(listener(value->{if(!refreshing[0]){draft.contractedWidth=value+4;preview.contracted=true;refresh.run();}}));
   visible.setOnCheckedChangeListener((v,on)->{draft.showRail=on;refresh.run();});buttons.setOnCheckedChangeListener((v,on)->{draft.buttonsOnly=on;refresh.run();});overlap.setOnCheckedChangeListener((v,on)->{draft.overlapBar=on;refresh.run();});automatic.setOnCheckedChangeListener((v,on)->{draft.autoContract=on;preview.contracted=on;refresh.run();});animation.setOnCheckedChangeListener((v,on)->draft.animateSwitch=on);refresh.run();
-  barStyle.setOnCheckedChangeListener((v,on)->{if(on){draft.cornerArrows=false;refresh.run();}});
-  arrowStyle.setOnCheckedChangeListener((v,on)->{if(on){draft.cornerArrows=true;refresh.run();}});
+  pairStyle.setOnCheckedChangeListener((v,on)->{if(on){draft.pairedBars=true;draft.cornerArrows=false;refresh.run();}});
+  barStyle.setOnCheckedChangeListener((v,on)->{if(on){draft.pairedBars=false;draft.cornerArrows=false;refresh.run();}});
+  arrowStyle.setOnCheckedChangeListener((v,on)->{if(on){draft.pairedBars=false;draft.cornerArrows=true;refresh.run();}});
   arrowSize.setOnSeekBarChangeListener(listener(value->{draft.cornerArrowSize=value+16;arrowLabel.setText("Corner arrow size: "+draft.cornerArrowSize+" dp");preview.refresh();}));
   AlertDialog dialog=new AlertDialog.Builder(a).setTitle("Navigation bar").setView(root).setPositiveButton("Apply",null).setNegativeButton("Cancel",null).create();
   dialog.setOnShowListener(d->{int height=Math.round(a.getResources().getDisplayMetrics().heightPixels*.85f);dialog.getWindow().setLayout(-1,height);});dialog.show();
   dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v->{
    if(!draft.cornerArrows&&draft.autoContract){try{int seconds=Integer.parseInt(delay.getText().toString());if(seconds<2)throw new NumberFormatException();draft.contractDelaySeconds=seconds;}catch(NumberFormatException e){delay.setError("Enter whole seconds, 2 or more");delay.requestFocus();return;}}
-   target.cornerArrows=draft.cornerArrows;target.cornerArrowSize=draft.cornerArrowSize;target.railEdge=draft.railEdge;target.railWidth=draft.railWidth;target.railOpacity=draft.railOpacity;target.showRail=draft.showRail;target.animateSwitch=draft.animateSwitch;target.buttonsOnly=draft.buttonsOnly;target.overlapBar=draft.overlapBar;target.autoContract=draft.autoContract;target.contractedWidth=draft.contractedWidth;target.contractDelaySeconds=draft.contractDelaySeconds;target.contractToCorner=draft.contractToCorner;target.cornerEnd=draft.cornerEnd;saved.run();dialog.dismiss();
+   target.pairedBars=draft.pairedBars;target.topBottomPair=draft.topBottomPair;target.hiddenOpacity=draft.hiddenOpacity;target.cornerArrows=draft.cornerArrows;target.cornerArrowSize=draft.cornerArrowSize;target.railEdge=draft.railEdge;target.railWidth=draft.railWidth;target.railOpacity=draft.railOpacity;target.showRail=draft.showRail;target.animateSwitch=draft.animateSwitch;target.buttonsOnly=draft.buttonsOnly;target.overlapBar=draft.overlapBar;target.autoContract=draft.autoContract;target.contractedWidth=draft.contractedWidth;target.contractDelaySeconds=draft.contractDelaySeconds;target.contractToCorner=draft.contractToCorner;target.cornerEnd=draft.cornerEnd;saved.run();dialog.dismiss();
   });
  }
  private static LinearLayout panel(Activity a,LinearLayout parent){LinearLayout p=new LinearLayout(a);p.setOrientation(LinearLayout.VERTICAL);parent.addView(p,new LinearLayout.LayoutParams(-1,-2));return p;}

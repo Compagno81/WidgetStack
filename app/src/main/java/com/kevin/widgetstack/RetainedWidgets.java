@@ -95,11 +95,11 @@ final class RetainedWidgets {
         root.removeAllViews(R.id.retained_controls);
         root.addView(R.id.retained_controls,controls);
         boolean compact=motion<0||motion==0&&BarController.contracted(s);
-        boolean reserve=s.showRail&&!s.cornerArrows&&!s.overlapBar&&!(compact&&s.contractToCorner);
+        boolean reserve=s.showRail&&!s.cornerArrows&&!s.overlapBar&&(s.pairedBars||!(compact&&s.contractToCorner));
         int thickness=Math.round((compact?s.contractedWidth:s.railWidth)*c.getResources().getDisplayMetrics().density);
-        root.setViewPadding(R.id.retained_pages,reserve&&s.railEdge==StackState.LEFT?thickness:0,
-                reserve&&s.railEdge==StackState.TOP?thickness:0,reserve&&s.railEdge==StackState.RIGHT?thickness:0,
-                reserve&&s.railEdge==StackState.BOTTOM?thickness:0);
+        root.setViewPadding(R.id.retained_pages,reserve&&(s.pairedBars?!s.topBottomPair:s.railEdge==StackState.LEFT)?thickness:0,
+                reserve&&(s.pairedBars?s.topBottomPair:s.railEdge==StackState.TOP)?thickness:0,reserve&&(s.pairedBars?!s.topBottomPair:s.railEdge==StackState.RIGHT)?thickness:0,
+                reserve&&(s.pairedBars?s.topBottomPair:s.railEdge==StackState.BOTTOM)?thickness:0);
         root.setDisplayedChild(R.id.retained_pages,Math.max(0,s.children.indexOf(s.selected)));
         return root;
     }

@@ -1,0 +1,8 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:id="@id/previous" android:layout_gravity="top"
+        android:layout_width="match_parent" android:layout_height="36dp"
+        android:gravity="center" android:textColor="#FF102C23" android:background="@drawable/rail_background"/>
+    <TextView android:id="@id/next" android:layout_gravity="bottom"
+        android:layout_width="match_parent" android:layout_height="36dp"
+        android:gravity="center" android:textColor="#FF102C23" android:background="@drawable/rail_background"/>
+</merge>

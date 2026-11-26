@@ -67,8 +67,9 @@ final class StackRenderer {
         b.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN);
         int width=forceContracted==null?BarController.width(s):forceContracted?s.contractedWidth:s.railWidth;
         boolean compact=forceContracted==null?BarController.contracted(s):forceContracted;
-        boolean reserve=s.showRail&&!s.cornerArrows&&!s.overlapBar&&!(compact&&s.contractToCorner);
-        int w=reserve&&!s.horizontalRail()?width:0,h=reserve&&s.horizontalRail()?width:0;
+        boolean reserve=s.showRail&&!s.cornerArrows&&!s.overlapBar&&(s.pairedBars||!(compact&&s.contractToCorner));
+        int reserved=width*(s.pairedBars?2:1);
+        int w=reserve&&!s.usesHorizontalEdges()?reserved:0,h=reserve&&s.usesHorizontalEdges()?reserved:0;
         for(String k:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH})b.putInt(k,Math.max(32,outer.getInt(k,240)-w));
         for(String k:new String[]{AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT})b.putInt(k,Math.max(32,outer.getInt(k,160)-h));
         ArrayList<SizeF> sizes=outer.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
@@ -109,6 +110,10 @@ final class StackRenderer {
     static RemoteViews shell(Context c,StackState s,int direction,Boolean forceContracted,int barMotion){return shell(c,s,direction,forceContracted,barMotion,View.NO_ID);}
     private static RemoteViews shell(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){
         s.normalize();
+        if(s.pairedBars&&s.showRail){
+            boolean compact=s.autoContract&&(barMotion!=0?barMotion<0:forceContracted!=null?forceContracted:BarController.contracted(s));
+            return pairedShell(c,s,compact,rootId,direction);
+        }
         if(s.cornerArrows&&s.showRail){
             int[] corners={R.layout.corner_arrows_0,R.layout.corner_arrows_1,R.layout.corner_arrows_2,R.layout.corner_arrows_3};
             RemoteViews root=baseShell(c,corners[s.railEdge],rootId);
@@ -179,6 +184,33 @@ final class StackRenderer {
         RemoteViews root=rootId==View.NO_ID?new RemoteViews(c.getPackageName(),layout):new RemoteViews(c.getPackageName(),layout,rootId);
         root.removeAllViews(R.id.content);
         root.addView(R.id.content,new RemoteViews(c.getPackageName(),R.layout.stack_placeholder));
+        return root;
+    }
+    private static RemoteViews pairedShell(Context c,StackState s,boolean compact,int rootId,int direction){
+        boolean horizontal=s.topBottomPair;
+        int layout=horizontal?R.layout.paired_top_bottom:R.layout.paired_left_right;
+        if(s.animateSwitch && direction!=0){
+            if(horizontal)layout=direction<0?R.layout.paired_top_bottom_previous:R.layout.paired_top_bottom_next;
+            else layout=direction<0?R.layout.paired_left_right_previous:R.layout.paired_left_right_next;
+        }
+        RemoteViews root=baseShell(c,layout,rootId);
+        if(s.animateSwitch && direction!=0)root.setDisplayedChild(R.id.transition,1);
+        int width=compact?s.contractedWidth:s.railWidth;
+        int inset=s.overlapBar?0:Math.round(width*c.getResources().getDisplayMetrics().density);
+        int x=horizontal?0:inset,y=horizontal?inset:0;
+        root.setViewPadding(R.id.widget_area,x,y,x,y);
+        for(int button:new int[]{R.id.previous,R.id.next}){
+            boolean previous=button==R.id.previous;
+            if(horizontal)root.setViewLayoutHeight(button,width,android.util.TypedValue.COMPLEX_UNIT_DIP);
+            else root.setViewLayoutWidth(button,width,android.util.TypedValue.COMPLEX_UNIT_DIP);
+            root.setTextViewText(button,compact?"":horizontal?(previous?"↑":"↓"):(previous?"‹":"›"));
+            root.setContentDescription(button,compact?"Expand navigation":previous?"Previous widget":"Next widget");
+            root.setTextViewTextSize(button,android.util.TypedValue.COMPLEX_UNIT_DIP,Math.min(24,width*.7f));
+            root.setFloat(button,"setAlpha",(compact?s.hiddenOpacity:s.railOpacity)/100f);
+            root.setBoolean(button,"setEnabled",compact||s.children.size()>1);
+            root.setOnClickPendingIntent(button,compact?expandIntent(c,s.id):navigation(c,s.id,-1,previous?-1:1));
+        }
+        root.setOnClickPendingIntent(R.id.empty,PendingIntent.getActivity(c,s.id,editIntent(c,s.id),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE));
         return root;
     }
     private static RemoteViews contractedShell(Context c,StackState s,int rootId){

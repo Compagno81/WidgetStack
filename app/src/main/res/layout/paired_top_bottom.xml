@@ -1,0 +1,7 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <FrameLayout android:id="@id/widget_area" android:layout_width="match_parent" android:layout_height="match_parent">
+        <FrameLayout android:id="@id/content" android:layout_width="match_parent" android:layout_height="match_parent"/>
+    </FrameLayout>
+    <include layout="@layout/paired_top_bottom_controls"/>
+</FrameLayout>

@@ -15,6 +15,10 @@ public final class StackState {
     public int railEdge=RIGHT, railWidth=36, railOpacity=20;
     public boolean animateSwitch=false, buttonsOnly=false, overlapBar=false, autoContract=false;
     public boolean cornerArrows=false;
+    public boolean pairedBars=false;
+    public boolean topBottomPair=false;
+    public int hiddenOpacity=10;
+    public boolean usesHorizontalEdges(){return pairedBars ? topBottomPair : horizontalRail();}
     public int cornerArrowSize=32;
     public int contractedWidth=8;
     public int contractDelaySeconds=2;
@@ -62,6 +66,7 @@ public final class StackState {
     }
     public void select(int child) { if (children.contains(child)) selected = child; }
     public void normalize() {
+        hiddenOpacity=Math.max(0, Math.min(100, hiddenOpacity));
         cornerArrowSize=Math.max(16,Math.min(80,cornerArrowSize));
         if(railEdge<TOP||railEdge>RIGHT)railEdge=RIGHT;
         contractDelaySeconds=Math.max(2,contractDelaySeconds);cornerEnd=cornerEnd==1?1:0;

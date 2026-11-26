@@ -62,6 +62,10 @@ class StackPreview extends FrameLayout {
     private boolean onBar(float x,float y){
         if(!state.showRail||x<0||y<0||x>homeWidth||y>homeHeight)return false;
         float density=getResources().getDisplayMetrics().density;
+        if(state.pairedBars){
+            float width=(state.autoContract&&contracted?state.contractedWidth:state.railWidth)*density;
+            return state.topBottomPair?(y<width||y>=homeHeight-width):(x<width||x>=homeWidth-width);
+        }
         if(state.cornerArrows){
             float size=Math.max(48,state.cornerArrowSize)*density;
             boolean end=state.horizontalRail()?(x<size||x>=homeWidth-size):(y<size||y>=homeHeight-size);
@@ -84,6 +88,10 @@ class StackPreview extends FrameLayout {
         if(event.getAction()==MotionEvent.ACTION_UP){
             float x=(event.getX()-offsetX)/scale,y=(event.getY()-offsetY)/scale;
             if(onBar(x,y)){
+                if(state.pairedBars){
+                    if(!state.autoContract||!contracted)stepVisible((state.topBottomPair?y/homeHeight:x/homeWidth)<.5f?-1:1);
+                    demonstrateExpansion();return true;
+                }
                 if(state.cornerArrows){stepVisible((state.horizontalRail()?x/homeWidth:y/homeHeight)<.5f?-1:1);refresh();return true;}
                 if(!state.autoContract||!contracted){
                     float fraction=state.horizontalRail()?x/homeWidth:y/homeHeight;
