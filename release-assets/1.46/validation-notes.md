@@ -1,0 +1,1 @@
+The signed APK builds against Android 35 and uses the same certificate as version 1.45. The page slide runs on the incoming live widget, independently of the navigation controls. Physical Xiaomi launcher testing is pending.
