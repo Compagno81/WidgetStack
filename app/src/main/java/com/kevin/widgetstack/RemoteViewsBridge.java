@@ -66,10 +66,10 @@ final class RemoteViewsBridge {
         embedFitted(c,outer,source,child,size,new SizeF(size.getWidth()*scale,size.getHeight()*scale));
     }
     static void embedAuto(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size) throws ReflectiveOperationException {
-        embedWithSizing(c,outer,source,child,size,null);
+        embedWithSizing(c,outer,source,child,size,null,0);
     }
     static void embedFitted(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
-        embedWithSizing(c,outer,source,child,size,available);
+        embedWithSizing(c,outer,source,child,size,available,0);
     }
     /** Each explicit axis is a physical layout size; Auto follows its actual parent. */
     static void embedSized(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent) throws ReflectiveOperationException {
@@ -79,14 +79,17 @@ final class RemoteViewsBridge {
         float density=c.getResources().getDisplayMetrics().density;
         embedPositioned(c,outer,source,child,requested,widthPx,heightPx,percent,
             StackState.anchoredOffset(available.getWidth()*density,widthPx,percent,alignment%3),
-            StackState.anchoredOffset(available.getHeight()*density,heightPx,percent,alignment/3));
+            StackState.anchoredOffset(available.getHeight()*density,heightPx,percent,alignment/3),0);
     }
     static void embedPositioned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,StackState state,SizeF available) throws ReflectiveOperationException {
+        embedPositioned(c,outer,source,child,requested,state,available,0);
+    }
+    static void embedPositioned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,StackState state,SizeF available,int slideLayout) throws ReflectiveOperationException {
         float density=c.getResources().getDisplayMetrics().density;
         embedPositioned(c,outer,source,child,requested,state.widthPx(child),state.heightPx(child),state.visualScalePercent(child),
-            state.positionX(child,available.getWidth()*density),state.positionY(child,available.getHeight()*density));
+            state.positionX(child,available.getWidth()*density),state.positionY(child,available.getHeight()*density),slideLayout);
     }
-    private static void embedPositioned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent,float x,float y) throws ReflectiveOperationException {
+    private static void embedPositioned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent,float x,float y,int slideLayout) throws ReflectiveOperationException {
         RemoteViews chosen=select(c,new RemoteViews(source),requested);
         List<Object> collections=prepare(c,chosen,child);
         if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
@@ -99,10 +102,19 @@ final class RemoteViewsBridge {
         frame.setFloat(R.id.widget_scale_container,"setTranslationX",x);
         frame.setFloat(R.id.widget_scale_container,"setTranslationY",y);
         frame.removeAllViews(R.id.widget_scale_container);frame.addView(R.id.widget_scale_container,chosen);
-        outer.removeAllViews(R.id.content);outer.addView(R.id.content,frame);
+        outer.removeAllViews(R.id.content);addPage(c,outer,frame,slideLayout);
         List<Object> dest=actions(outer);if(dest!=null)dest.addAll(collections);
     }
-    private static void embedWithSizing(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available) throws ReflectiveOperationException {
+    private static void addPage(Context c,RemoteViews outer,RemoteViews page,int slideLayout){
+        if(slideLayout!=0){
+            RemoteViews wrapper=new RemoteViews(c.getPackageName(),slideLayout);
+            wrapper.removeAllViews(R.id.sliding_page);
+            wrapper.addView(R.id.sliding_page,page);
+            page=wrapper;
+        }
+        outer.addView(R.id.content,page);
+    }
+    static void embedWithSizing(Context c,RemoteViews outer,RemoteViews source,int child,SizeF size,SizeF available,int slideLayout) throws ReflectiveOperationException {
         RemoteViews chosen=select(c,new RemoteViews(source),size);
         List<Object> collections=prepare(c,chosen,child);
         if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
@@ -110,7 +122,7 @@ final class RemoteViewsBridge {
         if(available==null){
             // Auto uses the actual parent layout in the launcher. Options are
             // provider hints, not authoritative pixel bounds for the slot.
-            outer.addView(R.id.content,chosen);
+            addPage(c,outer,chosen,slideLayout);
         }else{
         SizeF bounds=WidgetSizing.rootSize(c,chosen,size);
         float scale=WidgetSizing.fit(available.getWidth(),available.getHeight(),bounds.getWidth(),bounds.getHeight());

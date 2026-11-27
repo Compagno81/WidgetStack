@@ -1,0 +1,2 @@
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:delay="0%" android:animation="@anim/page_move_top"/>

@@ -243,6 +243,7 @@ final class StackRenderer {
     static void update(Context c,int id,int direction){
         if(Recovery.paused(c)){RetainedWidgets.forget(id);Recovery.publish(c,id);return;}
         if(BarController.animating(id))return; // settle callback incorporates the newest snapshot
+        if(direction==0&&PageSlide.deferRefresh(id))return;
         publish(c,id,direction,0,false);
     }
     static void updateBarMotion(Context c,int id,int direction,int barMotion){publish(c,id,direction,barMotion,true);}
@@ -263,7 +264,10 @@ final class StackRenderer {
         try{root=retain?RetainedWidgets.full(c,s):renderForHome(c,s,direction,barMotion);}
         catch(Exception|LinkageError e){StackDiagnostics.note(c,"retention fallback",id,e.getMessage());retain=false;RetainedWidgets.forget(id);root=renderForHome(c,s,direction,barMotion);}
 
-        try{boolean fresh=root.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,root);if(retain)RetainedWidgets.remember(c,s);else RetainedWidgets.forget(id);if(root.getLayoutId()!=R.layout.viewport_probe)MeasuredViewport.stop(c,id);StackDiagnostics.note(c,"publication submitted",id,"selected="+s.selected+" path="+(WidgetPublisher.usesDirectPublication(android.os.Build.VERSION.SDK_INT)?"direct35":"platform")+" fresh="+fresh);}catch(RuntimeException e){
+        try{boolean fresh=root.getViewId()!=View.NO_ID;WidgetPublisher.update(c,id,root);
+            if(direction!=0 && !retain && BarController.usesStaticNavigation() && s.animateSwitch)
+                PageSlide.started(c,id);
+            if(retain)RetainedWidgets.remember(c,s);else RetainedWidgets.forget(id);if(root.getLayoutId()!=R.layout.viewport_probe)MeasuredViewport.stop(c,id);StackDiagnostics.note(c,"publication submitted",id,"selected="+s.selected+" path="+(WidgetPublisher.usesDirectPublication(android.os.Build.VERSION.SDK_INT)?"direct35":"platform")+" fresh="+fresh);}catch(RuntimeException e){
             RetainedWidgets.forget(id);Log.e("WidgetStack","Launcher rejected widget update",e);StackDiagnostics.note(c,"publish failed",id,e.getClass().getSimpleName());
             // Keep the active widget usable if retaining every page exceeds a
             // launcher/Binder limit. Do not replace it with an error unnecessarily.
@@ -285,7 +289,7 @@ final class StackRenderer {
         // publication a fresh identity, without another size-variant envelope.
         // Native MATCH_PARENT axes follow the slot; option changes republish it.
         if (BarController.usesStaticNavigation()) {
-            return render(c,s,0,null,0,nextRootId(c));
+            return render(c,s,direction,null,0,nextRootId(c));
         }
         return render(c,s,direction,null,barMotion,nextRootId(c));
     }
@@ -293,7 +297,9 @@ final class StackRenderer {
     private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId,Bundle exactOptions){
         s=VisibilityProfiles.filtered(c,s);
         AppWidgetManager m=AppWidgetManager.getInstance(c);
-        RemoteViews root=shell(c,s,direction,forceContracted,barMotion,rootId);
+        boolean staticShell=BarController.usesStaticNavigation();
+        int slideLayout=staticShell && s.animateSwitch?PageSlide.layout(s,direction):0;
+        RemoteViews root=shell(c,s,staticShell?0:direction,forceContracted,barMotion,rootId);
         if(s.children.isEmpty()&&new VisibilityProfiles(c).active(new StackStore(c).definitionId(s.id))!=0)root.setTextViewText(R.id.empty,"No widgets enabled in this profile.\nTap to configure.");
         RemoteViews source=StackHost.get(c).views.get(s.selected);
         if(source!=null){
@@ -303,8 +309,8 @@ final class StackRenderer {
             SizeF available=displaySize(actual,landscape),logical=displaySize(b,landscape);
             try{
                 if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0&&s.visualScalePercent(s.selected)==100&&!s.shifted(s.selected))
-                    RemoteViewsBridge.embedAuto(c,root,source,s.selected,logical);
-                else RemoteViewsBridge.embedPositioned(c,root,source,s.selected,logical,s,available);
+                    RemoteViewsBridge.embedWithSizing(c,root,source,s.selected,logical,null,slideLayout);
+                else RemoteViewsBridge.embedPositioned(c,root,source,s.selected,logical,s,available,slideLayout);
             }
             catch(Exception|LinkageError|StackOverflowError e){
                 Log.e("WidgetStack","Cannot embed widget "+s.selected,e);
