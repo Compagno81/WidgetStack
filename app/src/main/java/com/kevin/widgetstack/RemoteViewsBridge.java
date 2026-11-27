@@ -76,6 +76,17 @@ final class RemoteViewsBridge {
         embedAligned(c,outer,source,child,requested,widthPx,heightPx,percent,4,requested);
     }
     static void embedAligned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent,int alignment,SizeF available) throws ReflectiveOperationException {
+        float density=c.getResources().getDisplayMetrics().density;
+        embedPositioned(c,outer,source,child,requested,widthPx,heightPx,percent,
+            StackState.anchoredOffset(available.getWidth()*density,widthPx,percent,alignment%3),
+            StackState.anchoredOffset(available.getHeight()*density,heightPx,percent,alignment/3));
+    }
+    static void embedPositioned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,StackState state,SizeF available) throws ReflectiveOperationException {
+        float density=c.getResources().getDisplayMetrics().density;
+        embedPositioned(c,outer,source,child,requested,state.widthPx(child),state.heightPx(child),state.visualScalePercent(child),
+            state.positionX(child,available.getWidth()*density),state.positionY(child,available.getHeight()*density));
+    }
+    private static void embedPositioned(Context c,RemoteViews outer,RemoteViews source,int child,SizeF requested,int widthPx,int heightPx,int percent,float x,float y) throws ReflectiveOperationException {
         RemoteViews chosen=select(c,new RemoteViews(source),requested);
         List<Object> collections=prepare(c,chosen,child);
         if(Build.VERSION.SDK_INT>=35){copyCache(source,outer);copyCache(chosen,outer);}
@@ -85,10 +96,8 @@ final class RemoteViewsBridge {
         frame.setViewLayoutHeight(R.id.widget_scale_container,heightPx>0?heightPx:android.view.ViewGroup.LayoutParams.MATCH_PARENT,unit);
         frame.setFloat(R.id.widget_scale_container,"setScaleX",percent/100f);
         frame.setFloat(R.id.widget_scale_container,"setScaleY",percent/100f);
-        float density=c.getResources().getDisplayMetrics().density;
-        float w=widthPx>0?widthPx:available.getWidth()*density,h=heightPx>0?heightPx:available.getHeight()*density;
-        frame.setFloat(R.id.widget_scale_container,"setTranslationX",(available.getWidth()*density-w*percent/100f)*(alignment%3-1)/2f);
-        frame.setFloat(R.id.widget_scale_container,"setTranslationY",(available.getHeight()*density-h*percent/100f)*(alignment/3-1)/2f);
+        frame.setFloat(R.id.widget_scale_container,"setTranslationX",x);
+        frame.setFloat(R.id.widget_scale_container,"setTranslationY",y);
         frame.removeAllViews(R.id.widget_scale_container);frame.addView(R.id.widget_scale_container,chosen);
         outer.removeAllViews(R.id.content);outer.addView(R.id.content,frame);
         List<Object> dest=actions(outer);if(dest!=null)dest.addAll(collections);

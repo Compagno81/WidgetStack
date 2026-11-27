@@ -10,6 +10,12 @@ import java.util.Map;
 /** Main-thread timers only. Frames run inside the launcher's ViewFlipper, without polling. */
 final class BarController {
     static final long ANIMATION_MS=240;
+    static boolean usesStaticNavigation() {
+        return android.os.Build.VERSION.SDK_INT >= 37
+                && ("Xiaomi".equalsIgnoreCase(android.os.Build.MANUFACTURER)
+                    || "Xiaomi".equalsIgnoreCase(android.os.Build.BRAND));
+    }
+
     private static final Handler handler=new Handler(Looper.getMainLooper());
     private static final Map<Integer,Expansion> expanded=new HashMap<>();
     private static final class Expansion implements Runnable {
@@ -24,6 +30,11 @@ final class BarController {
         void refresh(){if(StackRenderer.owns(context,id)){StackRenderer.updateBarMotion(context,id,0,0);}}
         @Override public void run(){
             if(expanded.get(id)!=this)return;
+            if (usesStaticNavigation()) {
+                expanded.remove(id);
+                refresh();
+                return;
+            }
             collapsing=true;animationEnd=SystemClock.uptimeMillis()+ANIMATION_MS;
             StackRenderer.updateBarMotion(context,id,0,-1);
             handler.postDelayed(settle,ANIMATION_MS);
@@ -38,7 +49,7 @@ final class BarController {
     /** Returns whether this tap expands a contracted or currently contracting strip. */
     static boolean expand(Context c,int id){
         StackState s=new StackStore(c).get(id);Expansion old=expanded.get(id);
-        boolean animate=s!=null&&(contracted(s)||(old!=null&&old.collapsing));
+        boolean animate=!usesStaticNavigation()&&s!=null&&(contracted(s)||(old!=null&&old.collapsing));
         cancel(id);
         if(s==null||!s.showRail||s.cornerArrows||!s.autoContract)return false;
         Expansion e=new Expansion(c,s,animate);expanded.put(id,e);handler.postDelayed(e,s.contractDelayMillis());

@@ -23,6 +23,7 @@ final class WidgetSizeEditor {
         final Dialog dialog;
         final SizingPreview preview;
         final EditText[] fields=new EditText[2];
+        final EditText[] positionFields=new EditText[2];
         final SeekBar[] sliders=new SeekBar[2];
         final TextView dimensions;
         boolean syncing,closed;
@@ -38,13 +39,24 @@ final class WidgetSizeEditor {
             draft.setVisualScalePercent(child,saved.visualScalePercent(child));draft.setAlignment(child,saved.alignment(child));
             Bundle restored=activity.getIntent().getBundleExtra("resize_draft");
             if(restored!=null&&restored.getInt("child",-1)==child){draft.setDimensions(child,restored.getInt("width"),restored.getInt("height"));draft.setVisualScalePercent(child,restored.getInt("scale",100));draft.setAlignment(child,restored.getInt("alignment",4));previewId=restored.getInt("instance",previewId);activity.getIntent().removeExtra("resize_draft");}
-            dialog=new Dialog(activity);dialog.setTitle("Resize widget");
+            float density=activity.getResources().getDisplayMetrics().density;
+            android.util.SizeF viewport=StackRenderer.displaySize(viewportOptions(),activity.getResources().getConfiguration().orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE);
+            int initialX=saved.offsetX(child)+Math.round(draft.positionX(child,viewport.getWidth()*density));
+            int initialY=saved.offsetY(child)+Math.round(draft.positionY(child,viewport.getHeight()*density));
+            if(restored!=null&&restored.getInt("child",-1)==child){
+                initialX=restored.getInt("positionX",initialX);initialY=restored.getInt("positionY",initialY);
+            }
+            draft.setPosition(child,initialX,initialY);
+            dialog=new Dialog(activity);dialog.setTitle("Size and position");
             ScrollView scroll=new ScrollView(activity);LinearLayout root=new LinearLayout(activity);root.setOrientation(LinearLayout.VERTICAL);int padding=Ui.dp(activity,16);root.setPadding(padding,padding,padding,padding);scroll.addView(root);
-            Ui.text(activity,root,"Resize widget",24);
+            Ui.text(activity,root,"Size and position",24);
             Ui.text(activity,root,"Width and height resize independently. Auto fills that axis of the stack. Larger sizes are clipped to the stack. Values are screen pixels, from 1 to 4000; sliders use 50 px steps.",14);
             dimensions=Ui.text(activity,root,"",14);
             preview=new SizingPreview(activity,this);root.addView(preview,new LinearLayout.LayoutParams(-1,Ui.dp(activity,260)));
-            Ui.text(activity,root,"Preview shows the widget area for the selected instance. Use the controls below to resize. Provider actions are disabled.",13);
+            Ui.text(activity,root,"Drag inside the preview to move this widget. X moves right and Y moves down. Zero centres the widget on that axis.",13);
+            LinearLayout coordinates=Ui.row(activity,root);
+            positionField(coordinates,0,"X");positionField(coordinates,1,"Y");
+            Ui.compactButton(activity,Ui.row(activity,root),"Centre widget",()->position(0,0));
             Ui.tonalButton(activity,root,"Refresh preview snapshot",()->{snapshot=StackHost.get(activity).views.get(child);renderPreview();});
             Ui.text(activity,root,"Preview holds a snapshot while you edit. Refresh it to show newer provider content.",13);
             final TextView zoomLabel=Ui.text(activity,root,"Scale: "+draft.visualScalePercent(child)+"%",17);
@@ -55,9 +67,6 @@ final class WidgetSizeEditor {
                 public void onStartTrackingTouch(SeekBar bar){} public void onStopTrackingTouch(SeekBar bar){}
             });
             Ui.compactButton(activity,Ui.row(activity,root),"Reset scale to 100%",()->zoom.setProgress(75));
-            Ui.text(activity,root,"Alignment",17);
-            Spinner alignment=new Spinner(activity);alignment.setAdapter(new ArrayAdapter<>(activity,android.R.layout.simple_spinner_dropdown_item,new String[]{"Top left","Top centre","Top right","Centre left","Centre","Centre right","Bottom left","Bottom centre","Bottom right"}));alignment.setSelection(draft.alignment(child));root.addView(alignment);
-            alignment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){public void onNothingSelected(AdapterView<?> p){}public void onItemSelected(AdapterView<?> p,View v,int n,long id){draft.setAlignment(child,n);renderPreview();}});
             axis(root,0,"Width");axis(root,1,"Height");
             LinearLayout buttons=Ui.row(activity,root);
             Ui.compactButton(activity,buttons,"Cancel",dialog::dismiss);
@@ -68,7 +77,7 @@ final class WidgetSizeEditor {
                 StackState latest=new StackStore(activity).get(saved.id);
                 if(latest==null||!latest.children.contains(child)){dialog.dismiss();return;}
                 latest.setDimensions(child,draft.widthPx(child),draft.heightPx(child));
-                latest.setVisualScalePercent(child,draft.visualScalePercent(child));latest.setAlignment(child,draft.alignment(child));saved.setAlignment(child,draft.alignment(child));
+                latest.setVisualScalePercent(child,draft.visualScalePercent(child));latest.setPosition(child,draft.offsetX(child),draft.offsetY(child));saved.setPosition(child,draft.offsetX(child),draft.offsetY(child));
                 saved.setVisualScalePercent(child,draft.visualScalePercent(child));
                 new StackStore(activity).put(latest);
                 saved.setDimensions(child,draft.widthPx(child),draft.heightPx(child));
@@ -78,7 +87,7 @@ final class WidgetSizeEditor {
             dialog.setOnDismissListener(d->{closed=true;handler.removeCallbacks(refresh);handler.removeCallbacks(previewRender);StackRenderer.updateSizes(activity,saved.id);});
             sync();
         }
-        Bundle returnDraft(){Bundle b=new Bundle();b.putInt("child",child);b.putInt("instance",previewId);b.putInt("width",draft.widthPx(child));b.putInt("height",draft.heightPx(child));b.putInt("scale",draft.visualScalePercent(child));b.putInt("alignment",draft.alignment(child));return b;}
+        Bundle returnDraft(){Bundle b=new Bundle();b.putInt("child",child);b.putInt("instance",previewId);b.putInt("width",draft.widthPx(child));b.putInt("height",draft.heightPx(child));b.putInt("scale",draft.visualScalePercent(child));b.putInt("alignment",draft.alignment(child));b.putInt("positionX",draft.offsetX(child));b.putInt("positionY",draft.offsetY(child));return b;}
         void show(){
             dialog.show();dialog.getWindow().setLayout(-1,-1);
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -105,13 +114,44 @@ final class WidgetSizeEditor {
                 public void afterTextChanged(Editable e){}
             });
         }
+        void positionField(LinearLayout row,int axis,String label){
+            LinearLayout column=new LinearLayout(activity);column.setOrientation(LinearLayout.VERTICAL);
+            row.addView(column,new LinearLayout.LayoutParams(0,-2,1));
+            Ui.text(activity,column,label+" offset (px)",16);
+            EditText field=new EditText(activity);positionFields[axis]=field;
+            field.setSingleLine();field.setContentDescription(label+" offset in pixels");
+            field.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_SIGNED);
+            field.setText(Integer.toString(axis==0?draft.offsetX(child):draft.offsetY(child)));
+            column.addView(field);
+            field.addTextChangedListener(new TextWatcher(){
+                public void beforeTextChanged(CharSequence s,int start,int count,int after){}
+                public void onTextChanged(CharSequence s,int start,int before,int count){
+                    if(syncing)return;
+                    Integer n=parsePosition(field);if(n==null)return;
+                    draft.setPosition(child,axis==0?n:draft.offsetX(child),axis==1?n:draft.offsetY(child));
+                    preview.invalidate();
+                }
+                public void afterTextChanged(Editable e){}
+            });
+        }
+        Integer parsePosition(EditText field){
+            try{int value=Integer.parseInt(field.getText().toString());field.setError(null);return value;}
+            catch(NumberFormatException e){field.setError("Enter a whole number");return null;}
+        }
+        void position(int x,int y){
+            draft.setPosition(child,x,y);syncing=true;
+            for(int i=0;i<2;i++){
+                positionFields[i].setText(Integer.toString(i==0?x:y));positionFields[i].setError(null);
+            }
+            syncing=false;preview.invalidate();
+        }
         Integer parse(EditText field){
             String text=field.getText().toString().trim();
             if(text.isEmpty()){field.setError(null);return 0;}
             try{int n=Integer.parseInt(text);if(n>=1&&n<=StackState.MAX_SIZE_PX){field.setError(null);return n;}}catch(NumberFormatException ignored){}
             field.setError("Enter 1–4000 px, or use Auto");return null;
         }
-        boolean valid(){boolean w=parse(fields[0])!=null,h=parse(fields[1])!=null;return w&&h;}
+        boolean valid(){boolean w=parse(fields[0])!=null,h=parse(fields[1])!=null;return w&&h&&parsePosition(positionFields[0])!=null&&parsePosition(positionFields[1])!=null;}
         void set(int axis,int value){draft.setDimensions(child,axis==0?value:draft.widthPx(child),axis==1?value:draft.heightPx(child));}
         void sync(){syncing=true;for(int i=0;i<2;i++){
             if(fields[i]==null)continue;int value=i==0?draft.widthPx(child):draft.heightPx(child);
@@ -139,12 +179,13 @@ final class WidgetSizeEditor {
         final AppWidgetHostView host;
         final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
         final RectF bounds=new RectF();
-        float logicalWidth=240,logicalHeight=160,scale=1,startX,startY,startWidth,startHeight,startScale;
-        int edges;
+        float logicalWidth=240,logicalHeight=160,scale=1,startX,startY,startScale;
+        int startOffsetX,startOffsetY;
+        boolean dragging;
         SizingPreview(Context c,Session session){
             super(c);this.session=session;setWillNotDraw(false);setBackgroundColor(0xfff0f5fa);
             host=new AppWidgetHostView(c);host.setExecutor(PREVIEW_EXECUTOR);host.setPadding(0,0,0,0);host.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);host.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);addView(host);
-            setContentDescription("Non-interactive widget preview. Use width and height fields for accessible sizing.");
+            setContentDescription("Drag to position the widget or enter X and Y offsets below.");
         }
         void refresh(){
             android.util.SizeF size=session.logicalSize();float density=getResources().getDisplayMetrics().density;
@@ -153,7 +194,7 @@ final class WidgetSizeEditor {
             android.widget.RemoteViews source=session.snapshot;
             if(source!=null)try{
                 android.widget.RemoteViews frame=new android.widget.RemoteViews(getContext().getPackageName(),R.layout.sizing_preview);
-                RemoteViewsBridge.embedAligned(getContext(),frame,source,session.child,size,session.draft.widthPx(session.child),session.draft.heightPx(session.child),session.draft.visualScalePercent(session.child),session.draft.alignment(session.child),viewport);
+                RemoteViewsBridge.embedPositioned(getContext(),frame,source,session.child,size,session.draft,viewport);
                 host.updateAppWidget(frame);
             }catch(Exception e){host.updateAppWidget(null);}
             else host.updateAppWidget(null);
@@ -173,15 +214,37 @@ final class WidgetSizeEditor {
             bounds.set(left,top,left+logicalWidth*scale,top+logicalHeight*scale);
         }
         @Override protected void dispatchDraw(Canvas canvas){
+            int x=session.draft.offsetX(session.child),y=session.draft.offsetY(session.child);
+            View container=host.findViewById(R.id.widget_scale_container);
+            if(container!=null){container.setTranslationX(x);container.setTranslationY(y);}
             super.dispatchDraw(canvas);paint.setColor(0xff61b9f4);paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(3*getResources().getDisplayMetrics().density);canvas.drawRect(bounds,paint);
-            paint.setStyle(Paint.Style.FILL);float radius=5*getResources().getDisplayMetrics().density;
-            for(float x:new float[]{bounds.left,bounds.centerX(),bounds.right})for(float y:new float[]{bounds.top,bounds.centerY(),bounds.bottom})if(x!=bounds.centerX()||y!=bounds.centerY())canvas.drawCircle(x,y,radius,paint);
+            if(container==null){
+                canvas.save();canvas.clipRect(bounds);paint.setStrokeWidth(2);paint.setColor(0xff247bb0);
+                float cx=bounds.centerX()+x*scale,cy=bounds.centerY()+y*scale;
+                canvas.drawCircle(cx,cy,8,paint);canvas.drawLine(cx-14,cy,cx+14,cy,paint);canvas.drawLine(cx,cy-14,cx,cy+14,paint);
+                canvas.restore();
+            }
         }
         @Override public boolean onInterceptTouchEvent(MotionEvent event){return true;}
         @Override public boolean onTouchEvent(MotionEvent e){
-            return true;
+            switch(e.getActionMasked()){
+                case MotionEvent.ACTION_DOWN:
+                    if(!bounds.contains(e.getX(),e.getY()))return false;
+                    dragging=true;startX=e.getX();startY=e.getY();startScale=scale;
+                    startOffsetX=session.draft.offsetX(session.child);startOffsetY=session.draft.offsetY(session.child);
+                    getParent().requestDisallowInterceptTouchEvent(true);return true;
+                case MotionEvent.ACTION_MOVE:
+                case MotionEvent.ACTION_UP:
+                    if(!dragging)return false;
+                    session.position(Math.round(startOffsetX+(e.getX()-startX)/startScale),
+                        Math.round(startOffsetY+(e.getY()-startY)/startScale));
+                    if(e.getActionMasked()==MotionEvent.ACTION_UP){dragging=false;getParent().requestDisallowInterceptTouchEvent(false);performClick();}
+                    return true;
+                case MotionEvent.ACTION_CANCEL:
+                    dragging=false;getParent().requestDisallowInterceptTouchEvent(false);return true;
+                default:return dragging;
+            }
         }
-        int snap(float value){return Math.max(50,Math.min(StackState.MAX_SIZE_PX,Math.round(value/50)*50));}
         @Override public boolean performClick(){super.performClick();return true;}
     }
 }

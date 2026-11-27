@@ -64,9 +64,9 @@ final class RetainedWidgets {
                 }
                 if(android.os.Build.VERSION.SDK_INT<35&&!RemoteViewsBridge.collectionIds(c,source,child).isEmpty())
                     throw new UnsupportedOperationException("Nested collection retention requires Android 15 or later");
-                if(s.widthPx(child)==0&&s.heightPx(child)==0&&s.visualScalePercent(child)==100)
+                if(s.widthPx(child)==0&&s.heightPx(child)==0&&s.visualScalePercent(child)==100&&!s.shifted(child))
                     RemoteViewsBridge.embedAuto(c,page,source,child,logical);
-                else RemoteViewsBridge.embedAligned(c,page,source,child,logical,s.widthPx(child),s.heightPx(child),s.visualScalePercent(child),s.alignment(child),available);
+                else RemoteViewsBridge.embedPositioned(c,page,source,child,logical,s,available);
                 if(recyclable)RemoteViewsBridge.makeRetained(page);
             }
             root.addStableView(R.id.retained_pages,page,child);

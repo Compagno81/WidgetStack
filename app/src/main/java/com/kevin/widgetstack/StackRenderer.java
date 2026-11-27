@@ -284,6 +284,9 @@ final class StackRenderer {
         // A placement has one active provider. Give the actual launcher-visible
         // publication a fresh identity, without another size-variant envelope.
         // Native MATCH_PARENT axes follow the slot; option changes republish it.
+        if (BarController.usesStaticNavigation()) {
+            return render(c,s,0,null,0,nextRootId(c));
+        }
         return render(c,s,direction,null,barMotion,nextRootId(c));
     }
     private static RemoteViews render(Context c,StackState s,int direction,Boolean forceContracted,int barMotion,int rootId){return render(c,s,direction,forceContracted,barMotion,rootId,null);}
@@ -299,9 +302,9 @@ final class StackRenderer {
             boolean landscape=c.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE;
             SizeF available=displaySize(actual,landscape),logical=displaySize(b,landscape);
             try{
-                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0&&s.visualScalePercent(s.selected)==100)
+                if(s.widthPx(s.selected)==0&&s.heightPx(s.selected)==0&&s.visualScalePercent(s.selected)==100&&!s.shifted(s.selected))
                     RemoteViewsBridge.embedAuto(c,root,source,s.selected,logical);
-                else RemoteViewsBridge.embedAligned(c,root,source,s.selected,logical,s.widthPx(s.selected),s.heightPx(s.selected),s.visualScalePercent(s.selected),s.alignment(s.selected),available);
+                else RemoteViewsBridge.embedPositioned(c,root,source,s.selected,logical,s,available);
             }
             catch(Exception|LinkageError|StackOverflowError e){
                 Log.e("WidgetStack","Cannot embed widget "+s.selected,e);

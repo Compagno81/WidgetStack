@@ -33,9 +33,28 @@ public final class StackState {
     public final List<Integer> children = new ArrayList<>();
     private final Map<Integer,Integer> logicalSizePercent = new HashMap<>();
     private final Map<Integer,Integer> widthsPx = new HashMap<>(), heightsPx = new HashMap<>();
+    private final Map<Integer,Integer> offsetsX=new HashMap<>(), offsetsY=new HashMap<>();
+    public int offsetX(int child){return offsetsX.getOrDefault(child,0);}
+    public int offsetY(int child){return offsetsY.getOrDefault(child,0);}
+    public void setPosition(int child,int x,int y){
+        if(!children.contains(child))return;
+        alignments.remove(child);
+        offsetsX.put(child,x);offsetsY.put(child,y);
+    }
+    public boolean shifted(int child){return offsetX(child)!=0||offsetY(child)!=0;}
+    static float anchoredOffset(float availablePx,int explicitPx,int percent,int anchor){
+        float extent=explicitPx>0?explicitPx:availablePx;
+        return (availablePx-extent*percent/100f)*(anchor-1)/2f;
+    }
+    public float positionX(int child,float availablePx){
+        return offsetX(child)+anchoredOffset(availablePx,widthPx(child),visualScalePercent(child),alignment(child)%3);
+    }
+    public float positionY(int child,float availablePx){
+        return offsetY(child)+anchoredOffset(availablePx,heightPx(child),visualScalePercent(child),alignment(child)/3);
+    }
     private final Map<Integer,Integer> alignments=new HashMap<>();
     public int alignment(int child){return alignments.getOrDefault(child,4);}
-    public void setAlignment(int child,int value){if(children.contains(child))alignments.put(child,Math.max(0,Math.min(8,value)));}
+    public void setAlignment(int child,int value){if(children.contains(child)){offsetsX.remove(child);offsetsY.remove(child);alignments.put(child,Math.max(0,Math.min(8,value)));}}
     private final Map<Integer,Integer> visualScales = new HashMap<>();
     public int visualScalePercent(int child){return visualScales.getOrDefault(child,100);}
     public void setVisualScalePercent(int child,int percent){if(children.contains(child))visualScales.put(child,Math.max(25,Math.min(300,percent)));}
@@ -56,7 +75,7 @@ public final class StackState {
     public void remove(int child) {
         int old = children.indexOf(child);
         children.remove(Integer.valueOf(child));
-        alignments.remove(child);visualScales.remove(child);logicalSizePercent.remove(child);widthsPx.remove(child);heightsPx.remove(child);
+        offsetsX.remove(child);offsetsY.remove(child);alignments.remove(child);visualScales.remove(child);logicalSizePercent.remove(child);widthsPx.remove(child);heightsPx.remove(child);
         if (selected == child) selected = children.isEmpty() ? -1 : children.get(Math.min(Math.max(old, 0), children.size()-1));
         normalize();
     }
@@ -71,7 +90,7 @@ public final class StackState {
         if(railEdge<TOP||railEdge>RIGHT)railEdge=RIGHT;
         contractDelaySeconds=Math.max(2,contractDelaySeconds);cornerEnd=cornerEnd==1?1:0;
         railWidth=Math.max(8,Math.min(80,railWidth)); railOpacity=Math.max(0,Math.min(100,railOpacity)); contractedWidth=Math.max(4,Math.min(railWidth-1,contractedWidth));
-        alignments.keySet().retainAll(children);visualScales.keySet().retainAll(children);widthsPx.keySet().retainAll(children);heightsPx.keySet().retainAll(children);
+        offsetsX.keySet().retainAll(children);offsetsY.keySet().retainAll(children);alignments.keySet().retainAll(children);visualScales.keySet().retainAll(children);widthsPx.keySet().retainAll(children);heightsPx.keySet().retainAll(children);
         logicalSizePercent.keySet().retainAll(children);for(int child:children)logicalSizePercent.put(child,Math.max(100,Math.min(150,logicalSizePercent.getOrDefault(child,100))));
         if (!children.contains(selected)) selected = children.isEmpty() ? -1 : children.get(0); }
 }
